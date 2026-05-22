@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Join the Rescue | Harvest Trust</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#2a1800",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#e2e2e2",
+                        "secondary-fixed": "#ffdcc3",
+                        "on-secondary-container": "#663500",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#6e3900",
+                        "primary-container": "#518048",
+                        "outline": "#6f7a6a",
+                        "tertiary-fixed-dim": "#ffb95a",
+                        "surface-tint": "#3b6934",
+                        "on-primary-container": "#f8fff0",
+                        "surface-dim": "#dadada",
+                        "secondary-container": "#fc9430",
+                        "error-container": "#ffdad6",
+                        "inverse-on-surface": "#f0f1f1",
+                        "surface-container": "#eeeeee",
+                        "error": "#ba1a1a",
+                        "background": "#f9f9f9",
+                        "secondary": "#914d00",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#e2e2e2",
+                        "on-tertiary-container": "#fffbff",
+                        "on-secondary-fixed": "#2f1500",
+                        "tertiary-fixed": "#ffddb6",
+                        "surface": "#f9f9f9",
+                        "secondary-fixed-dim": "#ffb77d",
+                        "tertiary-container": "#a26800",
+                        "surface-bright": "#f9f9f9",
+                        "primary-fixed": "#bcf0ae",
+                        "on-surface-variant": "#3f4a3b",
+                        "surface-container-lowest": "#ffffff",
+                        "on-background": "#1a1c1c",
+                        "outline-variant": "#becab7",
+                        "on-surface": "#1a1c1c",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-high": "#e8e8e8",
+                        "surface-container-low": "#f3f3f3",
+                        "primary-fixed-dim": "#a1d494",
+                        "on-error": "#ffffff",
+                        "primary": "#396632",
+                        "inverse-primary": "#a1d494",
+                        "on-primary-fixed-variant": "#23501e",
+                        "on-primary-fixed": "#002201",
+                        "tertiary": "#815200",
+                        "on-tertiary-fixed-variant": "#643f00",
+                        "inverse-surface": "#2f3131"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "display": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9f9f9;
+            color: #1a1c1c;
+        }
+        h1, h2, h3, .font-headline {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .editorial-shadow {
+            box-shadow: 0 20px 40px rgba(26, 28, 28, 0.06);
+        }
+        .asymmetric-corner {
+            border-top-left-radius: 3rem;
+            border-bottom-right-radius: 3rem;
+        }
+        /* Role Selection Hover State */
+        .role-card.active {
+            background-color: #518048;
+            color: #f8fff0;
+        }
+        .role-card.active .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface antialiased overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="bg-surface/80 backdrop-blur-xl fixed top-0 z-50 w-full">
+<div class="flex justify-between items-center px-6 py-4 w-full max-w-7xl mx-auto">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="eco">eco</span>
+<span class="font-headline font-black text-primary tracking-tighter text-xl">Harvest Trust</span>
+</div>
+<nav class="hidden md:flex gap-8 items-center">
+<a class="text-on-surface-variant font-medium hover:text-secondary transition-colors" href="#">Our Mission</a>
+<a class="text-on-surface-variant font-medium hover:text-secondary transition-colors" href="#">Impact Report</a>
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-full font-bold transition-transform active:scale-95">Sign In</button>
+</nav>
+</div>
+</header>
+<main class="pt-24 pb-20">
+<!-- Hero Section -->
+<section class="max-w-7xl mx-auto px-6 py-12 md:py-20 flex flex-col md:flex-row items-center gap-12">
+<div class="flex-1 space-y-6">
+<div class="inline-block px-4 py-1.5 bg-primary-fixed text-on-primary-fixed rounded-full text-sm font-bold tracking-wide uppercase">
+                    Registration
+                </div>
+<h1 class="text-display-lg md:text-6xl font-extrabold tracking-tight text-on-surface leading-tight">
+                    Join the Rescue
+                </h1>
+<p class="text-headline-sm text-on-surface-variant max-w-xl text-lg md:text-xl">
+                    Choose your role to start making an impact. Together, we can ensure no meal goes to waste in our community.
+                </p>
+<div class="hidden md:block relative pt-8">
+<div class="bg-surface-container-low p-8 rounded-lg editorial-shadow flex items-start gap-4 max-w-md">
+<span class="material-symbols-outlined text-secondary text-3xl" data-icon="security" style="font-variation-settings: 'FILL' 1;">security</span>
+<div>
+<p class="font-bold text-on-surface">Secure your account</p>
+<p class="text-on-surface-variant text-sm mt-1 leading-relaxed">Optional: Secure your account with 2FA for better protection and peace of mind during your rescue journey.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Registration Canvas -->
+<div class="flex-1 w-full">
+<div class="bg-surface-container-lowest rounded-lg p-8 md:p-12 editorial-shadow">
+<form class="space-y-10" onsubmit="return false;">
+<!-- Role Selection -->
+<div class="space-y-4">
+<label class="font-headline font-bold text-lg block">I am joining because...</label>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+<button class="role-card group flex flex-col items-center justify-center p-6 bg-surface-container-low rounded-lg transition-all hover:bg-primary-container hover:text-on-primary-container active:scale-95 text-center gap-3" onclick="selectRole(this)" type="button">
+<span class="material-symbols-outlined text-3xl group-hover:scale-110 transition-transform" data-icon="volunteer_activism">volunteer_activism</span>
+<span class="text-sm font-bold leading-tight">I want to Donate</span>
+</button>
+<button class="role-card group flex flex-col items-center justify-center p-6 bg-surface-container-low rounded-lg transition-all hover:bg-primary-container hover:text-on-primary-container active:scale-95 text-center gap-3" onclick="selectRole(this)" type="button">
+<span class="material-symbols-outlined text-3xl group-hover:scale-110 transition-transform" data-icon="handshake">handshake</span>
+<span class="text-sm font-bold leading-tight">I want to Volunteer</span>
+</button>
+<button class="role-card group flex flex-col items-center justify-center p-6 bg-surface-container-low rounded-lg transition-all hover:bg-primary-container hover:text-on-primary-container active:scale-95 text-center gap-3" onclick="selectRole(this)" type="button">
+<span class="material-symbols-outlined text-3xl group-hover:scale-110 transition-transform" data-icon="restaurant">restaurant</span>
+<span class="text-sm font-bold leading-tight">I need Food</span>
+</button>
+</div>
+</div>
+<!-- Main Form -->
+<div class="space-y-6">
+<div class="space-y-2">
+<label class="text-label-md font-bold text-on-surface-variant ml-1" for="fullname">Full Name</label>
+<input class="w-full px-6 py-4 bg-surface-container-high border-none rounded-md focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all placeholder:text-outline" id="fullname" placeholder="Jane Doe" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="text-label-md font-bold text-on-surface-variant ml-1" for="email">Email Address</label>
+<input class="w-full px-6 py-4 bg-surface-container-high border-none rounded-md focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all placeholder:text-outline" id="email" placeholder="jane@example.com" type="email"/>
+</div>
+<div class="space-y-2">
+<label class="text-label-md font-bold text-on-surface-variant ml-1" for="password">Password</label>
+<div class="relative">
+<input class="w-full px-6 py-4 bg-surface-container-high border-none rounded-md focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all placeholder:text-outline" id="password" placeholder="••••••••" type="password"/>
+<button class="absolute right-6 top-1/2 -translate-y-1/2 text-on-surface-variant" type="button">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Action Button -->
+<button class="w-full py-5 bg-gradient-to-r from-secondary to-secondary-container text-on-secondary font-bold text-lg rounded-full editorial-shadow hover:scale-[1.02] transition-transform active:scale-95 flex items-center justify-center gap-3" type="submit">
+                            Create Account
+                            <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<p class="text-center text-on-surface-variant text-sm">
+                            Already have an account? <a class="text-primary font-bold hover:underline" href="#">Log in here</a>
+</p>
+</form>
+</div>
+</div>
+</section>
+<!-- Aesthetic Bento-ish visual section -->
+<section class="max-w-7xl mx-auto px-6 py-12">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+<div class="md:col-span-8 overflow-hidden asymmetric-corner bg-primary-container/10 relative h-64 md:h-80">
+<img class="w-full h-full object-cover grayscale-[20%] hover:grayscale-0 transition-all duration-700" data-alt="A warm, cinematic photograph of diverse volunteers smiling and packing cardboard boxes with fresh green vegetables in a bright community kitchen. The lighting is soft and golden, emphasizing a humanitarian and community-focused atmosphere. The overall aesthetic is clean and editorial with a focus on fresh produce and human connection." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDV3ThfMJB8J48x7IKqhWn5FTe8QHnHxJDfeRFSIMLt4suBUQ3lZnlRVe0o0fx9eSVaabmA8WwjSZODMRLl87TtuX4O8xdNnkq0UiuMelg9pZvqI84ZhEwGT7gOWbGduUufVLwIEgqNW4Mnh7goKcxuV4kyGQx6JLT25sLmEglAc59B6jy0e_YJfAUlNvULnuki1d-r7wxWX_Ays_4gRXfJ4PgCg8psEAsBoXkJn8cCcE40LoO58iYHYSzOSBqgOgAIbwqUUzFu46E"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent flex items-end p-8">
+<p class="text-on-primary text-xl font-bold max-w-sm">Over 2.5 million meals rescued since we started in 2021.</p>
+</div>
+</div>
+<div class="md:col-span-4 bg-tertiary-container text-on-tertiary-container rounded-lg p-8 flex flex-col justify-center items-center text-center gap-4">
+<span class="material-symbols-outlined text-6xl" data-icon="volunteer_activism" style="font-variation-settings: 'FILL' 1;">volunteer_activism</span>
+<h3 class="text-2xl font-bold tracking-tight">Be the hero today</h3>
+<p class="opacity-90">Every registration brings us closer to a world without hunger.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low dark:bg-surface-container-highest w-full py-12">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 w-full max-w-7xl mx-auto gap-6">
+<div class="flex flex-col gap-2">
+<span class="font-headline font-bold text-on-surface text-xl">Harvest Trust</span>
+<p class="font-body text-body-sm text-on-surface-variant max-w-xs">
+                    © 2024 Harvest Trust Food Rescue. A Humanitarian Editorial Project.
+                </p>
+</div>
+<div class="flex gap-8">
+<a class="text-on-surface-variant hover:text-secondary transition-colors font-medium" href="#">Privacy</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors font-medium" href="#">Terms</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors font-medium" href="#">Safety</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors font-medium" href="#">Contact</a>
+</div>
+</div>
+</footer>
+<script>
+        function selectRole(element) {
+            // Remove active class from all
+            document.querySelectorAll('.role-card').forEach(card => {
+                card.classList.remove('active');
+                card.classList.remove('bg-primary-container');
+                card.classList.remove('text-on-primary-container');
+                card.classList.add('bg-surface-container-low');
+            });
+            
+            // Add to clicked
+            element.classList.add('active');
+            element.classList.add('bg-primary-container');
+            element.classList.add('text-on-primary-container');
+            element.classList.remove('bg-surface-container-low');
+
+            // Micro-interaction: scale effect
+            element.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                element.style.transform = 'scale(1)';
+            }, 100);
+        }
+
+        // Atmospheric parallax on the image
+        window.addEventListener('scroll', () => {
+            const img = document.querySelector('img');
+            const scrolled = window.pageYOffset;
+            img.style.transform = `translateY(${scrolled * 0.05}px)`;
+        });
+    </script>
+</body></html>
