@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResQFood — Donor Dashboard</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/donor.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div id="offline-banner">📶 Offline mode — Huling update: <span id="offline-ts"></span></div>
+
+  <div class="donor-shell">
+
+    <!-- Top bar -->
+    <header class="donor-topbar" role="banner">
+      <span class="brand">🍱 RESQFOOD</span>
+      <span class="greeting" id="greeting-name">Magandang araw!</span>
+      <button class="icon-btn" id="btn-signout" aria-label="Sign out" title="Mag-sign out">⎋</button>
+    </header>
+
+    <!-- Activation gate banner (shown when onboardingComplete === false) -->
+    <div class="activation-banner hidden" id="activation-banner" role="alert" aria-live="polite">
+      <span class="ab-icon">🎯</span>
+      <div class="ab-body">
+        <div class="ab-title">I-activate ang iyong account</div>
+        <div class="ab-sub">Mag-post ng isang donation para ma-unlock ang lahat ng features. ~2 minuto.</div>
+      </div>
+      <a class="ab-cta" href="post.html">Mag-post →</a>
+    </div>
+
+    <!-- Navigation tabs -->
+    <nav class="donor-tabs" role="tablist" aria-label="Donor navigation">
+      <button class="donor-tab active" role="tab" aria-selected="true"
+              data-tab="board" aria-controls="panel-board">
+        <span class="tab-icon">📋</span>
+        Board
+      </button>
+      <button class="donor-tab" role="tab" aria-selected="false"
+              data-tab="history" id="tab-history" aria-controls="panel-history">
+        <span class="tab-icon">📜</span>
+        History
+        <span class="lock-badge hidden" id="history-lock">🔒</span>
+      </button>
+      <button class="donor-tab" role="tab" aria-selected="false"
+              data-tab="stats" id="tab-stats" aria-controls="panel-stats">
+        <span class="tab-icon">📊</span>
+        Stats
+        <span class="lock-badge hidden" id="stats-lock">🔒</span>
+      </button>
+    </nav>
+
+    <!-- ── BOARD TAB ── -->
+    <main class="donor-body" id="panel-board" role="tabpanel">
+
+      <!-- Dynamic kitchen time alert -->
+      <div id="kitchen-alert" class="kitchen-alert hidden" role="status" aria-live="polite"></div>
+
+      <!-- Post new donation button -->
+      <a class="post-fab" href="post.html" id="post-fab-btn" aria-label="Mag-post ng bagong donation">
+        <span class="fab-icon">➕</span>
+        <span class="fab-text">
+          Mag-post ng Surplus
+          <span class="fab-sub">I-post ang sobrang pagkain ngayon</span>
+        </span>
+        <span>→</span>
+      </a>
+
+      <!-- Active donations -->
+      <div class="section-header">
+        <span class="section-title">Aktibong Donations</span>
+        <span class="section-count" id="active-count">0</span>
+      </div>
+      <div id="active-list" aria-live="polite" aria-label="Aktibong donations">
+        <!-- Skeleton loaders shown while data loads -->
+        <div class="skeleton-card" id="skel-1">
+          <div class="skeleton-line" style="height:18px; width:60%; margin-bottom:8px;"></div>
+          <div class="skeleton-line" style="height:12px; width:40%; margin-bottom:16px;"></div>
+          <div class="skeleton-line" style="height:32px; width:100%;"></div>
+        </div>
+        <div class="skeleton-card" id="skel-2">
+          <div class="skeleton-line" style="height:18px; width:50%; margin-bottom:8px;"></div>
+          <div class="skeleton-line" style="height:12px; width:35%; margin-bottom:16px;"></div>
+          <div class="skeleton-line" style="height:32px; width:100%;"></div>
+        </div>
+      </div>
+
+      <!-- Completed section (collapsed) -->
+      <div class="history-section">
+        <button class="history-toggle" id="history-toggle-btn"
+                aria-expanded="false" aria-controls="completed-list">
+          <span class="section-title text-muted">Natapos na (nakaraang 5)</span>
+          <span class="history-chevron">▼</span>
+        </button>
+        <div class="history-list" id="completed-list" role="list"
+             aria-label="Mga natapos na donation"></div>
+      </div>
+
+    </main>
+
+    <!-- ── HISTORY TAB ── -->
+    <div class="donor-body hidden" id="panel-history" role="tabpanel" aria-label="Kasaysayan ng donations">
+      <div class="empty-state">
+        <div class="empty-icon">📜</div>
+        <p>Makikita dito ang lahat ng iyong mga donation.</p>
+        <p class="text-xs mt-2">Mag-post muna ng isang donation para ma-unlock.</p>
+      </div>
+    </div>
+
+    <!-- ── STATS TAB ── -->
+    <div class="donor-body hidden" id="panel-stats" role="tabpanel" aria-label="Iyong statistics">
+      <div id="stats-content">
+        <div class="card card-elevated" style="margin-bottom:1rem;">
+          <div class="text-muted text-sm" style="margin-bottom:.5rem;">Reliability Score</div>
+          <div style="font-size:2rem; font-weight:800;" id="stat-reliability">—</div>
+          <div class="reliability-chip neutral" id="stat-badge" style="margin-top:.5rem;">
+            Baguhan
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:.75rem;">
+          <div class="card">
+            <div class="text-muted text-xs">Kabuuang Donated</div>
+            <div style="font-size:1.5rem; font-weight:800;" id="stat-kg">0 kg</div>
+          </div>
+          <div class="card">
+            <div class="text-muted text-xs">Points</div>
+            <div style="font-size:1.5rem; font-weight:800;" id="stat-points">0</div>
+          </div>
+          <div class="card">
+            <div class="text-muted text-xs">Nai-verify</div>
+            <div style="font-size:1.5rem; font-weight:800;" id="stat-verified">0</div>
+          </div>
+          <div class="card">
+            <div class="text-muted text-xs">Na-cancel</div>
+            <div style="font-size:1.5rem; font-weight:800;" id="stat-cancelled">0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /donor-shell -->
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- Sign-out confirmation modal (minimal) -->
+  <div id="signout-modal" style="
+    display:none; position:fixed; inset:0; background:rgba(0,0,0,.5);
+    z-index:9000; align-items:flex-end; justify-content:center;
+  ">
+    <div style="background:#fff; border-radius:1.25rem 1.25rem 0 0; padding:2rem 1.5rem; width:100%; max-width:480px;">
+      <h3 style="margin-bottom:.75rem;">Mag-sign out?</h3>
+      <p class="text-muted text-sm" style="margin-bottom:1.5rem;">
+        Kailangan mo pang mag-OTP para makabalik.
+      </p>
+      <div style="display:flex; gap:.75rem;">
+        <button class="btn btn-ghost" id="btn-cancel-signout" style="flex:1;">Huwag na</button>
+        <button class="btn btn-danger" id="btn-confirm-signout" style="flex:1;">Sign Out</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="../js/modules/donor.js"></script>
+</body>
+</html>

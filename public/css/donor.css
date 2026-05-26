@@ -1,0 +1,385 @@
+/* ResQFood — Donor Dashboard styles */
+
+/* ── App shell ── */
+.donor-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+/* ── Top bar ── */
+.donor-topbar {
+  background: var(--color-primary);
+  color: #fff;
+  padding: var(--sp-4) var(--sp-5);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.donor-topbar .brand {
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: .05em;
+  color: var(--color-accent);
+  flex: 1;
+}
+.donor-topbar .greeting {
+  font-size: .85rem;
+  color: rgba(255,255,255,.75);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+.donor-topbar .icon-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,.8);
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: var(--sp-1);
+  line-height: 1;
+}
+.donor-topbar .icon-btn:hover { color: var(--color-accent); }
+
+/* ── Activation gate banner ── */
+.activation-banner {
+  background: var(--color-accent);
+  color: var(--color-primary);
+  padding: var(--sp-4) var(--sp-5);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.activation-banner .ab-icon { font-size: 1.5rem; flex-shrink: 0; }
+.activation-banner .ab-body { flex: 1; }
+.activation-banner .ab-title { font-weight: 700; font-size: .95rem; }
+.activation-banner .ab-sub   { font-size: .8rem;  opacity: .75; }
+.activation-banner .ab-cta   {
+  background: var(--color-primary);
+  color: var(--color-accent);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--sp-2) var(--sp-4);
+  font-weight: 700;
+  font-size: .85rem;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* ── Navigation tabs ── */
+.donor-tabs {
+  display: flex;
+  background: var(--color-surface);
+  border-bottom: 2px solid var(--color-border);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.donor-tabs::-webkit-scrollbar { display: none; }
+.donor-tab {
+  flex: 1;
+  min-width: 80px;
+  padding: var(--sp-3) var(--sp-2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-1);
+  font-size: .7rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  cursor: pointer;
+  border: none;
+  background: none;
+  border-bottom: 3px solid transparent;
+  transition: color .18s, border-color .18s;
+  text-decoration: none;
+  position: relative;
+}
+.donor-tab .tab-icon { font-size: 1.3rem; }
+.donor-tab.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+.donor-tab.locked {
+  opacity: .45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.donor-tab .lock-badge {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  font-size: .6rem;
+  background: var(--color-border);
+  border-radius: 4px;
+  padding: 1px 4px;
+  color: var(--color-muted);
+}
+
+/* ── Main scroll area ── */
+.donor-body {
+  flex: 1;
+  padding: var(--sp-4);
+  max-width: 520px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── Kitchen alert banner ── */
+.kitchen-alert {
+  border-radius: var(--radius-md);
+  padding: var(--sp-3) var(--sp-4);
+  margin-bottom: var(--sp-4);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font-size: .88rem;
+  font-weight: 600;
+}
+.kitchen-alert.alert-warning { background: var(--color-warning-lt); color: #92400e; }
+.kitchen-alert.alert-success  { background: var(--color-success-lt); color: var(--color-success); }
+.kitchen-alert.alert-info     { background: #e0f2fe; color: #0c4a6e; }
+
+/* ── Post button ── */
+.post-fab {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  background: var(--color-primary);
+  color: var(--color-accent);
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: var(--sp-4) var(--sp-5);
+  width: 100%;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: var(--sp-5);
+  text-decoration: none;
+  transition: background .18s, transform .12s;
+  box-shadow: var(--shadow-md);
+}
+.post-fab:hover { background: #002a5c; }
+.post-fab:active { transform: scale(.98); }
+.post-fab .fab-icon { font-size: 1.6rem; }
+.post-fab .fab-text { flex: 1; text-align: left; }
+.post-fab .fab-sub  { font-size: .75rem; font-weight: 500; opacity: .8; display: block; }
+
+/* ── Section headers ── */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--sp-3);
+}
+.section-title { font-size: 1rem; font-weight: 700; }
+.section-count {
+  font-size: .75rem;
+  background: var(--color-border);
+  padding: var(--sp-1) var(--sp-2);
+  border-radius: 9999px;
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+/* ── Donation card ── */
+.donation-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-4) var(--sp-5);
+  margin-bottom: var(--sp-3);
+  box-shadow: var(--shadow-sm);
+  border-left: 4px solid var(--color-border);
+  transition: box-shadow .18s;
+}
+.donation-card:hover { box-shadow: var(--shadow-md); }
+.donation-card.status-pending    { border-left-color: #f59e0b; }
+.donation-card.status-scheduled  { border-left-color: #3b82f6; }
+.donation-card.status-picked-up  { border-left-color: #0ea5e9; }
+.donation-card.status-en-route   { border-left-color: #8b5cf6; }
+.donation-card.status-delivered  { border-left-color: #10b981; }
+.donation-card.status-verified   { border-left-color: var(--color-success); }
+.donation-card.status-cancelled  { border-left-color: var(--color-danger); opacity: .7; }
+
+.donation-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+.donation-card__food {
+  font-weight: 700;
+  font-size: 1rem;
+}
+.donation-card__meta {
+  font-size: .8rem;
+  color: var(--color-muted);
+  margin-top: var(--sp-1);
+}
+
+/* Horizontal status stepper on card */
+.card-stepper {
+  display: flex;
+  align-items: center;
+  margin: var(--sp-3) 0;
+  overflow-x: auto;
+  padding-bottom: var(--sp-1);
+  scrollbar-width: none;
+}
+.card-stepper::-webkit-scrollbar { display: none; }
+
+.cs-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-width: 48px;
+  position: relative;
+}
+.cs-step + .cs-step::before {
+  content: '';
+  position: absolute;
+  left: calc(-50% + 8px);
+  top: 10px;
+  width: calc(100% - 16px);
+  height: 2px;
+  background: var(--color-border);
+}
+.cs-step.done + .cs-step::before   { background: var(--color-step-done); }
+.cs-step.active + .cs-step::before { background: var(--color-border); }
+
+.cs-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .55rem;
+  font-weight: 700;
+  color: #fff;
+  z-index: 1;
+  position: relative;
+  flex-shrink: 0;
+}
+.cs-step.done   .cs-dot { background: var(--color-step-done); }
+.cs-step.active .cs-dot { background: var(--color-primary); box-shadow: 0 0 0 3px rgba(0,25,60,.18); }
+.cs-step.cancelled .cs-dot { background: var(--color-danger); }
+
+.cs-label {
+  font-size: .58rem;
+  color: var(--color-muted);
+  margin-top: 4px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 52px;
+}
+.cs-step.active   .cs-label { color: var(--color-primary); font-weight: 700; }
+.cs-step.done     .cs-label { color: var(--color-step-done); }
+.cs-step.cancelled .cs-label { color: var(--color-danger); }
+
+/* Card actions */
+.donation-card__actions {
+  display: flex;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--color-border);
+}
+.btn-cancel-inline {
+  background: none;
+  border: 1.5px solid var(--color-danger);
+  color: var(--color-danger);
+  border-radius: var(--radius-sm);
+  padding: var(--sp-2) var(--sp-3);
+  font-size: .8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .18s;
+}
+.btn-cancel-inline:hover { background: var(--color-danger-lt); }
+
+.cancel-blocked-msg {
+  font-size: .78rem;
+  color: var(--color-muted);
+  align-self: center;
+}
+
+/* ── Empty state ── */
+.empty-state {
+  text-align: center;
+  padding: var(--sp-10) var(--sp-5);
+  color: var(--color-muted);
+}
+.empty-state .empty-icon { font-size: 3rem; margin-bottom: var(--sp-3); }
+.empty-state p { font-size: .9rem; }
+
+/* ── Reliability score chip ── */
+.reliability-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  font-size: .75rem;
+  font-weight: 700;
+  padding: var(--sp-1) var(--sp-2);
+  border-radius: 9999px;
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-border);
+}
+.reliability-chip.high   { border-color: var(--color-success); color: var(--color-success); }
+.reliability-chip.neutral { border-color: var(--color-muted); color: var(--color-muted); }
+.reliability-chip.low    { border-color: var(--color-danger); color: var(--color-danger); }
+
+/* ── Completed/history section (collapsed) ── */
+.history-section { margin-top: var(--sp-6); }
+.history-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--sp-3) 0;
+  border-top: 1px solid var(--color-border);
+}
+.history-toggle:hover .section-title { color: var(--color-primary); }
+.history-chevron {
+  font-size: 1rem;
+  transition: transform .2s;
+}
+.history-toggle[aria-expanded="true"] .history-chevron {
+  transform: rotate(180deg);
+}
+.history-list { display: none; }
+.history-list.open { display: block; }
+
+/* ── Loading skeleton ── */
+.skeleton-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-4) var(--sp-5);
+  margin-bottom: var(--sp-3);
+  box-shadow: var(--shadow-sm);
+}
+.skeleton-line {
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background-size: 200% 100%;
+  border-radius: var(--radius-sm);
+  animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

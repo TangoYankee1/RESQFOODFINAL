@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResQFood — Mag-register bilang Donor</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/auth.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div id="offline-banner">📶 Offline mode. Subukan muli kapag may koneksyon.</div>
+
+  <!-- ── Hero ── -->
+  <div class="reg-hero">
+    <span class="brand-mark">🍱 RESQFOOD</span>
+    <h1>Mag-register bilang Donor</h1>
+    <p>Isang beses lang. Tatagal ng 3 minuto.</p>
+  </div>
+
+  <!-- ── Progress stepper ── -->
+  <div style="background:#fff; padding: 1rem 1.25rem 0; max-width:480px; margin:0 auto;">
+    <div class="stepper" id="reg-stepper" aria-label="Mga hakbang sa registration">
+      <div class="step-item active" id="si-1">
+        <div class="step-dot">1</div>
+        <div class="step-label">Numero</div>
+      </div>
+      <div class="step-item" id="si-2">
+        <div class="step-dot">2</div>
+        <div class="step-label">Impormasyon</div>
+      </div>
+      <div class="step-item" id="si-3">
+        <div class="step-dot">3</div>
+        <div class="step-label">Uri ng Donor</div>
+      </div>
+      <div class="step-item" id="si-4">
+        <div class="step-dot">4</div>
+        <div class="step-label">Waiver</div>
+      </div>
+      <div class="step-item" id="si-5">
+        <div class="step-dot">✓</div>
+        <div class="step-label">Tapos</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Main form container ── -->
+  <div class="reg-container" id="reg-main" style="max-width:480px; margin:0 auto;">
+
+    <!-- RECOVERY SCREEN (shown on Firestore write failure) -->
+    <div class="recovery-screen" id="recovery-screen">
+      <span class="error-icon">⚠️</span>
+      <h2>Nagkaroon ng problema</h2>
+      <p id="recovery-msg" class="text-muted text-center">
+        Hindi ma-save ang iyong account. Siguraduhing may koneksyon.
+      </p>
+      <button class="btn btn-primary btn-lg btn-full" id="btn-retry">
+        Subukan Muli
+      </button>
+      <button class="btn btn-ghost btn-full" id="btn-recovery-back">
+        Bumalik
+      </button>
+    </div>
+
+    <!-- ══ STEP 1: Phone ══ -->
+    <div class="step-panel active" id="step-1">
+      <div class="step-title">Ano ang iyong numero?</div>
+      <div class="step-desc">
+        Magpapadala kami ng 6-digit na code para i-verify ang iyong numero.
+        Hindi na kakailanganin ng password.
+      </div>
+
+      <!-- Phone input -->
+      <div class="form-group">
+        <label class="form-label" for="inp-phone">Numero ng Telepono</label>
+        <div class="phone-input-wrap" id="phone-wrap">
+          <span class="phone-prefix">🇵🇭 +63</span>
+          <input type="tel" id="inp-phone" inputmode="numeric"
+                 placeholder="9171234567" maxlength="10"
+                 aria-describedby="phone-hint" autocomplete="tel" />
+        </div>
+        <div class="form-hint" id="phone-hint">
+          Halimbawa: 9171234567 (huwag ilagay ang unang 0)
+        </div>
+        <div class="form-error" id="err-phone"></div>
+        <div class="phone-collision-msg" id="collision-msg"></div>
+      </div>
+
+      <div id="recaptcha-container"></div>
+
+      <button class="btn btn-primary btn-full btn-lg" id="btn-send-otp">
+        Magpadala ng Code
+      </button>
+
+      <!-- OTP entry (hidden until SMS sent) -->
+      <div id="otp-section" class="hidden" style="margin-top:2rem;">
+        <div class="step-desc" style="margin-bottom:.5rem;">
+          Ilagay ang 6-digit code na natanggap mo sa <strong id="otp-phone-display"></strong>
+        </div>
+        <div class="otp-group" id="otp-group" aria-label="OTP input">
+          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" />
+          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" />
+          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" />
+          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" />
+          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" />
+          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" />
+        </div>
+        <div class="form-error" id="err-otp"></div>
+        <div class="otp-timer">
+          <span id="otp-countdown"></span>
+          <button class="resend-btn" id="btn-resend" disabled>Magpadala ulit</button>
+        </div>
+        <button class="btn btn-primary btn-full btn-lg" id="btn-verify-otp" style="margin-top:1.5rem;" disabled>
+          I-verify ang Code
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ STEP 2: Identity & Location ══ -->
+    <div class="step-panel" id="step-2">
+      <div class="step-title">Sino ka at saan ka?</div>
+      <div class="step-desc">
+        Gagamitin ang impormasyon na ito para maikonekta kita sa volunteer sa inyong lugar.
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inp-name">Buong Pangalan</label>
+        <input type="text" class="form-input" id="inp-name"
+               placeholder="Maria Santos" autocomplete="name"
+               minlength="3" maxlength="100" />
+        <div class="form-error" id="err-name"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inp-email">
+          Email <span class="optional">Opsyonal — para sa resibo ng donation</span>
+        </label>
+        <input type="email" class="form-input" id="inp-email"
+               placeholder="maria@halimbawa.com" autocomplete="email" />
+        <div class="form-error" id="err-email"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inp-barangay">Barangay <span style="color:var(--color-danger)">*</span></label>
+        <select class="form-select" id="inp-barangay">
+          <option value="">— Piliin ang iyong barangay —</option>
+          <optgroup label="Cebu City">
+            <option>Adlaon</option><option>Agsungot</option><option>Apas</option>
+            <option>Babag</option><option>Bacayan</option><option>Banilad</option>
+            <option>Basak Pardo</option><option>Basak San Nicolas</option>
+            <option>Binaliw</option><option>Bonbon</option><option>Budla-an</option>
+            <option>Buhisan</option><option>Bulacao</option><option>Buot-Taup Pardo</option>
+            <option>Busay</option><option>Calamba</option><option>Cambinocot</option>
+            <option>Capitol Site</option><option>Carreta</option><option>Central Poblacion</option>
+            <option>Cogon Pardo</option><option>Cogon Ramos</option><option>Day-as</option>
+            <option>Duljo-Fatima</option><option>Ermita</option><option>Escario</option>
+            <option>Flores</option><option>Guadalupe</option><option>Guba</option>
+            <option>Hippodromo</option><option>Inayawan</option><option>Kalubihan</option>
+            <option>Kalunasan</option><option>Kamagayan</option><option>Kamputhaw</option>
+            <option>Kasambagan</option><option>Kinasang-an Pardo</option><option>Labangon</option>
+            <option>Lahug</option><option>Lorega San Miguel</option><option>Lusaran</option>
+            <option>Luz</option><option>Mabini</option><option>Mabolo</option>
+            <option>Malubog</option><option>Manipis</option><option>Mambaling</option>
+            <option>Mining</option><option>Mabolo</option><option>Non-Carbon</option>
+            <option>Odoc</option><option>Pahina Central</option><option>Pahina San Nicolas</option>
+            <option>Pamutan</option><option>Pardo</option><option>Pari-an</option>
+            <option>Paril</option><option>Pasil</option><option>Pit-os</option>
+            <option>Pulangbato</option><option>Pung-ol-Sibugay</option><option>Punta Princesa</option>
+            <option>Putlod</option><option>Quiot Pardo</option><option>Sambag I</option>
+            <option>Sambag II</option><option>San Antonio</option><option>San Jose</option>
+            <option>San Nicolas Central</option><option>San Roque</option><option>Santa Cruz</option>
+            <option>Santo Niño</option><option>Sapangdaku</option><option>Sawang Calero</option>
+            <option>Sinsin</option><option>Sirao</option><option>Suba Poblacion</option>
+            <option>Sudlon I</option><option>Sudlon II</option><option>T. Padilla</option>
+            <option>Tabunan</option><option>Tagbao</option><option>Talamban</option>
+            <option>Taptap</option><option>Tejero</option><option>Tinago</option>
+            <option>Tisa</option><option>To-ong Pardo</option><option>Toong</option>
+            <option>Tugbongan</option><option>Umapad</option><option>Zapatera</option>
+          </optgroup>
+        </select>
+        <div class="form-error" id="err-barangay"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inp-street">Kalsada / Address</label>
+        <input type="text" class="form-input" id="inp-street"
+               placeholder="Halimbawa: Harap ng 7-Eleven, Gorordo Ave"
+               autocomplete="street-address" maxlength="200" />
+        <div class="form-hint">Hindi kailangan ng eksaktong coordinates.</div>
+        <div class="form-error" id="err-street"></div>
+      </div>
+
+      <div class="step-nav">
+        <button class="btn btn-ghost btn-back" id="btn-2-back">← Bumalik</button>
+        <button class="btn btn-primary btn-next" id="btn-2-next">Susunod →</button>
+      </div>
+    </div>
+
+    <!-- ══ STEP 3: Business Toggle ══ -->
+    <div class="step-panel" id="step-3">
+      <div class="step-title">Negosyo o Indibidwal?</div>
+      <div class="step-desc">
+        Ang mga donasyon mula sa negosyo ay mas mabilis ma-claim dahil sa mas mataas na
+        antas ng tiwala ng mga volunteer.
+      </div>
+
+      <div class="form-group">
+        <div class="toggle-group" id="donor-type-toggle" role="group" aria-label="Uri ng donor">
+          <button class="toggle-btn active" data-val="false" id="toggle-individual" type="button">
+            👤 Indibidwal
+          </button>
+          <button class="toggle-btn" data-val="true" id="toggle-business" type="button">
+            🏪 Negosyo / Establish.
+          </button>
+        </div>
+      </div>
+
+      <!-- Business fields (hidden by default) -->
+      <div id="business-fields" class="hidden">
+        <div class="form-group">
+          <label class="form-label" for="inp-business-name">Pangalan ng Negosyo</label>
+          <input type="text" class="form-input" id="inp-business-name"
+                 placeholder="Halimbawa: Maria's Eatery" maxlength="150" />
+          <div class="form-error" id="err-business-name"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="inp-permit">
+            Business Permit Number
+            <span class="optional">Opsyonal — para sa kumpiyansa ng volunteer</span>
+          </label>
+          <input type="text" class="form-input" id="inp-permit"
+                 placeholder="Halimbawa: BP-2026-00123" maxlength="50" />
+        </div>
+      </div>
+
+      <div class="alert alert-info" style="margin-top:1rem;">
+        <span>ℹ️</span>
+        <span>
+          Ang pangalan mo ay lalabas sa mission board bilang
+          <strong id="preview-display-name">"Maria S."</strong>
+        </span>
+      </div>
+
+      <div class="step-nav">
+        <button class="btn btn-ghost btn-back" id="btn-3-back">← Bumalik</button>
+        <button class="btn btn-primary btn-next" id="btn-3-next">Susunod →</button>
+      </div>
+    </div>
+
+    <!-- ══ STEP 4: Waiver ══ -->
+    <div class="step-panel" id="step-4">
+      <div class="step-title">Kaligtasan at Pahintulot</div>
+      <div class="step-desc">
+        Basahin ang buong pahayag bago i-check ang mga kahon sa ibaba.
+      </div>
+
+      <div class="waiver-box" id="waiver-scroll-box" tabindex="0" role="document"
+           aria-label="Kasunduan sa kaligtasan at privacy">
+        <p><strong>Bago ko i-post ang donation, kumpirmado kong:</strong></p>
+        <ul>
+          <li>Ang pagkaing ito ay hindi pa nauulit o kinain ng iba.</li>
+          <li>Ito ay nailagay sa malinis na lalagyan at hindi naiwan sa init ng araw nang matagal.</li>
+          <li>Kaya kong maghintay sa pickup window na aking itatakda.</li>
+          <li>
+            Naiintindihan kong <strong>ako</strong> ang may pananagutan sa kalidad at
+            kaligtasan ng pagkain, at ang <strong>ResQFood</strong> ay tagapagkoordinate
+            lamang — hindi responsible sa anumang problemang dulot ng pagkain.
+          </li>
+        </ul>
+        <br />
+        <p><strong>Tungkol sa aking personal na impormasyon:</strong></p>
+        <ul>
+          <li>
+            Ang aking pangalan at numero ay gagamitin lamang para sa koordinasyon ng pickup.
+            Hindi ito ibebenta o ibibigay sa ibang partido maliban sa volunteer na mag-a-assign
+            ng iyong donation.
+          </li>
+          <li>
+            Sumasang-ayon ako sa pagkolekta at paggamit ng aking datos ayon sa
+            Data Privacy Act ng Pilipinas (R.A. 10173) at sa Privacy Policy ng ResQFood.
+          </li>
+          <li>
+            Maaari kong hilingin ang pagbabago o pagbura ng aking datos sa anumang oras
+            sa pamamagitan ng pakikipag-ugnayan sa aming support team.
+          </li>
+        </ul>
+        <br />
+        <p style="font-size:.8rem; color:#666;">
+          Bersyon ng waiver: v1-2026 · Petsa ng pagbabago: Enero 2026
+        </p>
+      </div>
+
+      <div class="waiver-scroll-hint" id="scroll-hint">
+        ↓ Mag-scroll pababa para i-unlock ang mga checkbox
+      </div>
+
+      <div id="waiver-checkboxes" style="display:flex; flex-direction:column; gap:.75rem; opacity:.4; pointer-events:none;" aria-disabled="true">
+        <label class="checkbox-row">
+          <input type="checkbox" id="chk-safety" disabled />
+          <span>Kumpirmado kong <strong>ligtas ang pagkain</strong> na aking ipo-post.</span>
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" id="chk-privacy" disabled />
+          <span>
+            Puwede naming gamitin ang aking <strong>pangalan at numero</strong> para sa
+            pagkoordinate. Hindi ito ibebenta.
+          </span>
+        </label>
+      </div>
+      <div class="form-error" id="err-waiver"></div>
+
+      <div class="step-nav">
+        <button class="btn btn-ghost btn-back" id="btn-4-back">← Bumalik</button>
+        <button class="btn btn-primary btn-next" id="btn-4-submit" disabled>
+          Gawin ang Account
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ STEP 5: Success ══ -->
+    <div class="step-panel" id="step-5">
+      <div class="completion-screen">
+        <div class="check-icon">✅</div>
+        <h2>Welcome sa ResQFood!</h2>
+        <p class="text-muted">
+          Nairehistro na ang iyong account. I-post ang iyong unang donation
+          para ma-activate ang lahat ng features.
+        </p>
+        <a class="btn btn-primary btn-lg btn-full" href="../donor/index.html" style="margin-top:1rem;">
+          Pumunta sa Dashboard →
+        </a>
+      </div>
+    </div>
+
+  </div><!-- /reg-container -->
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <script type="module" src="../js/register/donor.js"></script>
+</body>
+</html>

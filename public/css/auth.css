@@ -1,0 +1,204 @@
+/* ResQFood — Auth / Registration styles */
+
+/* Hero strip at top of register pages */
+.reg-hero {
+  background: var(--color-primary);
+  padding: var(--sp-8) var(--sp-5) var(--sp-6);
+  text-align: center;
+  color: #fff;
+}
+.reg-hero .brand-mark {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  color: var(--color-accent);
+  display: block;
+  margin-bottom: var(--sp-2);
+}
+.reg-hero h1 { font-size: 1.5rem; color: #fff; margin-bottom: var(--sp-2); }
+.reg-hero p  { font-size: .95rem; color: rgba(255,255,255,.75); margin-bottom: 0; }
+
+/* ── Role gateway cards ── */
+.role-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-4);
+  margin: var(--sp-6) 0;
+}
+
+.role-card {
+  background: var(--color-surface);
+  border: 2.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-5) var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--color-primary);
+  transition: border-color .18s, box-shadow .18s, transform .12s;
+  text-align: center;
+}
+.role-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+.role-card.featured {
+  border-color: var(--color-accent);
+  background: #fffde7;
+}
+.role-card.featured:hover { border-color: var(--color-accent-dk); }
+
+.role-card__icon {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+.role-card__title {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.role-card__tagline {
+  font-size: .78rem;
+  color: var(--color-muted);
+  line-height: 1.4;
+  font-style: italic;
+}
+
+/* ── Registration step container ── */
+.reg-container {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  margin-top: -var(--sp-4);
+  padding: var(--sp-6) var(--sp-5);
+  min-height: calc(100vh - 180px);
+}
+
+.step-panel { display: none; }
+.step-panel.active { display: block; }
+
+.step-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: var(--sp-2);
+}
+.step-desc {
+  font-size: .88rem;
+  color: var(--color-muted);
+  margin-bottom: var(--sp-6);
+  line-height: 1.5;
+}
+
+/* OTP input group */
+.otp-group {
+  display: flex;
+  gap: var(--sp-2);
+  justify-content: center;
+  margin: var(--sp-6) 0;
+}
+.otp-input {
+  width: 48px;
+  height: 56px;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  border: 2.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: border-color .18s;
+  background: var(--color-surface);
+  color: var(--color-primary);
+}
+.otp-input:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(0,25,60,.12); }
+.otp-input.filled { border-color: var(--color-primary); background: rgba(0,25,60,.04); }
+
+.otp-timer {
+  text-align: center;
+  font-size: .85rem;
+  color: var(--color-muted);
+  margin-top: var(--sp-4);
+}
+.otp-timer .resend-btn {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: .85rem;
+}
+.otp-timer .resend-btn:disabled { color: var(--color-muted); cursor: not-allowed; text-decoration: none; }
+
+/* reCAPTCHA invisible container */
+#recaptcha-container { display: none; }
+
+/* Waiver scrollbox */
+.waiver-box {
+  background: var(--color-bg);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--sp-5);
+  max-height: 220px;
+  overflow-y: auto;
+  font-size: .88rem;
+  line-height: 1.7;
+  margin-bottom: var(--sp-4);
+  color: var(--color-primary);
+  scroll-behavior: smooth;
+}
+.waiver-box ul { padding-left: var(--sp-5); margin: var(--sp-2) 0; }
+.waiver-box ul li { margin-bottom: var(--sp-2); }
+.waiver-scroll-hint {
+  text-align: center;
+  font-size: .78rem;
+  color: var(--color-muted);
+  margin-bottom: var(--sp-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+}
+
+/* Nav buttons at bottom of steps */
+.step-nav {
+  display: flex;
+  gap: var(--sp-3);
+  margin-top: var(--sp-8);
+}
+.step-nav .btn-back { flex: 0 0 auto; }
+.step-nav .btn-next { flex: 1; }
+
+/* Completion screen */
+.completion-screen {
+  text-align: center;
+  padding: var(--sp-10) var(--sp-5);
+}
+.completion-screen .check-icon {
+  font-size: 4rem;
+  margin-bottom: var(--sp-4);
+}
+.completion-screen h2 { margin-bottom: var(--sp-3); }
+
+/* Error block for phone collision */
+.phone-collision-msg {
+  background: var(--color-warning-lt);
+  border: 1px solid var(--color-warning);
+  border-radius: var(--radius-md);
+  padding: var(--sp-4);
+  font-size: .88rem;
+  margin-top: var(--sp-3);
+  display: none;
+}
+.phone-collision-msg.visible { display: block; }
+
+/* Recovery screen */
+.recovery-screen {
+  text-align: center;
+  padding: var(--sp-10) var(--sp-5);
+  display: none;
+}
+.recovery-screen.visible { display: flex; flex-direction: column; align-items: center; gap: var(--sp-4); }
+.recovery-screen .error-icon { font-size: 3rem; }

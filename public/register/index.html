@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResQFood — Sumali</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/auth.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    .role-grid { grid-template-columns: 1fr 1fr; }
+    @media (max-width: 360px) { .role-grid { grid-template-columns: 1fr; } }
+
+    .gateway-footer {
+      text-align: center;
+      padding: var(--sp-6) var(--sp-4);
+      font-size: .85rem;
+      color: var(--color-muted);
+    }
+    .gateway-footer a {
+      color: var(--color-primary);
+      font-weight: 700;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="offline-banner">📶 Offline ka ngayon. Ilang features ay hindi available.</div>
+
+  <div class="reg-hero">
+    <span class="brand-mark">🍱 RESQFOOD</span>
+    <h1>Sino ka sa ating komunidad?</h1>
+    <p>Piliin ang iyong papel para makapagsimula.</p>
+  </div>
+
+  <div class="page-content" style="max-width:520px;">
+    <div class="role-grid" role="list">
+
+      <!-- DONOR -->
+      <a class="role-card featured" href="donor.html" id="card-donor"
+         role="listitem" aria-label="Mag-register bilang Food Donor">
+        <span class="role-card__icon">🍱</span>
+        <span class="role-card__title">May sobrang pagkain?</span>
+        <span class="role-card__tagline">
+          I-post ang sobrang ulam o paninda para maihatid sa nangangailangan.
+        </span>
+      </a>
+
+      <!-- VOLUNTEER -->
+      <a class="role-card" href="volunteer.html" id="card-volunteer"
+         role="listitem" aria-label="Mag-register bilang Volunteer">
+        <span class="role-card__icon">🛵</span>
+        <span class="role-card__title">Maghatid</span>
+        <span class="role-card__tagline">
+          Kumilos bilang courier ng pagkain sa inyong barangay.
+        </span>
+      </a>
+
+      <!-- ORG ADMIN -->
+      <a class="role-card" href="org-admin.html" id="card-org"
+         role="listitem" aria-label="Mag-register bilang Organization Admin">
+        <span class="role-card__icon">🏠</span>
+        <span class="role-card__title">Org Admin</span>
+        <span class="role-card__tagline">
+          Para sa mga shelter, orphanage, o community kitchen na tatanggap ng donasyon.
+        </span>
+      </a>
+
+      <!-- LGU -->
+      <a class="role-card" href="lgu-invite.html" id="card-lgu"
+         role="listitem" aria-label="LGU Official access">
+        <span class="role-card__icon">🏛️</span>
+        <span class="role-card__title">LGU Official</span>
+        <span class="role-card__tagline">
+          Para sa mga opisyal ng barangay o lungsod. Kailangan ng invite link.
+        </span>
+      </a>
+
+    </div>
+
+    <div class="gateway-footer">
+      May account na? <a href="/index.html#signin">Mag-sign in dito</a>
+    </div>
+  </div>
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <script type="module">
+    // Store intended role in sessionStorage when a card is clicked
+    const cards = {
+      'card-donor':     'donor',
+      'card-volunteer': 'volunteer',
+      'card-org':       'orgAdmin',
+      'card-lgu':       'lgu',
+    };
+
+    Object.entries(cards).forEach(([id, role]) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('click', () => {
+          sessionStorage.setItem('intendedRole', role);
+        });
+      }
+    });
+
+    // Offline banner
+    function updateOnline() {
+      document.body.classList.toggle('offline', !navigator.onLine);
+    }
+    window.addEventListener('online',  updateOnline);
+    window.addEventListener('offline', updateOnline);
+    updateOnline();
+  </script>
+</body>
+</html>

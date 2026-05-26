@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResQFood — Mag-post ng Donation</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/auth.css" />
+  <link rel="stylesheet" href="../css/donor.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* Posting-specific overrides */
+    .guardrail-ok   { color: var(--color-success); font-weight: 600; font-size: .85rem; margin-top: .5rem; }
+    .guardrail-warn { color: var(--color-danger);  font-weight: 600; font-size: .85rem; margin-top: .5rem; }
+
+    .photo-preview {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: var(--radius-md);
+      margin-top: var(--sp-3);
+      display: none;
+    }
+    .photo-upload-area {
+      border: 2px dashed var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--sp-5);
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .18s;
+    }
+    .photo-upload-area:hover { border-color: var(--color-primary); }
+    .photo-upload-area input { display: none; }
+
+    /* Review card */
+    .review-card {
+      background: var(--color-bg);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-5);
+      margin-bottom: var(--sp-4);
+    }
+    .review-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: var(--sp-2) 0;
+      border-bottom: 1px solid var(--color-border);
+      font-size: .9rem;
+      gap: var(--sp-3);
+    }
+    .review-row:last-child { border-bottom: none; }
+    .review-row .label { color: var(--color-muted); flex-shrink: 0; }
+    .review-row .value { font-weight: 600; text-align: right; }
+
+    /* Hold-to-confirm button */
+    .hold-btn {
+      position: relative;
+      overflow: hidden;
+      background: var(--color-primary);
+      color: var(--color-accent);
+      border: none;
+      border-radius: var(--radius-md);
+      padding: var(--sp-4) var(--sp-6);
+      width: 100%;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      transition: background .18s;
+    }
+    .hold-btn:disabled { opacity: .5; cursor: not-allowed; }
+    .hold-btn .hold-fill {
+      position: absolute;
+      inset: 0;
+      background: rgba(252, 212, 0, .35);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: none;
+    }
+    .hold-btn .hold-label { position: relative; z-index: 1; }
+    .hold-btn.holding .hold-fill {
+      transform: scaleX(1);
+      transition: transform 3s linear;
+    }
+
+    .expiry-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-2);
+      background: var(--color-warning-lt);
+      color: #92400e;
+      border-radius: var(--radius-md);
+      padding: var(--sp-2) var(--sp-4);
+      font-size: .85rem;
+      font-weight: 600;
+      margin-bottom: var(--sp-4);
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="offline-banner">📶 Offline — Ang iyong donation ay ise-save kapag may koneksyon na.</div>
+
+  <!-- Top bar -->
+  <header class="donor-topbar" role="banner">
+    <a href="index.html" class="icon-btn" aria-label="Bumalik sa dashboard" style="color:rgba(255,255,255,.8); text-decoration:none; font-size:1.2rem;">←</a>
+    <span class="brand" style="font-size:1rem;">Mag-post ng Surplus</span>
+    <span></span>
+  </header>
+
+  <!-- Stepper -->
+  <div style="background:#fff; padding:1rem 1.25rem 0; max-width:480px; margin:0 auto;">
+    <div class="stepper" id="post-stepper">
+      <div class="step-item active" id="psi-1">
+        <div class="step-dot">1</div>
+        <div class="step-label">Pagkain</div>
+      </div>
+      <div class="step-item" id="psi-2">
+        <div class="step-dot">2</div>
+        <div class="step-label">Logistics</div>
+      </div>
+      <div class="step-item" id="psi-3">
+        <div class="step-dot">3</div>
+        <div class="step-label">Review</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="reg-container" style="max-width:480px; margin:0 auto;" id="post-container">
+
+    <!-- ══ STEP 1: Food Identity ══ -->
+    <div class="step-panel active" id="post-step-1">
+      <div class="step-title">Anong pagkain ang ipo-post mo?</div>
+      <div class="step-desc">
+        Ang uri ng pagkain ay gagamitin para kalkulahin ang pinakamátagal na
+        ligtas na pickup window.
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inp-food-type">Uri ng Pagkain</label>
+        <select class="form-select" id="inp-food-type">
+          <option value="">— Piliin ang uri —</option>
+          <option value="Kanin">🍚 Kanin (6 oras)</option>
+          <option value="Tinapay">🍞 Tinapay (6 oras)</option>
+          <option value="Gulay">🥦 Gulay (4 na oras)</option>
+          <option value="Tinapa">🐟 Tinapa / Isda (4 na oras)</option>
+          <option value="Manok">🍗 Manok (3 oras)</option>
+          <option value="Baboy">🥩 Baboy / Karne (3 oras)</option>
+          <option value="Processed">📦 Processed / Naka-pack (3 oras)</option>
+          <option value="Other">🥘 Iba pa (2 oras)</option>
+        </select>
+        <div class="form-error" id="err-food-type"></div>
+        <div id="guardrail-info" class="hidden" style="margin-top:.5rem;">
+          <div class="alert alert-warning" id="guardrail-hint"></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inp-qty">Dami (kg)</label>
+        <input type="number" class="form-input" id="inp-qty"
+               min="0.1" max="500" step="0.1"
+               placeholder="Halimbawa: 5" inputmode="decimal" />
+        <div class="form-hint">1 kg ≈ isang kilong bigas na luto</div>
+        <div class="form-error" id="err-qty"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inp-desc">Paglalarawan</label>
+        <textarea class="form-textarea" id="inp-desc" rows="3"
+                  placeholder="Halimbawa: 'Natirang adobo mula sa tanghalian, nilagay sa ref ng 1PM.'"
+                  maxlength="300"></textarea>
+        <div class="form-hint" style="display:flex; justify-content:space-between;">
+          <span>Ilarawan ang kondisyon ng pagkain.</span>
+          <span id="desc-count">0/300</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inp-window-end">
+          Deadline ng Pickup <span style="color:var(--color-danger)">*</span>
+        </label>
+        <input type="datetime-local" class="form-input" id="inp-window-end" />
+        <div id="guardrail-result" style="margin-top:.5rem;"></div>
+        <div class="form-error" id="err-window-end"></div>
+      </div>
+
+      <div class="step-nav">
+        <a href="index.html" class="btn btn-ghost btn-back">← Dashboard</a>
+        <button class="btn btn-primary btn-next" id="btn-p1-next">Susunod →</button>
+      </div>
+    </div>
+
+    <!-- ══ STEP 2: Pickup Logistics ══ -->
+    <div class="step-panel" id="post-step-2">
+      <div class="step-title">Saan at kailan ang pickup?</div>
+      <div class="step-desc">
+        Ang address ay pre-filled mula sa iyong profile. Baguhin kung iba ang
+        location ngayon.
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inp-pickup-addr">Pickup Address</label>
+        <input type="text" class="form-input" id="inp-pickup-addr"
+               placeholder="Kalsada, landmark, barangay"
+               maxlength="200" />
+        <div class="form-hint">Isulat ang lugar na madaling hanapin ng volunteer.</div>
+        <div class="form-error" id="err-pickup-addr"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inp-window-start">Simula ng Pickup Window</label>
+        <input type="datetime-local" class="form-input" id="inp-window-start" />
+        <div class="form-error" id="err-window-start"></div>
+      </div>
+
+      <div class="form-hint" style="margin-bottom:1rem; font-size:.8rem; background:var(--color-bg); padding:.75rem; border-radius:.5rem;">
+        ⏰ Deadline ng pickup: <strong id="window-end-display">—</strong>
+        <span id="guardrail-badge" class="hidden" style="margin-left:.5rem; font-size:.75rem; color:var(--color-success);">✓ Ligtas</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Litrato ng Pagkain <span class="optional">Opsyonal</span></label>
+        <div class="photo-upload-area" id="photo-upload-area"
+             role="button" tabindex="0" aria-label="Mag-upload ng litrato">
+          <input type="file" id="inp-photo" accept="image/*" capture="environment" />
+          <span id="photo-upload-text">📷 I-tap para kumuha ng larawan o mag-upload</span>
+          <img id="photo-preview" class="photo-preview" alt="Preview ng pagkain" />
+        </div>
+        <div class="form-hint">Ang larawan ay makakatulong sa volunteer na makilala ang iyong donation.</div>
+      </div>
+
+      <div class="step-nav">
+        <button class="btn btn-ghost btn-back" id="btn-p2-back">← Bumalik</button>
+        <button class="btn btn-primary btn-next" id="btn-p2-next">I-review →</button>
+      </div>
+    </div>
+
+    <!-- ══ STEP 3: Review & Confirm ══ -->
+    <div class="step-panel" id="post-step-3">
+      <div class="step-title">I-review ang iyong donation</div>
+      <div class="step-desc">
+        Tiyakin na tama ang lahat ng impormasyon bago mag-submit.
+      </div>
+
+      <!-- Summary card (populated by JS) -->
+      <div class="review-card" id="review-summary"></div>
+
+      <!-- Safe expiry badge -->
+      <div class="expiry-badge" id="expiry-badge">
+        ⏰ Ligtas hanggang: <strong id="expiry-display">—</strong>
+      </div>
+
+      <!-- Final safety checkbox -->
+      <div style="margin-bottom:1.5rem;">
+        <label class="checkbox-row">
+          <input type="checkbox" id="chk-post-confirm" />
+          <span>
+            <strong>Kumpirmado ko</strong> na ang impormasyon ay tama at ang pagkain ay
+            <strong>ligtas para kainin</strong> ngayong oras na ito.
+          </span>
+        </label>
+        <div class="form-error" id="err-post-confirm"></div>
+      </div>
+
+      <p class="text-sm text-muted" style="margin-bottom:1rem; text-align:center;">
+        Pindutin nang 3 segundo para mag-submit.
+      </p>
+
+      <!-- Hold-to-confirm submit -->
+      <button class="hold-btn" id="btn-hold-submit" disabled aria-label="Pindutin nang 3 segundo para mag-submit">
+        <div class="hold-fill" id="hold-fill"></div>
+        <span class="hold-label" id="hold-label">🍱 I-post ang Donation</span>
+      </button>
+
+      <div class="step-nav" style="margin-top:1rem;">
+        <button class="btn btn-ghost btn-back" id="btn-p3-back">← Baguhin</button>
+      </div>
+    </div>
+
+  </div><!-- /post-container -->
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <script type="module" src="../js/post.js"></script>
+</body>
+</html>

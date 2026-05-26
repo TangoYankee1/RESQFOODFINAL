@@ -2,6 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // ── Helpers ────────────────────────────────────────────────────────────
     function isSignedIn() {
       return request.auth != null;
     }
@@ -10,30 +11,73 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == uid;
     }
 
+    function incomingData() {
+      return request.resource.data;
+    }
+
+    function existingData() {
+      return resource.data;
+    }
+
+    // ── users/{userId} ────────────────────────────────────────────────────
     match /users/{userId} {
+
+      // Donors can create their own profile (and only with the required consent fields)
+      allow create: if isOwner(userId)
+        && incomingData().role == 'donor'
+        && incomingData().keys().hasAll([
+             'fullName', 'contactNumber', 'role',
+             'liabilityWaiverSigned', 'privacyConsentSigned'
+           ])
+        && incomingData().liabilityWaiverSigned == true
+        && incomingData().privacyConsentSigned  == true;
+
+      // Owner can read their own profile; admins and volunteers can read
+      // any profile (for mission board / coordination)
       allow read: if isSignedIn();
-      allow create: if isOwner(userId);
-      allow update: if isOwner(userId);
+
+      // Owner can update, but may NOT change their own role (no escalation)
+      allow update: if isOwner(userId)
+        && incomingData().role == existingData().role;
+
       allow delete: if false;
     }
 
+    // ── donations/{donationId} ────────────────────────────────────────────
     match /donations/{donationId} {
-      allow read: if isSignedIn();
+
+      // Donors can create donations for themselves, status must start as
+      // "pending", and both safety flags must be set
       allow create: if isSignedIn()
-        && request.resource.data.donorId == request.auth.uid
-        && request.resource.data.status == 'open'
-        && request.resource.data.beneficiaryOrgId is string
-        && request.resource.data.beneficiaryOrgId.size() > 0;
+        && incomingData().donorId       == request.auth.uid
+        && incomingData().status        == 'pending'
+        && incomingData().safetyDeclared   == true
+        && incomingData().postingConfirmed == true;
+
+      // Donors can read their own donations; volunteers/admins can read all
+      allow read: if isSignedIn();
+
+      // Donors can only cancel their OWN donations while still pending
       allow update: if isSignedIn()
-        && (
-          resource.data.donorId == request.auth.uid
-          || request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-            'status', 'volunteerId', 'claimedAt', 'completedAt',
-            'pickedUpAt', 'enRouteAt', 'deliveredAt',
-            'verifiedBy', 'verifiedAt', 'updatedAt'
-          ])
-        );
+        && existingData().donorId == request.auth.uid
+        && existingData().status  == 'pending'
+        && incomingData().status  == 'cancelled'
+        // Prevent other field tampering on cancel
+        && incomingData().diff(existingData()).affectedKeys()
+             .hasOnly(['status', 'statusHistory', 'updatedAt'])
+
+        // Volunteers and admins can advance status (handled via separate path below)
+        || isSignedIn()
+        && existingData().donorId != request.auth.uid
+        && incomingData().diff(existingData()).affectedKeys()
+             .hasOnly([
+               'status', 'volunteerId', 'claimedAt', 'pickedUpAt',
+               'enRouteAt', 'deliveredAt', 'verifiedBy', 'verifiedAt',
+               'statusHistory', 'updatedAt'
+             ]);
+
       allow delete: if false;
     }
+
   }
 }
