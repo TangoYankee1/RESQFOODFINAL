@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResQFood — Mag-register bilang Volunteer</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/auth.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    .avail-grid {
+      display: grid;
+      grid-template-columns: auto repeat(3, 1fr);
+      gap: var(--sp-2);
+      font-size: .82rem;
+    }
+    .avail-grid .col-head {
+      font-weight: 700;
+      font-size: .78rem;
+      color: var(--color-muted);
+      text-align: center;
+      padding: var(--sp-1) 0 var(--sp-2);
+    }
+    .avail-grid .row-label {
+      font-weight: 600;
+      color: var(--color-on-surface);
+      display: flex;
+      align-items: center;
+      font-size: .82rem;
+    }
+    .avail-grid input[type="checkbox"] {
+      width: 1.2rem;
+      height: 1.2rem;
+      accent-color: var(--color-primary);
+      margin: auto;
+      display: block;
+    }
+
+    .commitment-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-3);
+      margin: var(--sp-4) 0;
+    }
+    .commitment-card {
+      border: 2px solid var(--color-border-solid);
+      border-radius: var(--radius-md);
+      padding: var(--sp-4);
+      cursor: pointer;
+      transition: border-color .18s, background .18s;
+      text-align: center;
+    }
+    .commitment-card:hover { border-color: var(--color-primary); }
+    .commitment-card.selected {
+      border-color: var(--color-primary);
+      background: var(--color-success-lt);
+    }
+    .commitment-card .cc-icon  { font-size: 2rem; display: block; margin-bottom: var(--sp-2); }
+    .commitment-card .cc-title { font-weight: 700; font-size: .95rem; margin-bottom: var(--sp-1); }
+    .commitment-card .cc-sub   { font-size: .78rem; color: var(--color-muted); }
+
+    .cert-preview {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary-cont));
+      border-radius: var(--radius-lg);
+      padding: var(--sp-8) var(--sp-6);
+      text-align: center;
+      color: #fff;
+      margin: var(--sp-4) 0;
+    }
+    .cert-preview .cert-icon { font-size: 3rem; margin-bottom: var(--sp-3); display: block; }
+    .cert-preview h3 { color: var(--color-accent); font-size: 1.1rem; margin-bottom: var(--sp-2); }
+    .cert-preview p  { color: rgba(255,255,255,.85); font-size: .88rem; margin-bottom: 0; }
+
+    .barangay-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-2);
+      margin-top: var(--sp-3);
+    }
+    .barangay-chip {
+      background: var(--color-surface-high);
+      border: 1.5px solid transparent;
+      border-radius: var(--radius-full);
+      padding: var(--sp-1) var(--sp-3);
+      font-size: .82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s, border-color .15s;
+    }
+    .barangay-chip.selected {
+      background: var(--color-success-lt);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .team-skip-link {
+      display: block;
+      text-align: center;
+      font-size: .88rem;
+      color: var(--color-muted);
+      margin-top: var(--sp-3);
+      cursor: pointer;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div id="offline-banner">📶 Offline mode. Subukan muli kapag may koneksyon.</div>
+
+  <!-- Hero -->
+  <div class="reg-hero">
+    <span class="brand-mark">🍱 RESQFOOD</span>
+    <h1>Mag-register bilang Volunteer</h1>
+    <p>Maging bahagi ng barangay rescue network.</p>
+  </div>
+
+  <!-- Stepper -->
+  <div style="background:#fff; padding: 1rem 1.25rem 0; max-width:480px; margin:0 auto;">
+    <div class="stepper" id="reg-stepper" aria-label="Mga hakbang sa registration">
+      <div class="step-item active" id="si-1">
+        <div class="step-dot">1</div>
+        <div class="step-label">Numero</div>
+      </div>
+      <div class="step-item" id="si-2">
+        <div class="step-dot">2</div>
+        <div class="step-label">Impormasyon</div>
+      </div>
+      <div class="step-item" id="si-3">
+        <div class="step-dot">3</div>
+        <div class="step-label">Oras</div>
+      </div>
+      <div class="step-item" id="si-4">
+        <div class="step-dot">4</div>
+        <div class="step-label">Emergency</div>
+      </div>
+      <div class="step-item" id="si-5">
+        <div class="step-dot">5</div>
+        <div class="step-label">Team</div>
+      </div>
+      <div class="step-item" id="si-6">
+        <div class="step-dot">✓</div>
+        <div class="step-label">Tapos</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="reg-container" id="reg-main" style="max-width:480px; margin:0 auto;">
+
+    <!-- Recovery screen -->
+    <div class="recovery-screen" id="recovery-screen">
+      <span class="error-icon">⚠️</span>
+      <h2>Nagkaroon ng problema</h2>
+      <p id="recovery-msg" class="text-muted text-center">
+        Hindi ma-save ang iyong account. Siguraduhing may koneksyon.
+      </p>
+      <button class="btn btn-primary btn-lg btn-full" id="btn-retry">Subukan Muli</button>
+      <button class="btn btn-ghost btn-full" id="btn-recovery-back">Bumalik</button>
+    </div>
+
+    <!-- STEP 1: Phone -->
+    <div class="step-panel active" id="step-1">
+      <div class="step-title">Ano ang iyong numero?</div>
+      <div class="step-desc">
+        Magpapadala kami ng 6-digit na code para i-verify ang iyong numero.
+        Hindi na kakailanganin ng password.
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="v-inp-phone">Numero ng Telepono</label>
+        <div class="phone-input-wrap" id="v-phone-wrap">
+          <span class="phone-prefix">🇵🇭 +63</span>
+          <input type="tel" id="v-inp-phone" inputmode="numeric"
+                 placeholder="9171234567" maxlength="10"
+                 class="form-input" autocomplete="tel" />
+        </div>
+        <div class="form-error" id="v-err-phone"></div>
+      </div>
+      <div id="v-otp-section" class="hidden">
+        <div class="form-group">
+          <label class="form-label" for="v-inp-otp">6-digit na Code</label>
+          <input type="text" id="v-inp-otp" inputmode="numeric" maxlength="6"
+                 placeholder="123456" class="form-input" autocomplete="one-time-code" />
+          <div class="form-error" id="v-err-otp"></div>
+        </div>
+        <div style="font-size:.82rem; color:var(--color-muted); margin-bottom:var(--sp-4);">
+          Hindi natanggap?
+          <span id="v-resend-link" style="color:var(--color-primary);font-weight:700;cursor:pointer;">Magpadala ulit</span>
+          <span id="v-otp-timer">(60s)</span>
+        </div>
+        <button class="btn btn-primary btn-full btn-lg" id="v-btn-verify-otp">I-verify →</button>
+      </div>
+      <button class="btn btn-primary btn-full btn-lg" id="v-btn-send-otp" style="margin-top:var(--sp-2);">
+        Magpadala ng Code
+      </button>
+    </div>
+
+    <!-- STEP 2: Identity + Commitment -->
+    <div class="step-panel" id="step-2">
+      <div class="step-title">Sino ka?</div>
+      <div class="step-desc">Ilang impormasyon para makilala ka ng iyong komunidad.</div>
+      <div class="form-group">
+        <label class="form-label" for="v-inp-name">Buong Pangalan</label>
+        <input type="text" id="v-inp-name" placeholder="Juan Dela Cruz"
+               class="form-input" autocomplete="name" />
+        <div class="form-error" id="v-err-name"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="v-inp-nickname">Palayaw (para sa leaderboard)</label>
+        <input type="text" id="v-inp-nickname" placeholder="Juan" class="form-input" />
+        <div class="form-error" id="v-err-nickname"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Kaya mo bang maghatid 1–2 beses sa isang linggo?</label>
+        <div class="commitment-grid">
+          <div class="commitment-card" id="cc-regular" data-level="regular">
+            <span class="cc-icon">💪</span>
+            <div class="cc-title">Oo, kaya ko!</div>
+            <div class="cc-sub">Regular — full mission board access</div>
+          </div>
+          <div class="commitment-card" id="cc-backup" data-level="backup">
+            <span class="cc-icon">🕐</span>
+            <div class="cc-title">Paminsan-minsan lang</div>
+            <div class="cc-sub">Backup — urgent missions only</div>
+          </div>
+        </div>
+        <div class="form-error" id="v-err-commitment"></div>
+      </div>
+      <div class="step-nav">
+        <button class="btn btn-ghost btn-back" id="v-btn-2-back">← Bumalik</button>
+        <button class="btn btn-primary btn-next" id="v-btn-2-next">Susunod →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Availability + Territory -->
+    <div class="step-panel" id="step-3">
+      <div class="step-title">Kailan at saan ka available?</div>
+      <div class="step-desc">Ipapakita lang ang mga mission na angkop sa iyong oras at lugar.</div>
+
+      <div class="form-group">
+        <label class="form-label" style="margin-bottom:var(--sp-3);">Availability</label>
+        <div class="avail-grid">
+          <div></div>
+          <div class="col-head">Umaga<br/><span style="font-weight:400;font-size:.72rem;">6AM–12PM</span></div>
+          <div class="col-head">Hapon<br/><span style="font-weight:400;font-size:.72rem;">12PM–6PM</span></div>
+          <div class="col-head">Gabi<br/><span style="font-weight:400;font-size:.72rem;">6PM–10PM</span></div>
+
+          <div class="row-label">Lunes</div>
+          <input type="checkbox" data-slot="mon-morning" />
+          <input type="checkbox" data-slot="mon-afternoon" />
+          <input type="checkbox" data-slot="mon-evening" />
+
+          <div class="row-label">Martes</div>
+          <input type="checkbox" data-slot="tue-morning" />
+          <input type="checkbox" data-slot="tue-afternoon" />
+          <input type="checkbox" data-slot="tue-evening" />
+
+          <div class="row-label">Miyerkoles</div>
+          <input type="checkbox" data-slot="wed-morning" />
+          <input type="checkbox" data-slot="wed-afternoon" />
+          <input type="checkbox" data-slot="wed-evening" />
+
+          <div class="row-label">Huwebes</div>
+          <input type="checkbox" data-slot="thu-morning" />
+          <input type="checkbox" data-slot="thu-afternoon" />
+          <input type="checkbox" data-slot="thu-evening" />
+
+          <div class="row-label">Biyernes</div>
+          <input type="checkbox" data-slot="fri-morning" />
+          <input type="checkbox" data-slot="fri-afternoon" />
+          <input type="checkbox" data-slot="fri-evening" />
+
+          <div class="row-label">Sabado</div>
+          <input type="checkbox" data-slot="sat-morning" checked />
+          <input type="checkbox" data-slot="sat-afternoon" checked />
+          <input type="checkbox" data-slot="sat-evening" />
+
+          <div class="row-label">Linggo</div>
+          <input type="checkbox" data-slot="sun-morning" checked />
+          <input type="checkbox" data-slot="sun-afternoon" />
+          <input type="checkbox" data-slot="sun-evening" />
+        </div>
+        <div class="form-error" id="v-err-avail"></div>
+      </div>
+
+      <div class="form-group" style="margin-top:var(--sp-5);">
+        <label class="form-label">Preferred Barangays (max 10)</label>
+        <div class="barangay-chips" id="barangay-chips"></div>
+        <div class="form-error" id="v-err-barangay"></div>
+      </div>
+
+      <div class="step-nav">
+        <button class="btn btn-ghost btn-back" id="v-btn-3-back">← Bumalik</button>
+        <button class="btn btn-primary btn-next" id="v-btn-3-next">Susunod →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Emergency Contact -->
+    <div class="step-panel" id="step-4">
+      <div class="step-title">Emergency Contact</div>
+      <div class="step-desc">
+        Para sa kaligtasan mo. Kokonektahin lang kapag may emergency habang nag-de-deliver.
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="v-inp-ec-name">Pangalan ng Kontak</label>
+        <input type="text" id="v-inp-ec-name" placeholder="Maria Dela Cruz"
+               class="form-input" autocomplete="name" />
+        <div class="form-error" id="v-err-ec-name"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="v-inp-ec-phone">Numero ng Kontak</label>
+        <div class="phone-input-wrap">
+          <span class="phone-prefix">🇵🇭 +63</span>
+          <input type="tel" id="v-inp-ec-phone" inputmode="numeric"
+                 placeholder="9181234567" maxlength="10"
+                 class="form-input" autocomplete="tel" />
+        </div>
+        <div class="form-error" id="v-err-ec-phone"></div>
+      </div>
+      <div class="step-nav">
+        <button class="btn btn-ghost btn-back" id="v-btn-4-back">← Bumalik</button>
+        <button class="btn btn-primary btn-next" id="v-btn-4-next">Susunod →</button>
+      </div>
+    </div>
+
+    <!-- STEP 5: Team Code -->
+    <div class="step-panel" id="step-5">
+      <div class="step-title">May team code ba?</div>
+      <div class="step-desc">
+        Kung miyembro ka ng SK, simbahan, o barangay group, ilagay ang code nila.
+        Hindi required — puwede kang mag-register nang walang team.
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="v-inp-team">Team Code (optional)</label>
+        <input type="text" id="v-inp-team" placeholder="SK-LAHUG-2026"
+               class="form-input" style="text-transform:uppercase; letter-spacing:.1em;" />
+        <div class="form-hint" style="font-size:.8rem; color:var(--color-muted); margin-top:var(--sp-2);">
+          Hanapin ang code sa iyong team coordinator o group chat.
+        </div>
+      </div>
+      <div class="step-nav">
+        <button class="btn btn-ghost btn-back" id="v-btn-5-back">← Bumalik</button>
+        <button class="btn btn-primary btn-next" id="v-btn-5-next">Susunod →</button>
+      </div>
+      <a class="team-skip-link" id="v-skip-team">Mag-register nang walang team →</a>
+    </div>
+
+    <!-- STEP 6: Certificate Preview -->
+    <div class="step-panel" id="step-6">
+      <div class="step-title">Malapit ka nang maging volunteer!</div>
+      <div class="step-desc">Tingnan mo kung ano ang matatanggap mo pagkatapos ng 10 missions.</div>
+
+      <div class="cert-preview">
+        <span class="cert-icon">🏅</span>
+        <h3>Barangay Certificate</h3>
+        <p>
+          "Si <strong id="cert-name-display">Juan</strong> ay kinikilala ng Barangay Lahug
+          para sa pagliligtas ng 500kg ng sobrang pagkain — 2026."
+        </p>
+      </div>
+
+      <div style="background:var(--color-success-lt); border-radius:var(--radius-md); padding:var(--sp-4); margin-bottom:var(--sp-4);">
+        <div style="font-weight:700; color:var(--color-primary); margin-bottom:var(--sp-2);">🎯 10 missions para sa certificate</div>
+        <div style="font-size:.88rem; color:var(--color-primary);">
+          Puwede itong gamitin para sa school requirements o barangay record.
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-full btn-lg" id="v-btn-submit">
+        Tapusin ang Registration ✓
+      </button>
+      <button class="btn btn-ghost btn-full" id="v-btn-6-back" style="margin-top:var(--sp-2);">
+        ← Bumalik
+      </button>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="step-panel" id="step-success">
+      <div class="completion-screen">
+        <div class="check-icon">✅</div>
+        <h2>Nakapag-register ka na!</h2>
+        <p class="text-muted" style="margin-bottom:var(--sp-6);">
+          Maaari ka nang tumingin ng mga available missions. Ang iyong account ay
+          ipapaaktibo ng iyong team coordinator o LGU.
+        </p>
+        <div style="background:var(--color-warning-lt); border-radius:var(--radius-md); padding:var(--sp-4); margin-bottom:var(--sp-6); text-align:left;">
+          <div style="font-weight:700; color:var(--color-accent-dk); margin-bottom:var(--sp-2);">⏳ Pending Orientation</div>
+          <div style="font-size:.88rem;">
+            Kailangan mong dumalo sa barangay orientation bago makatanggap ng missions.
+            Makikipag-ugnayan sa iyo ang iyong team coordinator o LGU.
+          </div>
+        </div>
+        <a class="btn btn-primary btn-full btn-lg" href="../volunteer/index.html">
+          Pumunta sa Mission Board →
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="toast-container" aria-live="polite"></div>
+  <script type="module" src="../js/register/volunteer.js"></script>
+</body>
+</html>

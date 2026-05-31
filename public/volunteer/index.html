@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResQFood — Mission Board</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      background: var(--color-surface-low);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Topbar ── */
+    .vol-topbar {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary-cont));
+      color: #fff;
+      padding: var(--sp-4) var(--sp-5);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .vol-topbar .brand {
+      font-family: var(--font-head);
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: .05em;
+      flex: 1;
+    }
+    .vol-topbar .role-chip {
+      font-size: .75rem;
+      font-weight: 700;
+      background: rgba(255,255,255,.2);
+      border-radius: var(--radius-full);
+      padding: var(--sp-1) var(--sp-3);
+    }
+    .vol-topbar .signout-btn {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,.75);
+      font-size: .85rem;
+      cursor: pointer;
+      padding: var(--sp-1) var(--sp-2);
+    }
+
+    /* ── Greeting banner ── */
+    .vol-greeting {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary-cont));
+      color: #fff;
+      padding: var(--sp-5) var(--sp-5) var(--sp-8);
+    }
+    .vol-greeting h2 { color: #fff; font-size: 1.3rem; margin-bottom: var(--sp-1); }
+    .vol-greeting p  { color: rgba(255,255,255,.8); font-size: .88rem; margin-bottom: 0; }
+
+    /* ── Stats strip ── */
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-3);
+      padding: 0 var(--sp-4);
+      margin: calc(-1 * var(--sp-5)) 0 var(--sp-5);
+      position: relative;
+      z-index: 1;
+    }
+    .stat-card {
+      background: var(--color-surface-lowest);
+      border-radius: var(--radius-md);
+      padding: var(--sp-4) var(--sp-3);
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .stat-card .stat-val {
+      font-family: var(--font-head);
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--color-primary);
+      display: block;
+    }
+    .stat-card .stat-lbl {
+      font-size: .72rem;
+      color: var(--color-muted);
+      font-weight: 600;
+    }
+
+    /* ── Main content ── */
+    .vol-body {
+      flex: 1;
+      padding: 0 var(--sp-4) var(--sp-8);
+      max-width: 480px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* ── Tabs ── */
+    .vol-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: var(--sp-5);
+      background: var(--color-surface-lowest);
+      border-radius: var(--radius-md);
+      padding: var(--sp-1);
+      box-shadow: var(--shadow-sm);
+    }
+    .vol-tab {
+      flex: 1;
+      padding: var(--sp-3) var(--sp-2);
+      border: none;
+      background: none;
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--color-muted);
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      transition: background .15s, color .15s;
+    }
+    .vol-tab.active {
+      background: var(--color-primary);
+      color: #fff;
+    }
+
+    /* ── Section label ── */
+    .section-head {
+      font-size: .75rem;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin: var(--sp-5) 0 var(--sp-3);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+    }
+    .section-head .urgent-dot {
+      width: .55rem;
+      height: .55rem;
+      background: var(--color-danger);
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    /* ── Mission card ── */
+    .mission-card {
+      background: var(--color-surface-lowest);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-5);
+      margin-bottom: var(--sp-3);
+      box-shadow: var(--shadow-sm);
+      border-top: 3px solid transparent;
+      transition: box-shadow .2s;
+    }
+    .mission-card:hover { box-shadow: var(--shadow-md); }
+    .mission-card.urgent { border-top-color: var(--color-danger); }
+    .mission-card.regular { border-top-color: var(--color-primary); }
+
+    .mc-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--sp-3);
+    }
+    .mc-food {
+      font-family: var(--font-head);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .mc-qty {
+      font-size: .82rem;
+      color: var(--color-muted);
+      margin-top: var(--sp-1);
+    }
+    .mc-urgency {
+      font-size: .72rem;
+      font-weight: 700;
+      padding: var(--sp-1) var(--sp-2);
+      border-radius: var(--radius-full);
+    }
+    .urgency-high   { background: var(--color-danger-lt);  color: var(--color-danger); }
+    .urgency-normal { background: var(--color-success-lt); color: var(--color-primary); }
+
+    .mc-meta {
+      font-size: .82rem;
+      color: var(--color-muted);
+      margin-bottom: var(--sp-3);
+    }
+    .mc-meta span { margin-right: var(--sp-3); }
+
+    .mc-reliability {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-1);
+      font-size: .78rem;
+      font-weight: 700;
+      margin-bottom: var(--sp-4);
+    }
+    .rel-high    { color: var(--color-primary); }
+    .rel-neutral { color: var(--color-muted); }
+    .rel-new     { color: var(--color-danger); }
+
+    .mc-window {
+      font-size: .82rem;
+      color: var(--color-on-surface);
+      margin-bottom: var(--sp-4);
+    }
+    .mc-window strong { color: var(--color-primary); }
+
+    /* ── Pending orientation banner ── */
+    .orientation-banner {
+      background: var(--color-warning-lt);
+      border-radius: var(--radius-md);
+      padding: var(--sp-4);
+      margin-bottom: var(--sp-5);
+      font-size: .88rem;
+    }
+    .orientation-banner strong { color: var(--color-accent-dk); }
+
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center;
+      padding: var(--sp-10) var(--sp-4);
+      color: var(--color-muted);
+    }
+    .empty-state .empty-icon { font-size: 3rem; display: block; margin-bottom: var(--sp-3); }
+
+    /* ── Bottom nav ── */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--color-surface-lowest);
+      border-top: 1px solid var(--color-border-solid);
+      display: flex;
+      padding: var(--sp-2) 0 env(safe-area-inset-bottom, var(--sp-2));
+      z-index: 100;
+    }
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--sp-1);
+      padding: var(--sp-2);
+      text-decoration: none;
+      font-size: .68rem;
+      font-weight: 600;
+      color: var(--color-muted);
+      transition: color .15s;
+    }
+    .nav-item.active { color: var(--color-primary); }
+    .nav-item .nav-icon { font-size: 1.3rem; }
+    body { padding-bottom: 5rem; }
+  </style>
+</head>
+<body>
+  <header class="vol-topbar">
+    <span class="brand">🍱 RESQFOOD</span>
+    <span class="role-chip">Volunteer</span>
+    <button class="signout-btn" id="btn-signout">Sign out</button>
+  </header>
+
+  <div id="offline-banner">📶 Offline ka ngayon. Ilang features ay hindi available.</div>
+
+  <!-- Greeting -->
+  <div class="vol-greeting">
+    <h2>Magandang araw, <span id="vol-greeting-name">Juan</span>!</h2>
+    <p>Mayroon kang <strong id="active-count">0</strong> active mission ngayon.</p>
+  </div>
+
+  <!-- Stats strip -->
+  <div class="stats-strip">
+    <div class="stat-card">
+      <span class="stat-val" id="stat-kg">0</span>
+      <span class="stat-lbl">kg naligtas</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-val" id="stat-missions">0</span>
+      <span class="stat-lbl">missions</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-val" id="stat-points">0</span>
+      <span class="stat-lbl">puntos</span>
+    </div>
+  </div>
+
+  <main class="vol-body">
+
+    <!-- Pending orientation notice -->
+    <div class="orientation-banner" id="orientation-banner">
+      <strong>⏳ Pending Orientation</strong><br />
+      Kailangan mong dumalo sa barangay orientation bago makatanggap ng missions.
+      Makikipag-ugnayan sa iyo ang iyong team coordinator o LGU.
+    </div>
+
+    <!-- Tabs -->
+    <div class="vol-tabs" role="tablist">
+      <button class="vol-tab active" id="tab-available" role="tab">Available</button>
+      <button class="vol-tab"        id="tab-my"        role="tab">Aking Missions</button>
+      <button class="vol-tab"        id="tab-history"   role="tab">History</button>
+    </div>
+
+    <!-- Available missions panel -->
+    <div id="panel-available">
+      <!-- injected by JS -->
+    </div>
+
+    <!-- My missions panel -->
+    <div id="panel-my" class="hidden">
+      <!-- injected by JS -->
+    </div>
+
+    <!-- History panel (link out) -->
+    <div id="panel-history" class="hidden">
+      <div style="text-align:center; padding: var(--sp-8) var(--sp-4);">
+        <div style="font-size:2.5rem; margin-bottom:var(--sp-3);">📋</div>
+        <p style="color:var(--color-muted); margin-bottom:var(--sp-5);">
+          Tingnan ang iyong mga natapos na missions at certificate progress.
+        </p>
+        <a class="btn btn-primary btn-full" href="history.html">
+          Buksan ang History →
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Bottom nav -->
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <a class="nav-item active" href="index.html">
+      <span class="nav-icon">🗂️</span>Missions
+    </a>
+    <a class="nav-item" href="scanner.html">
+      <span class="nav-icon">📷</span>Scanner
+    </a>
+    <a class="nav-item" href="history.html">
+      <span class="nav-icon">📋</span>History
+    </a>
+  </nav>
+
+  <div id="toast-container" aria-live="polite"></div>
+  <script src="../js/modules/volunteer.js"></script>
+</body>
+</html>

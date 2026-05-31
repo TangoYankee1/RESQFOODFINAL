@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="../css/auth.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     .role-grid { grid-template-columns: 1fr 1fr; }
     @media (max-width: 360px) { .role-grid { grid-template-columns: 1fr; } }
@@ -87,28 +87,9 @@
 
   <div id="toast-container" aria-live="polite"></div>
 
-  <script type="module">
-    // Store intended role in sessionStorage when a card is clicked
-    const cards = {
-      'card-donor':     'donor',
-      'card-volunteer': 'volunteer',
-      'card-org':       'orgAdmin',
-      'card-lgu':       'lgu',
-    };
-
-    Object.entries(cards).forEach(([id, role]) => {
-      const el = document.getElementById(id);
-      if (el) {
-        el.addEventListener('click', () => {
-          sessionStorage.setItem('intendedRole', role);
-        });
-      }
-    });
-
+  <script>
     // Offline banner
-    function updateOnline() {
-      document.body.classList.toggle('offline', !navigator.onLine);
-    }
+    function updateOnline() { document.body.classList.toggle('offline', !navigator.onLine); }
     window.addEventListener('online',  updateOnline);
     window.addEventListener('offline', updateOnline);
     updateOnline();

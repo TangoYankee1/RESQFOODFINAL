@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResQFood — Active Mission</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      background: var(--color-surface-low);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .mission-header {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary-cont));
+      color: #fff;
+      padding: var(--sp-4) var(--sp-5);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .mission-header .brand {
+      font-family: var(--font-head);
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: .05em;
+      flex: 1;
+    }
+    .back-link {
+      color: rgba(255,255,255,.8);
+      text-decoration: none;
+      font-size: .85rem;
+      font-weight: 600;
+    }
+
+    .mission-body {
+      flex: 1;
+      padding: var(--sp-5) var(--sp-4) var(--sp-8);
+      max-width: 480px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Status badge */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-2);
+      font-weight: 800;
+      font-size: .88rem;
+      padding: var(--sp-2) var(--sp-4);
+      border-radius: var(--radius-full);
+      margin-bottom: var(--sp-5);
+    }
+    .status-scheduled { background: var(--color-warning-lt);  color: var(--color-accent-dk); }
+    .status-pickedup  { background: var(--color-success-lt);  color: var(--color-primary); }
+    .status-enroute   { background: var(--color-success-lt);  color: var(--color-primary); }
+    .status-delivered { background: var(--color-success-lt);  color: var(--color-primary); }
+
+    /* Mission detail card */
+    .detail-card {
+      background: var(--color-surface-lowest);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-6);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: var(--sp-4);
+    }
+    .detail-title {
+      font-family: var(--font-head);
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: var(--sp-1);
+    }
+    .detail-qty {
+      font-size: .9rem;
+      color: var(--color-muted);
+      margin-bottom: var(--sp-4);
+    }
+
+    .detail-rows { margin-top: var(--sp-2); }
+    .detail-row {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-3);
+      padding: var(--sp-3) 0;
+      font-size: .9rem;
+      border-top: 1px solid var(--color-border);
+    }
+    .detail-row:first-child { border-top: none; }
+    .detail-row .dr-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: .1rem; }
+    .detail-row .dr-label { color: var(--color-muted); font-size: .78rem; }
+    .detail-row .dr-value { font-weight: 600; }
+
+    /* Countdown timer */
+    .countdown-bar {
+      background: var(--color-surface-lowest);
+      border-radius: var(--radius-md);
+      padding: var(--sp-4);
+      margin-bottom: var(--sp-4);
+      box-shadow: var(--shadow-sm);
+      text-align: center;
+    }
+    .countdown-label { font-size: .78rem; color: var(--color-muted); font-weight: 600; margin-bottom: var(--sp-1); }
+    .countdown-value {
+      font-family: var(--font-head);
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--color-danger);
+    }
+    .countdown-value.safe { color: var(--color-primary); }
+
+    /* CTA scan button */
+    .scan-cta {
+      background: linear-gradient(135deg, var(--color-accent-dk), var(--color-accent));
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-lg);
+      padding: var(--sp-5) var(--sp-6);
+      font-family: var(--font-head);
+      font-size: 1.1rem;
+      font-weight: 800;
+      width: 100%;
+      cursor: pointer;
+      margin-bottom: var(--sp-3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-3);
+      text-decoration: none;
+      box-shadow: var(--shadow-md);
+    }
+    .scan-cta:active { opacity: .9; }
+
+    .cancel-btn {
+      background: none;
+      border: 1.5px solid var(--color-border-solid);
+      border-radius: var(--radius-md);
+      color: var(--color-danger);
+      font-size: .88rem;
+      font-weight: 700;
+      width: 100%;
+      padding: var(--sp-3);
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header class="mission-header">
+    <a class="back-link" href="index.html">← Missions</a>
+    <span class="brand">🍱 RESQFOOD</span>
+  </header>
+
+  <div id="offline-banner">📶 Offline ka ngayon. Ilang features ay hindi available.</div>
+
+  <main class="mission-body">
+
+    <div id="status-badge-wrap" class="status-badge status-scheduled">
+      📅 SCHEDULED
+    </div>
+
+    <!-- Mission detail card -->
+    <div class="detail-card">
+      <div class="detail-title" id="m-food">Kanin at Ulam</div>
+      <div class="detail-qty" id="m-qty">3.5 kg</div>
+      <div class="detail-rows">
+        <div class="detail-row">
+          <span class="dr-icon">📞</span>
+          <div>
+            <div class="dr-label">Donor Contact</div>
+            <div class="dr-value" id="m-contact">Maria Santos · +639171234567</div>
+          </div>
+        </div>
+        <div class="detail-row">
+          <span class="dr-icon">📍</span>
+          <div>
+            <div class="dr-label">Pickup Address</div>
+            <div class="dr-value" id="m-address">Corner Gorordo Ave, Lahug, Cebu City</div>
+          </div>
+        </div>
+        <div class="detail-row">
+          <span class="dr-icon">⏰</span>
+          <div>
+            <div class="dr-label">Pickup Window</div>
+            <div class="dr-value" id="m-window">Ngayon, 2:00 PM – 4:00 PM</div>
+          </div>
+        </div>
+        <div class="detail-row">
+          <span class="dr-icon">🏷️</span>
+          <div>
+            <div class="dr-label">Mission ID</div>
+            <div class="dr-value" id="m-id">M001</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Countdown -->
+    <div class="countdown-bar">
+      <div class="countdown-label">Natitira ang pickup window</div>
+      <div class="countdown-value safe" id="countdown">45 minuto</div>
+    </div>
+
+    <!-- Scan CTA -->
+    <a class="scan-cta" href="scanner.html">
+      <span style="font-size:1.4rem;">📷</span>
+      Scan at Pickup
+    </a>
+
+    <!-- Cancel (only for scheduled) -->
+    <button class="cancel-btn" id="btn-cancel-mission">
+      Kanselahin ang Mission
+    </button>
+
+  </main>
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <script>
+    // ── Load mission from sessionStorage or use demo defaults ─────────────────
+    const raw = sessionStorage.getItem('active_mission');
+    const m   = raw ? JSON.parse(raw) : null;
+
+    if (m) {
+      setText('m-food',    m.food);
+      setText('m-qty',     `${m.qty} kg`);
+      setText('m-contact', m.contact ?? '—');
+      setText('m-address', m.address ?? m.barangay ?? '—');
+      setText('m-window',  m.window ?? '—');
+      setText('m-id',      m.id ?? '—');
+    }
+
+    function setText(id, val) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    }
+
+    // ── Fake countdown (demo) ─────────────────────────────────────────────────
+    let minsLeft = 45;
+    const cdEl   = document.getElementById('countdown');
+    const iv = setInterval(() => {
+      minsLeft--;
+      if (minsLeft <= 0) { clearInterval(iv); if (cdEl) { cdEl.textContent = 'Expired!'; cdEl.classList.remove('safe'); } return; }
+      if (cdEl) {
+        cdEl.textContent = minsLeft > 60
+          ? `${Math.floor(minsLeft / 60)}h ${minsLeft % 60}m`
+          : `${minsLeft} minuto`;
+        cdEl.classList.toggle('safe', minsLeft > 15);
+      }
+    }, 5000); // accelerated for demo (5s = 1 minute feel)
+
+    // ── Cancel ────────────────────────────────────────────────────────────────
+    document.getElementById('btn-cancel-mission')?.addEventListener('click', () => {
+      if (confirm('Tiyak bang kanselahin ang mission na ito?')) {
+        sessionStorage.removeItem('active_mission');
+        window.location.href = 'index.html';
+      }
+    });
+
+    // ── Offline ───────────────────────────────────────────────────────────────
+    const update = () => document.body.classList.toggle('offline', !navigator.onLine);
+    window.addEventListener('online',  update);
+    window.addEventListener('offline', update);
+    update();
+  </script>
+</body>
+</html>

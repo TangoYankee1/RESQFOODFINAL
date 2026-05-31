@@ -5,13 +5,15 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: var(--color-bg);
+  background: var(--color-surface-low);
 }
 
-/* ── Top bar ── */
+/* ── Top bar — glassmorphism ── */
 .donor-topbar {
-  background: var(--color-primary);
-  color: #fff;
+  background: rgba(255,255,255,0.80);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  color: var(--color-on-surface);
   padding: var(--sp-4) var(--sp-5);
   display: flex;
   align-items: center;
@@ -19,17 +21,19 @@
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: var(--shadow-sm);
 }
 .donor-topbar .brand {
   font-size: 1.1rem;
   font-weight: 800;
   letter-spacing: .05em;
-  color: var(--color-accent);
+  font-family: var(--font-head);
+  color: var(--color-primary);
   flex: 1;
 }
 .donor-topbar .greeting {
   font-size: .85rem;
-  color: rgba(255,255,255,.75);
+  color: var(--color-muted);
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
@@ -39,18 +43,20 @@
 .donor-topbar .icon-btn {
   background: none;
   border: none;
-  color: rgba(255,255,255,.8);
+  color: var(--color-muted);
   font-size: 1.4rem;
   cursor: pointer;
   padding: var(--sp-1);
   line-height: 1;
+  border-radius: var(--radius-full);
+  transition: background .18s;
 }
-.donor-topbar .icon-btn:hover { color: var(--color-accent); }
+.donor-topbar .icon-btn:hover { background: var(--color-surface-high); }
 
 /* ── Activation gate banner ── */
 .activation-banner {
-  background: var(--color-accent);
-  color: var(--color-primary);
+  background: var(--color-warning-lt);
+  color: #6e3900;
   padding: var(--sp-4) var(--sp-5);
   display: flex;
   align-items: center;
@@ -58,13 +64,13 @@
 }
 .activation-banner .ab-icon { font-size: 1.5rem; flex-shrink: 0; }
 .activation-banner .ab-body { flex: 1; }
-.activation-banner .ab-title { font-weight: 700; font-size: .95rem; }
-.activation-banner .ab-sub   { font-size: .8rem;  opacity: .75; }
+.activation-banner .ab-title { font-weight: 700; font-size: .95rem; font-family: var(--font-head); }
+.activation-banner .ab-sub   { font-size: .8rem; opacity: .75; }
 .activation-banner .ab-cta   {
-  background: var(--color-primary);
-  color: var(--color-accent);
+  background: linear-gradient(135deg, var(--color-accent-dk), var(--color-accent));
+  color: #fff;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-full);
   padding: var(--sp-2) var(--sp-4);
   font-weight: 700;
   font-size: .85rem;
@@ -72,15 +78,16 @@
   white-space: nowrap;
   text-decoration: none;
   display: inline-block;
+  box-shadow: var(--shadow-sm);
 }
 
 /* ── Navigation tabs ── */
 .donor-tabs {
   display: flex;
-  background: var(--color-surface);
-  border-bottom: 2px solid var(--color-border);
+  background: var(--color-surface-lowest);
   overflow-x: auto;
   scrollbar-width: none;
+  box-shadow: var(--shadow-sm);
 }
 .donor-tabs::-webkit-scrollbar { display: none; }
 .donor-tab {
@@ -117,7 +124,7 @@
   top: 4px;
   right: 8px;
   font-size: .6rem;
-  background: var(--color-border);
+  background: var(--color-surface-high);
   border-radius: 4px;
   padding: 1px 4px;
   color: var(--color-muted);
@@ -143,34 +150,35 @@
   font-size: .88rem;
   font-weight: 600;
 }
-.kitchen-alert.alert-warning { background: var(--color-warning-lt); color: #92400e; }
+.kitchen-alert.alert-warning { background: var(--color-warning-lt); color: #6e3900; }
 .kitchen-alert.alert-success  { background: var(--color-success-lt); color: var(--color-success); }
 .kitchen-alert.alert-info     { background: #e0f2fe; color: #0c4a6e; }
 
-/* ── Post button ── */
+/* ── Post button — warm orange gradient FAB ── */
 .post-fab {
   display: flex;
   align-items: center;
   gap: var(--sp-3);
-  background: var(--color-primary);
-  color: var(--color-accent);
+  background: linear-gradient(135deg, var(--color-accent-dk), var(--color-accent));
+  color: #fff;
   border: none;
   border-radius: var(--radius-lg);
   padding: var(--sp-4) var(--sp-5);
   width: 100%;
   font-size: 1.05rem;
   font-weight: 700;
+  font-family: var(--font-head);
   cursor: pointer;
   margin-bottom: var(--sp-5);
   text-decoration: none;
-  transition: background .18s, transform .12s;
+  transition: opacity .18s, transform .12s, box-shadow .18s;
   box-shadow: var(--shadow-md);
 }
-.post-fab:hover { background: #002a5c; }
+.post-fab:hover { opacity: .92; box-shadow: var(--shadow-lg); }
 .post-fab:active { transform: scale(.98); }
 .post-fab .fab-icon { font-size: 1.6rem; }
 .post-fab .fab-text { flex: 1; text-align: left; }
-.post-fab .fab-sub  { font-size: .75rem; font-weight: 500; opacity: .8; display: block; }
+.post-fab .fab-sub  { font-size: .75rem; font-weight: 500; opacity: .85; display: block; }
 
 /* ── Section headers ── */
 .section-header {
@@ -179,34 +187,35 @@
   justify-content: space-between;
   margin-bottom: var(--sp-3);
 }
-.section-title { font-size: 1rem; font-weight: 700; }
+.section-title { font-size: 1rem; font-weight: 700; font-family: var(--font-head); }
 .section-count {
   font-size: .75rem;
-  background: var(--color-border);
+  background: var(--color-surface-high);
   padding: var(--sp-1) var(--sp-2);
-  border-radius: 9999px;
+  border-radius: var(--radius-full);
   font-weight: 600;
   color: var(--color-muted);
 }
 
 /* ── Donation card ── */
 .donation-card {
-  background: var(--color-surface);
+  background: var(--color-surface-lowest);
   border-radius: var(--radius-lg);
   padding: var(--sp-4) var(--sp-5);
   margin-bottom: var(--sp-3);
   box-shadow: var(--shadow-sm);
-  border-left: 4px solid var(--color-border);
-  transition: box-shadow .18s;
+  transition: box-shadow .18s, transform .12s;
 }
-.donation-card:hover { box-shadow: var(--shadow-md); }
-.donation-card.status-pending    { border-left-color: #f59e0b; }
-.donation-card.status-scheduled  { border-left-color: #3b82f6; }
-.donation-card.status-picked-up  { border-left-color: #0ea5e9; }
-.donation-card.status-en-route   { border-left-color: #8b5cf6; }
-.donation-card.status-delivered  { border-left-color: #10b981; }
-.donation-card.status-verified   { border-left-color: var(--color-success); }
-.donation-card.status-cancelled  { border-left-color: var(--color-danger); opacity: .7; }
+.donation-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+
+/* Status accent via top colored strip instead of left border */
+.donation-card.status-pending    { border-top: 3px solid #f59e0b; }
+.donation-card.status-scheduled  { border-top: 3px solid #3b82f6; }
+.donation-card.status-picked-up  { border-top: 3px solid #0ea5e9; }
+.donation-card.status-en-route   { border-top: 3px solid #8b5cf6; }
+.donation-card.status-delivered  { border-top: 3px solid var(--color-primary); }
+.donation-card.status-verified   { border-top: 3px solid var(--color-primary); }
+.donation-card.status-cancelled  { border-top: 3px solid var(--color-danger); opacity: .7; }
 
 .donation-card__head {
   display: flex;
@@ -218,6 +227,8 @@
 .donation-card__food {
   font-weight: 700;
   font-size: 1rem;
+  font-family: var(--font-head);
+  color: var(--color-on-surface);
 }
 .donation-card__meta {
   font-size: .8rem;
@@ -251,29 +262,29 @@
   top: 10px;
   width: calc(100% - 16px);
   height: 2px;
-  background: var(--color-border);
+  background: var(--color-surface-high);
 }
 .cs-step.done + .cs-step::before   { background: var(--color-step-done); }
-.cs-step.active + .cs-step::before { background: var(--color-border); }
+.cs-step.active + .cs-step::before { background: var(--color-surface-high); }
 
 .cs-dot {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: var(--color-border);
+  background: var(--color-surface-high);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: .55rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--color-muted);
   z-index: 1;
   position: relative;
   flex-shrink: 0;
 }
-.cs-step.done   .cs-dot { background: var(--color-step-done); }
-.cs-step.active .cs-dot { background: var(--color-primary); box-shadow: 0 0 0 3px rgba(0,25,60,.18); }
-.cs-step.cancelled .cs-dot { background: var(--color-danger); }
+.cs-step.done   .cs-dot { background: var(--color-step-done); color: #fff; }
+.cs-step.active .cs-dot { background: var(--color-primary); color: #fff; box-shadow: var(--shadow-focus); }
+.cs-step.cancelled .cs-dot { background: var(--color-danger); color: #fff; }
 
 .cs-label {
   font-size: .58rem;
@@ -289,23 +300,22 @@
 .cs-step.done     .cs-label { color: var(--color-step-done); }
 .cs-step.cancelled .cs-label { color: var(--color-danger); }
 
-/* Card actions */
+/* Card actions — no divider, use spacing */
 .donation-card__actions {
   display: flex;
   gap: var(--sp-2);
-  margin-top: var(--sp-3);
+  margin-top: var(--sp-4);
   padding-top: var(--sp-3);
-  border-top: 1px solid var(--color-border);
 }
 .btn-cancel-inline {
   background: none;
-  border: 1.5px solid var(--color-danger);
   color: var(--color-danger);
   border-radius: var(--radius-sm);
   padding: var(--sp-2) var(--sp-3);
   font-size: .8rem;
   font-weight: 600;
   cursor: pointer;
+  border: none;
   transition: background .18s;
 }
 .btn-cancel-inline:hover { background: var(--color-danger-lt); }
@@ -333,15 +343,14 @@
   font-size: .75rem;
   font-weight: 700;
   padding: var(--sp-1) var(--sp-2);
-  border-radius: 9999px;
-  background: var(--color-bg);
-  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-low);
 }
-.reliability-chip.high   { border-color: var(--color-success); color: var(--color-success); }
-.reliability-chip.neutral { border-color: var(--color-muted); color: var(--color-muted); }
-.reliability-chip.low    { border-color: var(--color-danger); color: var(--color-danger); }
+.reliability-chip.high    { background: var(--color-success-lt); color: var(--color-success); }
+.reliability-chip.neutral { background: var(--color-surface-high); color: var(--color-muted); }
+.reliability-chip.low     { background: var(--color-danger-lt); color: var(--color-danger); }
 
-/* ── Completed/history section (collapsed) ── */
+/* ── Completed/history section ── */
 .history-section { margin-top: var(--sp-6); }
 .history-toggle {
   display: flex;
@@ -352,7 +361,6 @@
   border: none;
   cursor: pointer;
   padding: var(--sp-3) 0;
-  border-top: 1px solid var(--color-border);
 }
 .history-toggle:hover .section-title { color: var(--color-primary); }
 .history-chevron {
@@ -367,14 +375,14 @@
 
 /* ── Loading skeleton ── */
 .skeleton-card {
-  background: var(--color-surface);
+  background: var(--color-surface-lowest);
   border-radius: var(--radius-lg);
   padding: var(--sp-4) var(--sp-5);
   margin-bottom: var(--sp-3);
   box-shadow: var(--shadow-sm);
 }
 .skeleton-line {
-  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background: linear-gradient(90deg, var(--color-surface-high) 25%, var(--color-surface-low) 50%, var(--color-surface-high) 75%);
   background-size: 200% 100%;
   border-radius: var(--radius-sm);
   animation: shimmer 1.4s infinite;

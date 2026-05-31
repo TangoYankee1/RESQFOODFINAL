@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResQFood — I-verify ang Delivery</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <style>
+    body {
+      background: var(--color-surface-low);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .verify-header {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary-cont));
+      color: #fff;
+      padding: var(--sp-4) var(--sp-5);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .verify-header .brand {
+      font-family: var(--font-head);
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: .05em;
+      flex: 1;
+    }
+    .verify-header .role-chip {
+      font-size: .75rem;
+      font-weight: 700;
+      background: rgba(255,255,255,.2);
+      border-radius: var(--radius-full);
+      padding: var(--sp-1) var(--sp-3);
+    }
+    .back-btn {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,.85);
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: var(--sp-1) var(--sp-2);
+      line-height: 1;
+    }
+    .verify-body {
+      flex: 1;
+      padding: var(--sp-4);
+      max-width: 480px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    /* Mode toggle */
+    .mode-toggle {
+      display: flex;
+      gap: 0;
+      background: var(--color-surface-lowest);
+      border-radius: var(--radius-md);
+      padding: var(--sp-1);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: var(--sp-5);
+    }
+    .mode-btn {
+      flex: 1;
+      padding: var(--sp-3) var(--sp-2);
+      border: none;
+      background: none;
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--color-muted);
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      transition: background .15s, color .15s;
+    }
+    .mode-btn.active { background: var(--color-primary); color: #fff; }
+
+    .section-title {
+      font-family: var(--font-head);
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: var(--sp-3);
+      color: var(--color-on-surface);
+    }
+    /* Camera */
+    #qr-reader { width: 100%; border-radius: var(--radius-lg); overflow: hidden; background: #000; box-shadow: var(--shadow-md); }
+    #qr-reader video { border-radius: var(--radius-lg); }
+    #qr-reader img   { display: none !important; }
+    .scan-hint { text-align: center; font-size: .85rem; color: var(--color-muted); margin: var(--sp-3) 0 var(--sp-5); }
+
+    .start-camera-area {
+      background: var(--color-surface-lowest);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-10) var(--sp-6);
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: var(--sp-4);
+    }
+    .camera-icon { font-size: 3rem; display: block; margin-bottom: var(--sp-4); }
+
+    /* Result card */
+    #scan-result {
+      background: var(--color-surface-lowest);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-6);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--sp-4);
+    }
+    .result-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-2);
+      font-weight: 700;
+      font-size: .85rem;
+      padding: var(--sp-2) var(--sp-4);
+      border-radius: var(--radius-full);
+      margin-bottom: var(--sp-4);
+    }
+    .result-badge.valid   { background: var(--color-success-lt); color: var(--color-success); }
+    .result-badge.invalid { background: var(--color-danger-lt);  color: var(--color-danger); }
+
+    .result-rows { margin-bottom: var(--sp-5); }
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: var(--sp-3) 0;
+      gap: var(--sp-3);
+      font-size: .9rem;
+    }
+    .result-row + .result-row { border-top: 1px solid var(--color-border); }
+    .result-row .label { color: var(--color-muted); flex-shrink: 0; }
+    .result-row .value { font-weight: 600; text-align: right; }
+
+    /* Success screen */
+    #verify-success {
+      text-align: center;
+      background: var(--color-surface-lowest);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-10) var(--sp-6);
+      box-shadow: var(--shadow-md);
+    }
+    .success-icon  { font-size: 4rem; margin-bottom: var(--sp-4); display: block; }
+    .success-title { font-family: var(--font-head); font-size: 1.4rem; font-weight: 800; color: var(--color-primary); margin-bottom: var(--sp-2); }
+    .success-sub   { font-size: .9rem; color: var(--color-muted); margin-bottom: var(--sp-6); }
+
+    /* PIN mode */
+    .pin-container {
+      background: var(--color-surface-lowest);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-6);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--sp-4);
+    }
+    .pin-label { font-size: .88rem; color: var(--color-muted); margin-bottom: var(--sp-5); text-align: center; }
+    .pin-inputs { display: flex; justify-content: center; gap: var(--sp-3); margin-bottom: var(--sp-5); }
+    .pin-digit {
+      width: 3rem;
+      height: 3.5rem;
+      font-size: 1.5rem;
+      font-weight: 800;
+      text-align: center;
+      border: 2px solid var(--color-border-solid);
+      border-radius: var(--radius-md);
+      background: var(--color-surface-low);
+      color: var(--color-on-surface);
+      transition: border-color .15s;
+      -moz-appearance: textfield;
+    }
+    .pin-digit::-webkit-outer-spin-button,
+    .pin-digit::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .pin-digit:focus  { outline: none; border-color: var(--color-primary); }
+    .pin-digit.filled { border-color: var(--color-primary); background: var(--color-surface-lowest); }
+    .pin-error {
+      text-align: center;
+      font-size: .85rem;
+      color: var(--color-danger);
+      margin-top: calc(-1 * var(--sp-3));
+      margin-bottom: var(--sp-4);
+      min-height: 1.2em;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="verify-header">
+    <button class="back-btn" id="btn-back" aria-label="Bumalik">←</button>
+    <span class="brand">🍱 RESQFOOD</span>
+    <span class="role-chip">Org Admin</span>
+  </header>
+
+  <div id="offline-banner">📶 Offline ka ngayon. Ang verification ay mase-save pagbalik ng signal.</div>
+
+  <main class="verify-body">
+
+    <!-- Mode toggle -->
+    <div class="mode-toggle" role="tablist">
+      <button class="mode-btn active" id="btn-mode-qr"  role="tab">📷 QR Scanner</button>
+      <button class="mode-btn"        id="btn-mode-pin" role="tab">🔢 PIN (Basic)</button>
+    </div>
+
+    <!-- ── QR MODE ── -->
+    <div id="qr-mode">
+
+      <!-- Camera prompt -->
+      <div id="camera-prompt" class="start-camera-area">
+        <span class="camera-icon">📸</span>
+        <p class="section-title" style="text-align:center;">I-scan ang QR ng Volunteer</p>
+        <p style="font-size:.88rem; color:var(--color-muted); margin-bottom:var(--sp-5);">
+          I-tap ang button para buksan ang camera at i-scan ang QR code na ipinakita ng volunteer.
+        </p>
+        <button class="btn btn-primary btn-full btn-lg" id="btn-start-scan">
+          📷 Buksan ang Camera
+        </button>
+      </div>
+
+      <!-- Camera viewfinder -->
+      <div id="qr-reader-wrap" class="hidden">
+        <p class="section-title">Handa na ang Camera</p>
+        <div id="qr-reader"></div>
+        <p class="scan-hint">Itutok ang camera sa QR code ng volunteer. Awtomatikong maki-detect.</p>
+        <button class="btn btn-ghost btn-full" id="btn-cancel-scan" style="margin-bottom:var(--sp-4);">
+          Itigil ang Pag-scan
+        </button>
+      </div>
+
+      <!-- Scan result card -->
+      <div id="scan-result" class="hidden">
+        <div id="validity-badge" class="result-badge valid">✓ Valid na Delivery</div>
+        <div class="result-rows" id="result-rows"></div>
+        <button class="btn btn-primary btn-full btn-lg" id="btn-confirm-verify">
+          ✅ I-verify ang Pagtanggap
+        </button>
+        <button class="btn btn-ghost btn-full" id="btn-scan-again" style="margin-top:var(--sp-3);">
+          🔄 I-scan Ulit
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ── PIN MODE ── -->
+    <div id="pin-mode" class="hidden">
+      <div class="pin-container">
+        <p class="section-title" style="text-align:center;">Ilagay ang 4-Digit PIN</p>
+        <p class="pin-label">
+          Sabihin sa volunteer na ibigay ang 4-digit PIN mula sa kanilang active mission screen.
+        </p>
+        <div class="pin-inputs">
+          <input class="pin-digit" id="pin-0" type="number" maxlength="1" inputmode="numeric" aria-label="PIN digit 1" />
+          <input class="pin-digit" id="pin-1" type="number" maxlength="1" inputmode="numeric" aria-label="PIN digit 2" />
+          <input class="pin-digit" id="pin-2" type="number" maxlength="1" inputmode="numeric" aria-label="PIN digit 3" />
+          <input class="pin-digit" id="pin-3" type="number" maxlength="1" inputmode="numeric" aria-label="PIN digit 4" />
+        </div>
+        <p class="pin-error" id="pin-error"></p>
+        <button class="btn btn-primary btn-full btn-lg" id="btn-confirm-pin" disabled>
+          ✅ I-verify gamit ang PIN
+        </button>
+      </div>
+    </div>
+
+    <!-- ── SUCCESS (shared) ── -->
+    <div id="verify-success" class="hidden">
+      <span class="success-icon">✅</span>
+      <div class="success-title">Na-verify na ang Delivery!</div>
+      <p class="success-sub">Salamat sa pag-confirm ng pagtanggap ng pagkain.</p>
+      <div id="success-summary" style="
+        background:var(--color-success-lt); border-radius:var(--radius-md);
+        padding:var(--sp-4); text-align:left; margin-bottom:var(--sp-5); font-size:.88rem;
+      "></div>
+      <button class="btn btn-primary btn-full btn-lg" id="btn-verify-next">
+        📷 I-verify ang Susunod
+      </button>
+      <a class="btn btn-ghost btn-full" href="index.html"
+         style="margin-top:var(--sp-3); display:block; text-align:center;">
+        Bumalik sa Dashboard
+      </a>
+    </div>
+
+  </main>
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <script type="module" src="../js/qr/orgAdminScanner.js"></script>
+</body>
+</html>

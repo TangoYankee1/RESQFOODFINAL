@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResQFood — LGU Dashboard</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/admin.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <header class="admin-topbar">
+    <span class="brand">🍱 RESQFOOD</span>
+    <span class="topbar-barangay">Barangay Lahug</span>
+    <span class="admin-name" id="admin-name">Maria Santos</span>
+    <span class="mfa-badge">🔐 MFA Active</span>
+    <button class="signout-btn" id="btn-signout">Sign out</button>
+  </header>
+
+  <div id="offline-banner">📶 Offline ka ngayon. Ilang features ay hindi available.</div>
+
+  <div class="admin-layout">
+
+    <!-- Sidebar -->
+    <nav class="admin-sidenav" aria-label="Admin navigation">
+      <a class="nav-link active" href="index.html">
+        <span class="nav-icon">📊</span> Dashboard
+      </a>
+      <a class="nav-link" href="users.html">
+        <span class="nav-icon">👥</span> Mga User
+      </a>
+      <a class="nav-link" href="donations.html">
+        <span class="nav-icon">🍱</span> Donations
+      </a>
+      <a class="nav-link" href="audit.html">
+        <span class="nav-icon">📋</span> Audit Trail
+      </a>
+    </nav>
+
+    <!-- Main content -->
+    <main class="admin-main" id="admin-main">
+      <div class="admin-main-inner">
+
+        <h1 class="page-title">Dashboard — Barangay Lahug</h1>
+        <p class="page-subtitle">Real-time na pangkalahatang-tanaw ng food rescue operations.</p>
+
+        <!-- Date range -->
+        <div class="date-range-bar">
+          <span class="dr-label">Panahon:</span>
+          <button class="range-btn" data-range="7">7 Araw</button>
+          <button class="range-btn active" data-range="30">30 Araw</button>
+          <button class="range-btn" data-range="month">Buwang Ito</button>
+        </div>
+
+        <!-- Metrics -->
+        <div class="metrics-grid" id="metrics-grid">
+          <div class="metric-card">
+            <div class="m-icon">⚖️</div>
+            <span class="m-val" id="stat-kg">1,247</span>
+            <div class="m-lbl">kg na na-rescue</div>
+            <div class="m-delta">↑ 12% vs nakaraang buwan</div>
+          </div>
+          <div class="metric-card accent">
+            <div class="m-icon">🛵</div>
+            <span class="m-val" id="stat-missions">63</span>
+            <div class="m-lbl">natapos na missions</div>
+            <div class="m-delta">↑ 8 vs nakaraang buwan</div>
+          </div>
+          <div class="metric-card success">
+            <div class="m-icon">🏢</div>
+            <span class="m-val" id="stat-orgs">12</span>
+            <div class="m-lbl">organisasyong nakinabang</div>
+            <div class="m-delta">Lahat ay active</div>
+          </div>
+          <div class="metric-card warning">
+            <div class="m-icon">⚡</div>
+            <span class="m-val" id="stat-active">4</span>
+            <div class="m-lbl">active missions ngayon</div>
+            <div class="m-delta">Real-time</div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-title">Uri ng Pagkain na Na-rescue (kg)</div>
+            <div class="chart-wrap"><canvas id="chart-food"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Uri ng Donor</div>
+            <div class="chart-wrap"><canvas id="chart-donor"></canvas></div>
+          </div>
+          <div class="chart-card full">
+            <div class="chart-title">Lingguhang Trend — kg na Na-rescue (nakaraang 8 linggo)</div>
+            <div class="chart-wrap"><canvas id="chart-trend"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Quick actions -->
+        <p class="section-head">Quick Actions</p>
+        <div class="quick-actions">
+          <a class="qa-card" href="users.html">
+            <span class="qa-icon">👥</span>
+            <div>
+              <span class="qa-label">Pamahalaan ang mga User</span>
+              <div class="qa-sub">Suspend, activate, tingnan</div>
+            </div>
+          </a>
+          <a class="qa-card" href="donations.html">
+            <span class="qa-icon">🍱</span>
+            <div>
+              <span class="qa-label">Tingnan ang Donations</span>
+              <div class="qa-sub">Read-only na listahan</div>
+            </div>
+          </a>
+          <div class="qa-card" id="btn-export-csv" style="cursor:pointer;">
+            <span class="qa-icon">📥</span>
+            <div>
+              <span class="qa-label">I-export ang CSV</span>
+              <div class="qa-sub">Para sa Excel / DILG</div>
+            </div>
+          </div>
+          <a class="qa-card" href="audit.html">
+            <span class="qa-icon">📋</span>
+            <div>
+              <span class="qa-label">Audit Trail</span>
+              <div class="qa-sub">Read-only na log</div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Active missions -->
+        <p class="section-head">Active Missions (Real-time)</p>
+        <div class="data-table-wrap">
+          <table class="data-table" id="active-missions-table">
+            <thead>
+              <tr>
+                <th>Volunteer</th>
+                <th>Pagkain</th>
+                <th>Dami</th>
+                <th>Organisasyon</th>
+                <th>Status</th>
+                <th>ETA</th>
+              </tr>
+            </thead>
+            <tbody id="active-missions-body">
+              <!-- injected by JS -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- Sign-out modal -->
+  <div id="signout-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 class="modal-title">Mag-sign out?</h3>
+      <p class="text-muted text-sm" style="margin-bottom:var(--sp-5);">Kailangan mong mag-MFA ulit para makabalik.</p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="btn-cancel-signout" style="flex:1;">Huwag na</button>
+        <button class="btn btn-danger" id="btn-confirm-signout" style="flex:1;">Sign Out</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/modules/systemAdmin.js"></script>
+</body>
+</html>

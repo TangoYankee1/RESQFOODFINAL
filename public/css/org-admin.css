@@ -1,0 +1,305 @@
+/* ── Org Admin shell ──────────────────────────────────────────────────────── */
+body {
+  background: var(--color-surface-low);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 5rem;
+}
+
+/* ── Topbar ──────────────────────────────────────────────────────────────── */
+.org-topbar {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-cont));
+  color: #fff;
+  padding: var(--sp-4) var(--sp-5);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.org-topbar .brand {
+  font-family: var(--font-head);
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: .05em;
+  flex: 1;
+}
+.org-topbar .role-chip {
+  font-size: .75rem;
+  font-weight: 700;
+  background: rgba(255,255,255,.2);
+  border-radius: var(--radius-full);
+  padding: var(--sp-1) var(--sp-3);
+}
+.org-topbar .signout-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,.75);
+  font-size: .85rem;
+  cursor: pointer;
+  padding: var(--sp-1) var(--sp-2);
+}
+
+/* ── Greeting banner ─────────────────────────────────────────────────────── */
+.org-greeting {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-cont));
+  color: #fff;
+  padding: var(--sp-5) var(--sp-5) var(--sp-8);
+}
+.org-greeting h2 { color: #fff; font-size: 1.3rem; margin-bottom: var(--sp-1); }
+.org-greeting p  { color: rgba(255,255,255,.8); font-size: .88rem; margin-bottom: 0; }
+.org-greeting .mode-pill {
+  display: inline-block;
+  background: rgba(255,255,255,.25);
+  font-size: .72rem;
+  font-weight: 700;
+  padding: var(--sp-1) var(--sp-3);
+  border-radius: var(--radius-full);
+  margin-top: var(--sp-2);
+}
+
+/* ── Stats strip ─────────────────────────────────────────────────────────── */
+.stats-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-3);
+  padding: 0 var(--sp-4);
+  margin: calc(-1 * var(--sp-5)) 0 var(--sp-5);
+  position: relative;
+  z-index: 1;
+}
+.stat-card {
+  background: var(--color-surface-lowest);
+  border-radius: var(--radius-md);
+  padding: var(--sp-4) var(--sp-3);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+.stat-card .stat-val {
+  font-family: var(--font-head);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  display: block;
+}
+.stat-card .stat-lbl {
+  font-size: .72rem;
+  color: var(--color-muted);
+  font-weight: 600;
+}
+
+/* ── Main body ───────────────────────────────────────────────────────────── */
+.org-body {
+  flex: 1;
+  padding: 0 var(--sp-4) var(--sp-8);
+  max-width: 480px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── Tabs ────────────────────────────────────────────────────────────────── */
+.org-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: var(--sp-5);
+  background: var(--color-surface-lowest);
+  border-radius: var(--radius-md);
+  padding: var(--sp-1);
+  box-shadow: var(--shadow-sm);
+}
+.org-tab {
+  flex: 1;
+  padding: var(--sp-3) var(--sp-2);
+  border: none;
+  background: none;
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background .15s, color .15s;
+  position: relative;
+}
+.org-tab.active {
+  background: var(--color-primary);
+  color: #fff;
+}
+.org-tab .badge-dot {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  width: 7px;
+  height: 7px;
+  background: var(--color-danger);
+  border-radius: 50%;
+}
+
+/* ── Pending orientation banner ──────────────────────────────────────────── */
+.pending-banner {
+  background: var(--color-warning-lt);
+  border-radius: var(--radius-md);
+  padding: var(--sp-4);
+  margin-bottom: var(--sp-5);
+  font-size: .88rem;
+}
+.pending-banner strong { color: var(--color-accent-dk); }
+
+/* ── Section header ──────────────────────────────────────────────────────── */
+.section-head {
+  font-size: .75rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin: var(--sp-5) 0 var(--sp-3);
+  color: var(--color-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.section-head .pulse-dot {
+  width: .55rem;
+  height: .55rem;
+  background: var(--color-danger);
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: .3; }
+}
+
+/* ── Delivery card ───────────────────────────────────────────────────────── */
+.delivery-card {
+  background: var(--color-surface-lowest);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-5);
+  margin-bottom: var(--sp-3);
+  box-shadow: var(--shadow-sm);
+  border-top: 3px solid transparent;
+  transition: box-shadow .2s;
+}
+.delivery-card:hover { box-shadow: var(--shadow-md); }
+.delivery-card.status-delivered { border-top-color: var(--color-success); }
+.delivery-card.status-enroute   { border-top-color: var(--color-accent); }
+
+.dc-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--sp-3);
+}
+.dc-food {
+  font-family: var(--font-head);
+  font-size: 1rem;
+  font-weight: 700;
+}
+.dc-qty {
+  font-size: .82rem;
+  color: var(--color-muted);
+  margin-top: var(--sp-1);
+}
+.dc-status {
+  font-size: .72rem;
+  font-weight: 700;
+  padding: var(--sp-1) var(--sp-2);
+  border-radius: var(--radius-full);
+}
+.dc-status.delivered { background: var(--color-success-lt); color: var(--color-success); }
+.dc-status.enroute   { background: var(--color-warning-lt); color: var(--color-accent-dk); }
+
+.dc-meta {
+  font-size: .82rem;
+  color: var(--color-muted);
+  margin-bottom: var(--sp-4);
+}
+.dc-meta span { margin-right: var(--sp-3); }
+
+.dc-actions {
+  display: flex;
+  gap: var(--sp-3);
+}
+
+/* ── Verified today card ─────────────────────────────────────────────────── */
+.verified-card {
+  background: var(--color-surface-lowest);
+  border-radius: var(--radius-md);
+  padding: var(--sp-4);
+  margin-bottom: var(--sp-2);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  border-left: 3px solid var(--color-success);
+}
+.verified-card .vc-check { font-size: 1.2rem; }
+.verified-card .vc-info { flex: 1; }
+.verified-card .vc-food { font-weight: 700; font-size: .9rem; }
+.verified-card .vc-meta { font-size: .78rem; color: var(--color-muted); margin-top: 2px; }
+.verified-card .vc-time {
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--color-success);
+}
+
+/* ── History table ───────────────────────────────────────────────────────── */
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .85rem;
+  margin-top: var(--sp-4);
+}
+.history-table th {
+  text-align: left;
+  padding: var(--sp-2) var(--sp-3);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  border-bottom: 2px solid var(--color-border);
+}
+.history-table td {
+  padding: var(--sp-3);
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+.history-table tr:last-child td { border-bottom: none; }
+
+/* ── Empty state ─────────────────────────────────────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: var(--sp-10) var(--sp-4);
+  color: var(--color-muted);
+}
+.empty-state .empty-icon { font-size: 3rem; display: block; margin-bottom: var(--sp-3); }
+
+/* ── Bottom nav ──────────────────────────────────────────────────────────── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--color-surface-lowest);
+  border-top: 1px solid var(--color-border-solid);
+  display: flex;
+  padding: var(--sp-2) 0 env(safe-area-inset-bottom, var(--sp-2));
+  z-index: 100;
+}
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: var(--sp-2);
+  text-decoration: none;
+  font-size: .68rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  transition: color .15s;
+}
+.nav-item.active { color: var(--color-primary); }
+.nav-item .nav-icon { font-size: 1.3rem; }

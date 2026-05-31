@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResQFood — History</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      background: var(--color-surface-low);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hist-header {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary-cont));
+      color: #fff;
+      padding: var(--sp-4) var(--sp-5);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .hist-header .brand {
+      font-family: var(--font-head);
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: .05em;
+      flex: 1;
+    }
+    .back-link { color: rgba(255,255,255,.8); text-decoration: none; font-size: .85rem; font-weight: 600; }
+
+    .hist-body {
+      flex: 1;
+      padding: var(--sp-5) var(--sp-4) var(--sp-10);
+      max-width: 480px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* ── Stats cards ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--sp-3);
+      margin-bottom: var(--sp-5);
+    }
+    .stat-tile {
+      background: var(--color-surface-lowest);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-5) var(--sp-4);
+      box-shadow: var(--shadow-sm);
+      text-align: center;
+    }
+    .stat-tile .tile-icon { font-size: 1.5rem; display: block; margin-bottom: var(--sp-2); }
+    .stat-tile .tile-val  {
+      font-family: var(--font-head);
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--color-primary);
+      display: block;
+    }
+    .stat-tile .tile-lbl { font-size: .75rem; color: var(--color-muted); font-weight: 600; }
+
+    /* ── Certificate progress ── */
+    .cert-card {
+      background: var(--color-surface-lowest);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-6);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: var(--sp-5);
+    }
+    .cert-card-title {
+      font-family: var(--font-head);
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: var(--sp-3);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+    }
+    .progress-bar-wrap {
+      background: var(--color-surface-high);
+      border-radius: var(--radius-full);
+      height: .75rem;
+      overflow: hidden;
+      margin-bottom: var(--sp-2);
+    }
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      background: linear-gradient(90deg, var(--color-primary), var(--color-primary-cont));
+      transition: width .4s ease;
+    }
+    .progress-label {
+      font-size: .82rem;
+      color: var(--color-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* ── Badges ── */
+    .badges-section {
+      margin-bottom: var(--sp-5);
+    }
+    .section-title {
+      font-family: var(--font-head);
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: var(--sp-3);
+    }
+    .badge-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-2);
+    }
+    .badge-chip {
+      background: var(--color-success-lt);
+      color: var(--color-primary);
+      font-size: .78rem;
+      font-weight: 700;
+      padding: var(--sp-1) var(--sp-3);
+      border-radius: var(--radius-full);
+      border: 1.5px solid var(--color-primary);
+    }
+
+    /* ── Mission history list ── */
+    .hist-mission {
+      background: var(--color-surface-lowest);
+      border-radius: var(--radius-md);
+      padding: var(--sp-4) var(--sp-5);
+      margin-bottom: var(--sp-3);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-4);
+    }
+    .hist-icon { font-size: 1.4rem; flex-shrink: 0; }
+    .hist-info { flex: 1; }
+    .hist-food {
+      font-weight: 700;
+      font-size: .95rem;
+      margin-bottom: var(--sp-1);
+    }
+    .hist-meta {
+      font-size: .8rem;
+      color: var(--color-muted);
+      margin-bottom: var(--sp-2);
+    }
+    .hist-status-badge {
+      display: inline-block;
+      font-size: .72rem;
+      font-weight: 700;
+      padding: var(--sp-1) var(--sp-2);
+      border-radius: var(--radius-full);
+    }
+    .s-delivered  { background: var(--color-success-lt); color: var(--color-primary); }
+    .s-cancelled  { background: var(--color-danger-lt);  color: var(--color-danger); }
+
+    /* ── Bottom nav ── */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--color-surface-lowest);
+      border-top: 1px solid var(--color-border-solid);
+      display: flex;
+      padding: var(--sp-2) 0 env(safe-area-inset-bottom, var(--sp-2));
+      z-index: 100;
+    }
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--sp-1);
+      padding: var(--sp-2);
+      text-decoration: none;
+      font-size: .68rem;
+      font-weight: 600;
+      color: var(--color-muted);
+      transition: color .15s;
+    }
+    .nav-item.active { color: var(--color-primary); }
+    .nav-item .nav-icon { font-size: 1.3rem; }
+    body { padding-bottom: 5rem; }
+  </style>
+</head>
+<body>
+  <header class="hist-header">
+    <a class="back-link" href="index.html">← Missions</a>
+    <span class="brand">🍱 RESQFOOD</span>
+  </header>
+
+  <div id="offline-banner">📶 Offline ka ngayon. Ilang features ay hindi available.</div>
+
+  <main class="hist-body">
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-tile">
+        <span class="tile-icon">⚖️</span>
+        <span class="tile-val">8.5 kg</span>
+        <span class="tile-lbl">Kabuuang nailigtas</span>
+      </div>
+      <div class="stat-tile">
+        <span class="tile-icon">✅</span>
+        <span class="tile-val">3</span>
+        <span class="tile-lbl">Nakumpletong misyon</span>
+      </div>
+      <div class="stat-tile">
+        <span class="tile-icon">⭐</span>
+        <span class="tile-val">120</span>
+        <span class="tile-lbl">Kasalukuyang puntos</span>
+      </div>
+      <div class="stat-tile">
+        <span class="tile-icon">🏅</span>
+        <span class="tile-val">HIGH</span>
+        <span class="tile-lbl" style="color:var(--color-primary);">Reliability</span>
+      </div>
+    </div>
+
+    <!-- Certificate progress -->
+    <div class="cert-card">
+      <div class="cert-card-title">
+        🎓 Barangay Certificate
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" style="width:30%;"></div>
+      </div>
+      <div class="progress-label">
+        <span>3 / 10 missions</span>
+        <span>7 missions pa</span>
+      </div>
+      <div style="font-size:.82rem; color:var(--color-muted); margin-top:var(--sp-3);">
+        Kumpletuhin ang 10 missions para makuha ang iyong barangay certificate na puwedeng gamitin sa school o barangay records.
+      </div>
+    </div>
+
+    <!-- Badges -->
+    <div class="badges-section">
+      <div class="section-title">🏆 Aking Badges</div>
+      <div class="badge-chips">
+        <span class="badge-chip">🌟 First Rescuer</span>
+        <span class="badge-chip">🚀 Quick Starter</span>
+        <span class="badge-chip">⏰ Punctual Pal</span>
+      </div>
+    </div>
+
+    <!-- Past missions -->
+    <div class="section-title">📋 Nakaraang Missions</div>
+
+    <div class="hist-mission">
+      <span class="hist-icon">🍱</span>
+      <div class="hist-info">
+        <div class="hist-food">Kanin at Ulam · 3.5 kg</div>
+        <div class="hist-meta">📍 Lahug · Kahapon, 2:00 PM</div>
+        <div class="hist-meta">🏠 Paabot Community Kitchen</div>
+        <span class="hist-status-badge s-delivered">✅ Delivered</span>
+      </div>
+    </div>
+
+    <div class="hist-mission">
+      <span class="hist-icon">🍞</span>
+      <div class="hist-info">
+        <div class="hist-food">Tinapay · 1.2 kg</div>
+        <div class="hist-meta">📍 Mabolo · 3 araw na ang nakalipas</div>
+        <div class="hist-meta">🏠 Lahug Youth Shelter</div>
+        <span class="hist-status-badge s-delivered">✅ Delivered</span>
+      </div>
+    </div>
+
+    <div class="hist-mission">
+      <span class="hist-icon">🥬</span>
+      <div class="hist-info">
+        <div class="hist-food">Gulay (assorted) · 2.0 kg</div>
+        <div class="hist-meta">📍 Banilad · Isang linggo na</div>
+        <div class="hist-meta">🏠 Caritas Cebu Shelter</div>
+        <span class="hist-status-badge s-delivered">✅ Delivered</span>
+      </div>
+    </div>
+
+    <div class="hist-mission">
+      <span class="hist-icon">🐟</span>
+      <div class="hist-info">
+        <div class="hist-food">Tinapa · 1.0 kg</div>
+        <div class="hist-meta">📍 Apas · 2 linggo na</div>
+        <div class="hist-meta">Cancelled bago ma-pickup</div>
+        <span class="hist-status-badge s-cancelled">✕ Cancelled</span>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Bottom nav -->
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <a class="nav-item" href="index.html">
+      <span class="nav-icon">🗂️</span>Missions
+    </a>
+    <a class="nav-item" href="scanner.html">
+      <span class="nav-icon">📷</span>Scanner
+    </a>
+    <a class="nav-item active" href="history.html">
+      <span class="nav-icon">📋</span>History
+    </a>
+  </nav>
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <script>
+    const update = () => document.body.classList.toggle('offline', !navigator.onLine);
+    window.addEventListener('online',  update);
+    window.addEventListener('offline', update);
+    update();
+  </script>
+</body>
+</html>

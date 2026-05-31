@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResQFood — Org Admin Dashboard</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/org-admin.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <header class="org-topbar">
+    <span class="brand">🍱 RESQFOOD</span>
+    <span class="role-chip">Org Admin</span>
+    <button class="signout-btn" id="btn-signout">Sign out</button>
+  </header>
+
+  <div id="offline-banner">📶 Offline ka ngayon. Ilang features ay hindi available.</div>
+
+  <!-- Greeting -->
+  <div class="org-greeting">
+    <h2 id="org-name">Lahug Soup Kitchen</h2>
+    <p>Mayroon kang <strong id="incoming-count">0</strong> paparating na delivery ngayon.</p>
+    <span class="mode-pill" id="mode-pill">Standard Mode · QR</span>
+  </div>
+
+  <!-- Stats strip -->
+  <div class="stats-strip">
+    <div class="stat-card">
+      <span class="stat-val" id="stat-kg">0</span>
+      <span class="stat-lbl">kg ngayong buwan</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-val" id="stat-deliveries">0</span>
+      <span class="stat-lbl">total deliveries</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-val" id="stat-today">0</span>
+      <span class="stat-lbl">na-verify ngayon</span>
+    </div>
+  </div>
+
+  <main class="org-body">
+
+    <!-- Pending training notice (hidden when active) -->
+    <div class="pending-banner hidden" id="pending-banner">
+      <strong>⏳ Pending Training</strong><br />
+      Kailangan mong dumalo sa 30-minutong orientation bago makatanggap ng deliveries.
+      Makikipag-ugnayan sa iyo ang iyong LGU coordinator.
+    </div>
+
+    <!-- Tabs -->
+    <div class="org-tabs" role="tablist">
+      <button class="org-tab active" id="tab-incoming" role="tab">
+        Paparating
+        <span class="badge-dot" id="incoming-dot"></span>
+      </button>
+      <button class="org-tab" id="tab-verified" role="tab">Na-verify</button>
+      <button class="org-tab" id="tab-history" role="tab">History</button>
+    </div>
+
+    <!-- Incoming deliveries panel -->
+    <div id="panel-incoming">
+      <!-- injected by JS -->
+    </div>
+
+    <!-- Verified today panel -->
+    <div id="panel-verified" class="hidden">
+      <!-- injected by JS -->
+    </div>
+
+    <!-- History panel (link out) -->
+    <div id="panel-history" class="hidden">
+      <div style="text-align:center; padding: var(--sp-8) var(--sp-4);">
+        <div style="font-size:2.5rem; margin-bottom:var(--sp-3);">📋</div>
+        <p style="color:var(--color-muted); margin-bottom:var(--sp-5);">
+          Tingnan ang lahat ng mga na-verify na deliveries at monthly summary.
+        </p>
+        <a class="btn btn-primary btn-full" href="history.html">
+          Buksan ang History →
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Bottom nav -->
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <a class="nav-item active" href="index.html">
+      <span class="nav-icon">🏠</span>Dashboard
+    </a>
+    <a class="nav-item" href="verify.html">
+      <span class="nav-icon">📷</span>I-verify
+    </a>
+    <a class="nav-item" href="history.html">
+      <span class="nav-icon">📋</span>History
+    </a>
+  </nav>
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- Sign-out modal -->
+  <div id="signout-modal" style="
+    display:none; position:fixed; inset:0; background:rgba(0,0,0,.5);
+    z-index:9000; align-items:flex-end; justify-content:center;
+  ">
+    <div style="background:#fff; border-radius:1.25rem 1.25rem 0 0; padding:2rem 1.5rem; width:100%; max-width:480px;">
+      <h3 style="margin-bottom:.75rem;">Mag-sign out?</h3>
+      <p class="text-muted text-sm" style="margin-bottom:1.5rem;">Kailangan mo pang mag-OTP para makabalik.</p>
+      <div style="display:flex; gap:.75rem;">
+        <button class="btn btn-ghost" id="btn-cancel-signout" style="flex:1;">Huwag na</button>
+        <button class="btn btn-danger" id="btn-confirm-signout" style="flex:1;">Sign Out</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/modules/orgAdmin.js"></script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResQFood — Audit Trail</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/admin.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <header class="admin-topbar">
+    <span class="brand">🍱 RESQFOOD</span>
+    <span class="topbar-barangay">Barangay Lahug</span>
+    <span class="admin-name">Maria Santos</span>
+    <span class="mfa-badge">🔐 MFA Active</span>
+    <button class="signout-btn" id="btn-signout">Sign out</button>
+  </header>
+
+  <div id="offline-banner">📶 Offline ka ngayon. Ilang features ay hindi available.</div>
+
+  <div class="admin-layout">
+
+    <nav class="admin-sidenav">
+      <a class="nav-link" href="index.html"><span class="nav-icon">📊</span> Dashboard</a>
+      <a class="nav-link" href="users.html"><span class="nav-icon">👥</span> Mga User</a>
+      <a class="nav-link" href="donations.html"><span class="nav-icon">🍱</span> Donations</a>
+      <a class="nav-link active" href="audit.html"><span class="nav-icon">📋</span> Audit Trail</a>
+    </nav>
+
+    <main class="admin-main">
+      <div class="admin-main-inner">
+
+        <h1 class="page-title">Audit Trail</h1>
+        <p class="page-subtitle">
+          Read-only na talaan ng lahat ng admin actions. Hindi mabubura o mae-edit.
+        </p>
+
+        <!-- Toolbar -->
+        <div style="display:flex; gap:var(--sp-3); margin-bottom:var(--sp-5); flex-wrap:wrap; align-items:center;">
+          <div class="filter-bar" style="margin-bottom:0;">
+            <button class="filter-btn active" data-action="all">Lahat</button>
+            <button class="filter-btn" data-action="user_suspended">Suspended</button>
+            <button class="filter-btn" data-action="org_activated">Org Activated</button>
+            <button class="filter-btn" data-action="report_exported">Exports</button>
+            <button class="filter-btn" data-action="user_viewed">Viewed</button>
+          </div>
+          <button class="btn btn-ghost" id="btn-export-audit" style="white-space:nowrap;">
+            📥 I-export CSV
+          </button>
+        </div>
+
+        <div style="background:var(--color-warning-lt); border-radius:var(--radius-md); padding:var(--sp-3) var(--sp-4); margin-bottom:var(--sp-5); font-size:.85rem;">
+          🔒 <strong>Immutable log.</strong> Walang delete o edit buttons. Lahat ng rekord ay permanente.
+        </div>
+
+        <p class="section-head"><span id="audit-count">0</span> rekord</p>
+
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Admin</th>
+                <th>Aksyon</th>
+                <th>Target</th>
+                <th>Detalye</th>
+              </tr>
+            </thead>
+            <tbody id="audit-body">
+              <!-- injected by JS -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <script>
+    const BASE_AUDIT = [
+      { action:'user_suspended',    admin:'Maria Santos', target:'Pedro Diaz',         details:'Suspended para sa 3 no-show.',             time:'May 28, 2026 · 2:30 PM' },
+      { action:'org_activated',     admin:'Maria Santos', target:'Lahug Soup Kitchen', details:'Na-activate pagkatapos ng orientation.',    time:'May 28, 2026 · 10:15 AM' },
+      { action:'report_exported',   admin:'Maria Santos', target:'—',                  details:'CSV export. May 1–28, 2026.',               time:'May 27, 2026 · 4:00 PM' },
+      { action:'user_viewed',       admin:'Maria Santos', target:'Jose Cruz',          details:'Tiningnan ang donor profile.',              time:'May 27, 2026 · 3:45 PM' },
+      { action:'user_suspended',    admin:'Maria Santos', target:'Nena Lim',           details:'Temporary suspension — pag-aralan.',       time:'May 26, 2026 · 11:00 AM' },
+      { action:'user_activated',    admin:'Maria Santos', target:'Nena Lim',           details:'Na-lift ang suspension.',                  time:'May 26, 2026 · 2:00 PM' },
+      { action:'org_activated',     admin:'Maria Santos', target:'Apas Feeding Prog.', details:'Na-activate pagkatapos ng orientation.',    time:'May 25, 2026 · 9:30 AM' },
+      { action:'report_exported',   admin:'Maria Santos', target:'—',                  details:'PDF export. April 1–30, 2026.',             time:'May 20, 2026 · 5:15 PM' },
+      { action:'user_viewed',       admin:'Maria Santos', target:'Carlos Uy',          details:'Tiningnan ang volunteer profile.',          time:'May 18, 2026 · 3:00 PM' },
+      { action:'account_activated', admin:'Maria Santos', target:'—',                  details:'Initial registration via invitation token.', time:'May 1, 2026 · 9:00 AM' },
+    ];
+
+    let currentAction = 'all';
+
+    function esc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function actionChip(action) {
+      const labels = {
+        user_suspended: 'Suspended', user_activated: 'Activated', org_activated: 'Org Activated',
+        report_exported: 'Exported', user_viewed: 'Viewed', account_activated: 'Account Created',
+      };
+      return `<span class="audit-chip audit-${action}">${labels[action] || action}</span>`;
+    }
+
+    function getAuditData() {
+      const sessionLog = JSON.parse(sessionStorage.getItem('audit_log') || '[]');
+      const sessionEntries = sessionLog.map(e => ({
+        action: e.action,
+        admin: 'Maria Santos',
+        target: e.target,
+        details: `Aksyon mula sa Users page.`,
+        time: e.time,
+      }));
+      return [...sessionEntries, ...BASE_AUDIT];
+    }
+
+    function renderAudit() {
+      const data = getAuditData();
+      const filtered = data.filter(e => currentAction === 'all' || e.action === currentAction);
+      document.getElementById('audit-count').textContent = filtered.length;
+
+      const tbody = document.getElementById('audit-body');
+      if (!tbody) return;
+
+      if (!filtered.length) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--color-muted);">Walang rekord.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(e => `
+        <tr>
+          <td style="white-space:nowrap; font-size:.8rem; color:var(--color-muted);">${esc(e.time)}</td>
+          <td><strong>${esc(e.admin)}</strong></td>
+          <td>${actionChip(e.action)}</td>
+          <td>${esc(e.target)}</td>
+          <td style="color:var(--color-muted); font-size:.82rem;">${esc(e.details)}</td>
+        </tr>`).join('');
+    }
+
+    function exportCSV() {
+      const data = getAuditData();
+      const rows = [['Timestamp','Admin','Aksyon','Target','Detalye']];
+      data.forEach(e => rows.push([e.time, e.admin, e.action, e.target, e.details]));
+      const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url; a.download = 'ResQFood_AuditTrail_Lahug.csv';
+      a.click(); URL.revokeObjectURL(url);
+      showToast('Na-export ang audit trail!', 'success');
+    }
+
+    function showToast(message, type = 'info', duration = 3500) {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const t = document.createElement('div');
+      t.className = `toast toast-${type}`;
+      t.textContent = message;
+      container.appendChild(t);
+      setTimeout(() => t.remove(), duration);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderAudit();
+
+      document.querySelectorAll('[data-action]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('[data-action]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentAction = btn.dataset.action;
+          renderAudit();
+        });
+      });
+
+      document.getElementById('btn-export-audit')?.addEventListener('click', exportCSV);
+
+      document.getElementById('btn-signout')?.addEventListener('click', () => {
+        window.location.href = '/register/index.html';
+      });
+
+      const update = () => document.body.classList.toggle('offline', !navigator.onLine);
+      window.addEventListener('online', update);
+      window.addEventListener('offline', update);
+      update();
+    });
+  </script>
+</body>
+</html>

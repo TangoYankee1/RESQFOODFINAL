@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResQFood — Delivery History</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/org-admin.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    .history-header {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary-cont));
+      color: #fff;
+      padding: var(--sp-4) var(--sp-5);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .history-header .brand {
+      font-family: var(--font-head);
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: .05em;
+      flex: 1;
+    }
+    .history-header .role-chip {
+      font-size: .75rem;
+      font-weight: 700;
+      background: rgba(255,255,255,.2);
+      border-radius: var(--radius-full);
+      padding: var(--sp-1) var(--sp-3);
+    }
+    .back-btn {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,.85);
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: var(--sp-1) var(--sp-2);
+    }
+    .history-body {
+      padding: var(--sp-5) var(--sp-4);
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* Summary stats */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-3);
+      margin-bottom: var(--sp-6);
+    }
+    .summary-card {
+      background: var(--color-surface-lowest);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-5);
+      box-shadow: var(--shadow-sm);
+      text-align: center;
+    }
+    .summary-card .s-val {
+      font-family: var(--font-head);
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--color-primary);
+      display: block;
+    }
+    .summary-card .s-lbl {
+      font-size: .75rem;
+      color: var(--color-muted);
+      font-weight: 600;
+      margin-top: var(--sp-1);
+    }
+
+    /* History list */
+    .section-head {
+      font-size: .75rem;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin: 0 0 var(--sp-3);
+      color: var(--color-muted);
+    }
+    .history-item {
+      background: var(--color-surface-lowest);
+      border-radius: var(--radius-md);
+      padding: var(--sp-4);
+      margin-bottom: var(--sp-2);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      border-left: 3px solid var(--color-success);
+    }
+    .hi-check { font-size: 1.1rem; }
+    .hi-info  { flex: 1; }
+    .hi-food  { font-weight: 700; font-size: .9rem; }
+    .hi-meta  { font-size: .78rem; color: var(--color-muted); margin-top: 2px; }
+    .hi-right { text-align: right; }
+    .hi-qty   { font-family: var(--font-head); font-weight: 800; color: var(--color-primary); font-size: 1rem; }
+    .hi-date  { font-size: .72rem; color: var(--color-muted); margin-top: 2px; }
+  </style>
+</head>
+<body>
+
+  <header class="history-header">
+    <button class="back-btn" id="btn-back" aria-label="Bumalik">←</button>
+    <span class="brand">🍱 RESQFOOD</span>
+    <span class="role-chip">Org Admin</span>
+  </header>
+
+  <div id="offline-banner">📶 Offline ka ngayon. Ilang features ay hindi available.</div>
+
+  <main class="history-body">
+
+    <h2 style="font-size:1.2rem; font-weight:800; margin-bottom:var(--sp-5);">
+      Delivery History
+    </h2>
+
+    <!-- Monthly summary -->
+    <div class="summary-grid" id="summary-grid">
+      <div class="summary-card">
+        <span class="s-val" id="sum-kg">42.5</span>
+        <div class="s-lbl">kg ngayong buwan</div>
+      </div>
+      <div class="summary-card">
+        <span class="s-val" id="sum-deliveries">15</span>
+        <div class="s-lbl">total deliveries</div>
+      </div>
+      <div class="summary-card">
+        <span class="s-val" id="sum-volunteers">4</span>
+        <div class="s-lbl">mga volunteer</div>
+      </div>
+      <div class="summary-card">
+        <span class="s-val" id="sum-avg">2.8</span>
+        <div class="s-lbl">avg kg per delivery</div>
+      </div>
+    </div>
+
+    <!-- History list -->
+    <p class="section-head">Mga Na-verify na Delivery</p>
+    <div id="history-list">
+      <!-- injected by JS -->
+    </div>
+
+  </main>
+
+  <!-- Bottom nav -->
+  <nav class="bottom-nav">
+    <a class="nav-item" href="index.html">
+      <span class="nav-icon">🏠</span>Dashboard
+    </a>
+    <a class="nav-item" href="verify.html">
+      <span class="nav-icon">📷</span>I-verify
+    </a>
+    <a class="nav-item active" href="history.html">
+      <span class="nav-icon">📋</span>History
+    </a>
+  </nav>
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <script>
+    const MOCK_HISTORY = [
+      { date: 'May 28', time: '3:15 PM', food: 'Kanin at Ulam',     qty: 4.5, volunteer: 'Juan Dela Cruz' },
+      { date: 'May 28', time: '10:15 AM', food: 'Tinapay',          qty: 1.5, volunteer: 'Maria Santos' },
+      { date: 'May 27', time: '2:30 PM',  food: 'Gulay (assorted)', qty: 3.0, volunteer: 'Pedro Lim' },
+      { date: 'May 27', time: '1:00 PM',  food: 'Kanin',            qty: 2.0, volunteer: 'Juan Dela Cruz' },
+      { date: 'May 26', time: '4:00 PM',  food: 'Tinapa',           qty: 5.0, volunteer: 'Maria Santos' },
+      { date: 'May 26', time: '9:30 AM',  food: 'Tinapay',          qty: 3.5, volunteer: 'Pedro Lim' },
+      { date: 'May 25', time: '2:45 PM',  food: 'Gulay (assorted)', qty: 1.8, volunteer: 'Pedro Lim' },
+      { date: 'May 25', time: '11:00 AM', food: 'Kanin at Ulam',    qty: 4.0, volunteer: 'Juan Dela Cruz' },
+      { date: 'May 24', time: '3:30 PM',  food: 'Tinapay',          qty: 2.0, volunteer: 'Maria Santos' },
+      { date: 'May 24', time: '10:00 AM', food: 'Gulay',            qty: 1.5, volunteer: 'Pedro Lim' },
+    ];
+
+    function esc(str) {
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const list = document.getElementById('history-list');
+      list.innerHTML = MOCK_HISTORY.map(h => `
+        <div class="history-item">
+          <span class="hi-check">✅</span>
+          <div class="hi-info">
+            <div class="hi-food">${esc(h.food)}</div>
+            <div class="hi-meta">👤 ${esc(h.volunteer)}</div>
+          </div>
+          <div class="hi-right">
+            <div class="hi-qty">${h.qty} kg</div>
+            <div class="hi-date">${esc(h.date)} · ${esc(h.time)}</div>
+          </div>
+        </div>`).join('');
+
+      document.getElementById('btn-back').addEventListener('click', () => history.back());
+
+      const update = () => document.body.classList.toggle('offline', !navigator.onLine);
+      window.addEventListener('online',  update);
+      window.addEventListener('offline', update);
+      update();
+    });
+  </script>
+</body>
+</html>

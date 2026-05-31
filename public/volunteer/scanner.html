@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResQFood — QR Scanner</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <style>
+    body {
+      background: var(--color-surface-low);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .scanner-header {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary-cont));
+      color: #fff;
+      padding: var(--sp-4) var(--sp-5);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .scanner-header .brand {
+      font-family: var(--font-head);
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: .05em;
+      flex: 1;
+    }
+    .scanner-header .role-chip {
+      font-size: .75rem;
+      font-weight: 700;
+      background: rgba(255,255,255,.2);
+      border-radius: var(--radius-full);
+      padding: var(--sp-1) var(--sp-3);
+    }
+
+    .scanner-body {
+      flex: 1;
+      padding: var(--sp-4);
+      max-width: 480px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .section-title {
+      font-family: var(--font-head);
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: var(--sp-3);
+      color: var(--color-on-surface);
+    }
+
+    /* Camera viewfinder */
+    #qr-reader {
+      width: 100%;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: #000;
+      box-shadow: var(--shadow-md);
+    }
+    /* Override html5-qrcode default styles */
+    #qr-reader video { border-radius: var(--radius-lg); }
+    #qr-reader img   { display: none !important; }
+    #qr-reader__scan_region { border-radius: var(--radius-lg); }
+
+    .scan-hint {
+      text-align: center;
+      font-size: .85rem;
+      color: var(--color-muted);
+      margin: var(--sp-3) 0 var(--sp-5);
+    }
+
+    /* Result card */
+    #scan-result {
+      background: var(--color-surface-lowest);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-6);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--sp-4);
+    }
+
+    .result-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-2);
+      font-weight: 700;
+      font-size: .85rem;
+      padding: var(--sp-2) var(--sp-4);
+      border-radius: var(--radius-full);
+      margin-bottom: var(--sp-4);
+    }
+    .result-badge.valid   { background: var(--color-success-lt); color: var(--color-success); }
+    .result-badge.invalid { background: var(--color-danger-lt);  color: var(--color-danger); }
+
+    .result-rows { margin-bottom: var(--sp-5); }
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: var(--sp-3) 0;
+      gap: var(--sp-3);
+      font-size: .9rem;
+    }
+    .result-row + .result-row {
+      border-top: 1px solid var(--color-border);
+    }
+    .result-row .label { color: var(--color-muted); flex-shrink: 0; }
+    .result-row .value { font-weight: 600; text-align: right; }
+
+    /* Success screen */
+    #scan-success {
+      text-align: center;
+      background: var(--color-surface-lowest);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-10) var(--sp-6);
+      box-shadow: var(--shadow-md);
+    }
+    .success-icon  { font-size: 4rem; margin-bottom: var(--sp-4); display: block; }
+    .success-title {
+      font-family: var(--font-head);
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--color-primary);
+      margin-bottom: var(--sp-2);
+    }
+    .success-sub { font-size: .9rem; color: var(--color-muted); margin-bottom: var(--sp-6); }
+
+    /* Camera start button */
+    .start-camera-area {
+      background: var(--color-surface-lowest);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-10) var(--sp-6);
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: var(--sp-4);
+    }
+    .camera-icon { font-size: 3rem; display: block; margin-bottom: var(--sp-4); }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="scanner-header">
+    <span class="brand">🍱 RESQFOOD</span>
+    <span class="role-chip">Volunteer</span>
+  </header>
+
+  <div id="offline-banner">📶 Offline ka ngayon. Ilang features ay hindi available.</div>
+
+  <main class="scanner-body">
+
+    <!-- Camera start prompt (shown first) -->
+    <div id="camera-prompt" class="start-camera-area">
+      <span class="camera-icon">📸</span>
+      <p class="section-title" style="text-align:center;">I-scan ang QR ng Donor</p>
+      <p style="font-size:.88rem; color:var(--color-muted); margin-bottom:var(--sp-5);">
+        I-tap ang button para buksan ang camera at i-scan ang QR code ng donation.
+      </p>
+      <button class="btn btn-primary btn-full btn-lg" id="btn-start-scan">
+        📷 Buksan ang Camera
+      </button>
+    </div>
+
+    <!-- Camera viewfinder -->
+    <div id="qr-reader-wrap" class="hidden">
+      <p class="section-title">Handa na ang Camera</p>
+      <div id="qr-reader"></div>
+      <p class="scan-hint">Itutok ang camera sa QR code ng donor. Awtomatikong maki-detect.</p>
+      <button class="btn btn-ghost btn-full" id="btn-cancel-scan" style="margin-bottom:var(--sp-4);">
+        Itigil ang Pag-scan
+      </button>
+    </div>
+
+    <!-- Scan result card (hidden until scan success) -->
+    <div id="scan-result" class="hidden">
+      <div id="validity-badge" class="result-badge valid">✓ Valid na Donation</div>
+      <div class="result-rows" id="result-rows"></div>
+      <button class="btn btn-primary btn-full btn-lg" id="btn-confirm-pickup">
+        ✅ Kumpirmahin ang Pickup
+      </button>
+      <button class="btn btn-ghost btn-full" id="btn-scan-again" style="margin-top:var(--sp-3);">
+        🔄 I-scan Ulit
+      </button>
+    </div>
+
+    <!-- Success screen (hidden until confirm) -->
+    <div id="scan-success" class="hidden">
+      <span class="success-icon">🎉</span>
+      <div class="success-title">Pickup Confirmed!</div>
+      <p class="success-sub">
+        Na-record ang pickup. Maihatid na ang pagkain sa komunidad. Salamat, volunteer!
+      </p>
+      <button class="btn btn-primary btn-full btn-lg" id="btn-scan-next">
+        📷 I-scan ang Susunod
+      </button>
+    </div>
+
+  </main>
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <script type="module" src="../js/qr/scanner.js"></script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResQFood — Donations</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/admin.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <header class="admin-topbar">
+    <span class="brand">🍱 RESQFOOD</span>
+    <span class="topbar-barangay">Barangay Lahug</span>
+    <span class="admin-name">Maria Santos</span>
+    <span class="mfa-badge">🔐 MFA Active</span>
+    <button class="signout-btn" id="btn-signout">Sign out</button>
+  </header>
+
+  <div id="offline-banner">📶 Offline ka ngayon. Ilang features ay hindi available.</div>
+
+  <div class="admin-layout">
+
+    <nav class="admin-sidenav">
+      <a class="nav-link" href="index.html"><span class="nav-icon">📊</span> Dashboard</a>
+      <a class="nav-link" href="users.html"><span class="nav-icon">👥</span> Mga User</a>
+      <a class="nav-link active" href="donations.html"><span class="nav-icon">🍱</span> Donations</a>
+      <a class="nav-link" href="audit.html"><span class="nav-icon">📋</span> Audit Trail</a>
+    </nav>
+
+    <main class="admin-main">
+      <div class="admin-main-inner">
+
+        <h1 class="page-title">Donations</h1>
+        <p class="page-subtitle">Read-only na listahan ng lahat ng donations sa Barangay Lahug.</p>
+
+        <!-- Toolbar -->
+        <div style="display:flex; gap:var(--sp-3); margin-bottom:var(--sp-5); flex-wrap:wrap; align-items:center;">
+          <div class="filter-bar" style="margin-bottom:0;">
+            <button class="filter-btn active" data-status="all">Lahat</button>
+            <button class="filter-btn" data-status="pending">Pending</button>
+            <button class="filter-btn" data-status="scheduled">Scheduled</button>
+            <button class="filter-btn" data-status="enRoute">En Route</button>
+            <button class="filter-btn" data-status="verified">Verified</button>
+          </div>
+          <button class="btn btn-ghost" id="btn-export-donations" style="white-space:nowrap;">
+            📥 I-export CSV
+          </button>
+        </div>
+
+        <p class="section-head"><span id="donation-count">0</span> donations</p>
+
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Donation ID</th>
+                <th>Pagkain</th>
+                <th>Dami (kg)</th>
+                <th>Donor</th>
+                <th>Volunteer</th>
+                <th>Organisasyon</th>
+                <th>Status</th>
+                <th>Petsa</th>
+              </tr>
+            </thead>
+            <tbody id="donations-body">
+              <!-- injected by JS -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <script>
+    const MOCK_DONATIONS = [
+      { id:'DON-2026-0041', food:'Kanin at Ulam',     qty:5.0,  donor:'Jose Cruz',     volunteer:'Juan Dela Cruz', org:'Lahug Soup Kitchen',  status:'enRoute',  date:'May 28, 2026' },
+      { id:'DON-2026-0042', food:'Tinapay (assorted)',qty:2.5,  donor:'Nena Lim',      volunteer:'Maria Santos',   org:'Apas Feeding Prog.',  status:'scheduled',date:'May 28, 2026' },
+      { id:'DON-2026-0040', food:'Tinapay',           qty:1.5,  donor:'Rosa Tan',      volunteer:'Maria Santos',   org:'Lahug Soup Kitchen',  status:'verified', date:'May 28, 2026' },
+      { id:'DON-2026-0039', food:'Gulay (assorted)',  qty:3.0,  donor:'Jose Cruz',     volunteer:'Pedro Diaz',     org:'Lahug Soup Kitchen',  status:'verified', date:'May 27, 2026' },
+      { id:'DON-2026-0038', food:'Kanin',             qty:2.0,  donor:'Rosa Tan',      volunteer:'Juan Dela Cruz', org:'Apas Feeding Prog.',  status:'verified', date:'May 27, 2026' },
+      { id:'DON-2026-0037', food:'Tinapa',            qty:5.0,  donor:'Nena Lim',      volunteer:'Carlos Uy',      org:'Lahug Soup Kitchen',  status:'verified', date:'May 26, 2026' },
+      { id:'DON-2026-0036', food:'Tinapay',           qty:3.5,  donor:'Jose Cruz',     volunteer:'Maria Santos',   org:'Apas Feeding Prog.',  status:'verified', date:'May 26, 2026' },
+      { id:'DON-2026-0035', food:'Gulay (assorted)',  qty:1.8,  donor:'Rosa Tan',      volunteer:'Carlos Uy',      org:'Lahug Soup Kitchen',  status:'verified', date:'May 25, 2026' },
+      { id:'DON-2026-0034', food:'Kanin at Ulam',     qty:4.0,  donor:'Nena Lim',      volunteer:'Juan Dela Cruz', org:'Lahug Soup Kitchen',  status:'verified', date:'May 25, 2026' },
+      { id:'DON-2026-0033', food:'Tinapay',           qty:2.0,  donor:'Jose Cruz',     volunteer:'Maria Santos',   org:'Apas Feeding Prog.',  status:'verified', date:'May 24, 2026' },
+      { id:'DON-2026-0032', food:'Gulay',             qty:1.5,  donor:'Rosa Tan',      volunteer:'Carlos Uy',      org:'Lahug Soup Kitchen',  status:'verified', date:'May 24, 2026' },
+      { id:'DON-2026-0031', food:'Kanin at Ulam',     qty:6.0,  donor:'Nena Lim',      volunteer:'Juan Dela Cruz', org:'Lahug Soup Kitchen',  status:'cancelled',date:'May 23, 2026' },
+    ];
+
+    const STATUS_LABELS = { pending:'Pending', scheduled:'Scheduled', enRoute:'En Route', pickedUp:'Picked Up', delivered:'Delivered', verified:'Verified', cancelled:'Cancelled' };
+    const STATUS_BADGES = { pending:'badge-pending', scheduled:'badge-scheduled', enRoute:'badge-enroute', pickedUp:'badge-pickedup', delivered:'badge-delivered', verified:'badge-active', cancelled:'badge-suspended' };
+
+    let currentStatus = 'all';
+
+    function esc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function renderTable() {
+      const filtered = MOCK_DONATIONS.filter(d => currentStatus === 'all' || d.status === currentStatus);
+      document.getElementById('donation-count').textContent = filtered.length;
+
+      const tbody = document.getElementById('donations-body');
+      if (!tbody) return;
+
+      if (!filtered.length) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:2rem; color:var(--color-muted);">Walang donations.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(d => `
+        <tr>
+          <td style="font-size:.78rem; color:var(--color-muted); white-space:nowrap;">${esc(d.id)}</td>
+          <td><strong>${esc(d.food)}</strong></td>
+          <td style="font-weight:700; color:var(--color-primary);">${d.qty}</td>
+          <td>${esc(d.donor)}</td>
+          <td>${esc(d.volunteer)}</td>
+          <td>${esc(d.org)}</td>
+          <td><span class="badge ${STATUS_BADGES[d.status] || 'badge-pending'}">${STATUS_LABELS[d.status] || d.status}</span></td>
+          <td style="font-size:.8rem; color:var(--color-muted); white-space:nowrap;">${esc(d.date)}</td>
+        </tr>`).join('');
+    }
+
+    function exportCSV() {
+      const data = currentStatus === 'all' ? MOCK_DONATIONS : MOCK_DONATIONS.filter(d => d.status === currentStatus);
+      const rows = [['Donation ID','Pagkain','Dami (kg)','Donor','Volunteer','Organisasyon','Status','Petsa']];
+      data.forEach(d => rows.push([d.id, d.food, d.qty, d.donor, d.volunteer, d.org, d.status, d.date]));
+      const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url; a.download = 'ResQFood_Donations_Lahug.csv';
+      a.click(); URL.revokeObjectURL(url);
+      showToast('Na-export ang donations!', 'success');
+    }
+
+    function showToast(message, type = 'info', duration = 3500) {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const t = document.createElement('div');
+      t.className = `toast toast-${type}`;
+      t.textContent = message;
+      container.appendChild(t);
+      setTimeout(() => t.remove(), duration);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderTable();
+
+      document.querySelectorAll('[data-status]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('[data-status]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentStatus = btn.dataset.status;
+          renderTable();
+        });
+      });
+
+      document.getElementById('btn-export-donations')?.addEventListener('click', exportCSV);
+
+      document.getElementById('btn-signout')?.addEventListener('click', () => {
+        window.location.href = '/register/index.html';
+      });
+
+      const update = () => document.body.classList.toggle('offline', !navigator.onLine);
+      window.addEventListener('online', update);
+      window.addEventListener('offline', update);
+      update();
+    });
+  </script>
+</body>
+</html>

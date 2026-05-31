@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="../css/base.css" />
   <link rel="stylesheet" href="../css/donor.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <!-- qrcode.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
@@ -237,16 +237,17 @@
   <script type="module">
     import { generateQR } from '../js/qr/generator.js';
 
-    // ── Load data from sessionStorage ────────────────────────────────────────
-    const payload    = sessionStorage.getItem('qr_payload');
-    const pin        = sessionStorage.getItem('qr_pin');
-    const foodType   = sessionStorage.getItem('qr_food_type');
-    const qty        = sessionStorage.getItem('qr_qty');
-    const donationId = sessionStorage.getItem('qr_donation_id');
+    // ── Load data from sessionStorage (with demo fallbacks) ──────────────────
+    const foodType   = sessionStorage.getItem('qr_food_type')   || 'Kanin at Ulam';
+    const qty        = sessionStorage.getItem('qr_qty')         || '3.5';
+    const donationId = sessionStorage.getItem('qr_donation_id') || 'DEMO-001';
+    const pin        = sessionStorage.getItem('qr_pin')         || '4829';
+    let   payload    = sessionStorage.getItem('qr_payload');
 
-    if (!payload || !pin) {
-      // No data — redirect to dashboard
-      window.location.href = 'index.html';
+    // Build a demo payload when none exists (direct navigation or expired session)
+    if (!payload) {
+      const { buildPayload } = await import('../js/qr/generator.js');
+      payload = buildPayload(donationId, 'DEMO_DONOR', foodType, Number(qty));
     }
 
     // ── Render QR ────────────────────────────────────────────────────────────

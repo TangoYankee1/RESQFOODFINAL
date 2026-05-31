@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResQFood — Mga User</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/admin.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <header class="admin-topbar">
+    <span class="brand">🍱 RESQFOOD</span>
+    <span class="topbar-barangay">Barangay Lahug</span>
+    <span class="admin-name">Maria Santos</span>
+    <span class="mfa-badge">🔐 MFA Active</span>
+    <button class="signout-btn" id="btn-signout">Sign out</button>
+  </header>
+
+  <div id="offline-banner">📶 Offline ka ngayon. Ilang features ay hindi available.</div>
+
+  <div class="admin-layout">
+
+    <nav class="admin-sidenav">
+      <a class="nav-link" href="index.html"><span class="nav-icon">📊</span> Dashboard</a>
+      <a class="nav-link active" href="users.html"><span class="nav-icon">👥</span> Mga User</a>
+      <a class="nav-link" href="donations.html"><span class="nav-icon">🍱</span> Donations</a>
+      <a class="nav-link" href="audit.html"><span class="nav-icon">📋</span> Audit Trail</a>
+    </nav>
+
+    <main class="admin-main">
+      <div class="admin-main-inner">
+
+        <h1 class="page-title">Mga User</h1>
+        <p class="page-subtitle">Pamahalaan ang mga donor, volunteer, at org admin sa Barangay Lahug.</p>
+
+        <!-- Filter bar -->
+        <div class="filter-bar" id="filter-bar">
+          <button class="filter-btn active" data-filter="all">Lahat</button>
+          <button class="filter-btn" data-filter="donor">Mga Donor</button>
+          <button class="filter-btn" data-filter="volunteer">Mga Volunteer</button>
+          <button class="filter-btn" data-filter="orgAdmin">Org Admins</button>
+          <button class="filter-btn" data-filter="pending">Pending Training</button>
+        </div>
+
+        <!-- User count -->
+        <p class="section-head">
+          <span id="user-count">8</span> user ang nahanap
+        </p>
+
+        <!-- Table -->
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Pangalan</th>
+                <th>Role</th>
+                <th>Barangay</th>
+                <th>Status</th>
+                <th>Detalye</th>
+                <th>Aksyon</th>
+              </tr>
+            </thead>
+            <tbody id="users-body">
+              <!-- injected by JS -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- Profile modal -->
+  <div id="user-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 class="modal-title" id="modal-user-name">—</h3>
+      <div id="modal-fields"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="btn-close-modal" style="flex:1;">Isara</button>
+        <button class="btn btn-danger hidden" id="btn-modal-suspend" style="flex:1;">Suspend</button>
+        <button class="btn btn-primary hidden" id="btn-modal-activate" style="flex:1;">Activate</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const MOCK_USERS = [
+      { uid:'U001', name:'Jose Cruz',     role:'donor',     barangay:'Lahug', status:'active',    extra:'92% reliable · 14 donations' },
+      { uid:'U002', name:'Maria Santos',  role:'volunteer', barangay:'Lahug', status:'active',    extra:'12 missions · 38.5 kg' },
+      { uid:'U003', name:'Ana Reyes',     role:'orgAdmin',  barangay:'Lahug', status:'active',    extra:'Lahug Soup Kitchen' },
+      { uid:'U004', name:'Boyet Cruz',    role:'orgAdmin',  barangay:'Lahug', status:'pending_training', extra:'Apas Feeding Program' },
+      { uid:'U005', name:'Nena Lim',      role:'donor',     barangay:'Lahug', status:'active',    extra:'78% reliable · 9 donations' },
+      { uid:'U006', name:'Pedro Diaz',    role:'volunteer', barangay:'Lahug', status:'suspended', extra:'5 missions · 3 no-shows' },
+      { uid:'U007', name:'Rosa Tan',      role:'donor',     barangay:'Lahug', status:'active',    extra:'85% reliable · 11 donations' },
+      { uid:'U008', name:'Carlos Uy',     role:'volunteer', barangay:'Lahug', status:'active',    extra:'8 missions · 24 kg' },
+    ];
+
+    const ROLE_LABELS = { donor:'Donor', volunteer:'Volunteer', orgAdmin:'Org Admin' };
+    const STATUS_LABELS = { active:'Active', suspended:'Suspended', pending_training:'Pending Training' };
+
+    let currentFilter = 'all';
+    let users = MOCK_USERS.map(u => ({ ...u }));
+
+    function esc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function roleBadge(role) {
+      const cls = { donor:'badge-donor', volunteer:'badge-volunteer', orgAdmin:'badge-orgadmin' }[role] || 'badge-pending';
+      return `<span class="badge ${cls}">${esc(ROLE_LABELS[role] || role)}</span>`;
+    }
+
+    function statusBadge(status) {
+      const map = { active:'badge-active', suspended:'badge-suspended', pending_training:'badge-pending' };
+      const labels = { active:'Active', suspended:'Suspended', pending_training:'Pending Training' };
+      return `<span class="badge ${map[status] || 'badge-pending'}">${labels[status] || status}</span>`;
+    }
+
+    function renderTable() {
+      const filtered = users.filter(u => {
+        if (currentFilter === 'all') return true;
+        if (currentFilter === 'pending') return u.status === 'pending_training';
+        return u.role === currentFilter;
+      });
+
+      document.getElementById('user-count').textContent = filtered.length;
+
+      const tbody = document.getElementById('users-body');
+      if (!tbody) return;
+
+      if (!filtered.length) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--color-muted);">Walang user na nahanap.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(u => {
+        const isPending = u.status === 'pending_training';
+        const isSuspended = u.status === 'suspended';
+        let actions = `<div class="action-btns">
+          <button class="btn-xs btn-xs-view" data-uid="${esc(u.uid)}" onclick="openModal('${esc(u.uid)}')">Tingnan</button>`;
+        if (isPending) {
+          actions += `<button class="btn-xs btn-xs-activate" onclick="activateOrg('${esc(u.uid)}')">Activate</button>`;
+        } else if (isSuspended) {
+          actions += `<button class="btn-xs btn-xs-activate" onclick="toggleStatus('${esc(u.uid)}', 'active')">I-activate</button>`;
+        } else {
+          actions += `<button class="btn-xs btn-xs-suspend" onclick="toggleStatus('${esc(u.uid)}', 'suspended')">Suspend</button>`;
+        }
+        actions += '</div>';
+
+        return `<tr>
+          <td><strong>${esc(u.name)}</strong></td>
+          <td>${roleBadge(u.role)}</td>
+          <td>${esc(u.barangay)}</td>
+          <td>${statusBadge(u.status)}</td>
+          <td style="color:var(--color-muted); font-size:.82rem;">${esc(u.extra)}</td>
+          <td>${actions}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function openModal(uid) {
+      const u = users.find(x => x.uid === uid);
+      if (!u) return;
+      document.getElementById('modal-user-name').textContent = u.name;
+      document.getElementById('modal-fields').innerHTML = `
+        <div class="modal-field"><div class="mf-label">Role</div><div class="mf-val">${esc(ROLE_LABELS[u.role] || u.role)}</div></div>
+        <div class="modal-field"><div class="mf-label">Barangay</div><div class="mf-val">${esc(u.barangay)}</div></div>
+        <div class="modal-field"><div class="mf-label">Status</div><div class="mf-val">${statusBadge(u.status)}</div></div>
+        <div class="modal-field"><div class="mf-label">Detalye</div><div class="mf-val">${esc(u.extra)}</div></div>
+      `;
+      const suspendBtn = document.getElementById('btn-modal-suspend');
+      const activateBtn = document.getElementById('btn-modal-activate');
+      if (u.status === 'suspended' || u.status === 'pending_training') {
+        suspendBtn?.classList.add('hidden');
+        activateBtn?.classList.remove('hidden');
+        activateBtn.onclick = () => { toggleStatus(uid, 'active'); closeModal(); };
+      } else {
+        activateBtn?.classList.add('hidden');
+        suspendBtn?.classList.remove('hidden');
+        suspendBtn.onclick = () => { toggleStatus(uid, 'suspended'); closeModal(); };
+      }
+      const modal = document.getElementById('user-modal');
+      if (modal) modal.style.display = 'flex';
+      logAudit('user_viewed', u.name);
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('user-modal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function toggleStatus(uid, newStatus) {
+      const u = users.find(x => x.uid === uid);
+      if (!u) return;
+      const old = u.status;
+      u.status = newStatus;
+      renderTable();
+      const action = newStatus === 'suspended' ? 'Suspended' : 'Activated';
+      showToast(`${action}: ${u.name}`, newStatus === 'suspended' ? 'error' : 'success');
+      logAudit(newStatus === 'suspended' ? 'user_suspended' : 'user_activated', u.name);
+    }
+
+    function activateOrg(uid) {
+      const u = users.find(x => x.uid === uid);
+      if (!u) return;
+      u.status = 'active';
+      renderTable();
+      showToast(`Na-activate ang org: ${u.name}`, 'success');
+      logAudit('org_activated', u.extra);
+    }
+
+    function logAudit(action, target) {
+      const log = JSON.parse(sessionStorage.getItem('audit_log') || '[]');
+      log.unshift({ action, target, time: new Date().toLocaleString('fil') });
+      sessionStorage.setItem('audit_log', JSON.stringify(log));
+    }
+
+    function showToast(message, type = 'info', duration = 3500) {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const t = document.createElement('div');
+      t.className = `toast toast-${type}`;
+      t.textContent = message;
+      container.appendChild(t);
+      setTimeout(() => t.remove(), duration);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderTable();
+
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentFilter = btn.dataset.filter;
+          renderTable();
+        });
+      });
+
+      document.getElementById('btn-close-modal')?.addEventListener('click', closeModal);
+      document.getElementById('user-modal')?.addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) closeModal();
+      });
+
+      document.getElementById('btn-signout')?.addEventListener('click', () => {
+        window.location.href = '/register/index.html';
+      });
+
+      const update = () => document.body.classList.toggle('offline', !navigator.onLine);
+      window.addEventListener('online', update);
+      window.addEventListener('offline', update);
+      update();
+    });
+  </script>
+</body>
+</html>

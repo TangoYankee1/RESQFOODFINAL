@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResQFood — Mag-register bilang Org Admin</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/auth.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div id="offline-banner">📶 Offline mode. Subukan muli kapag may koneksyon.</div>
+
+  <!-- Hero -->
+  <div class="reg-hero">
+    <span class="brand-mark">🍱 RESQFOOD</span>
+    <h1>Mag-register bilang Org Admin</h1>
+    <p>Para sa soup kitchen, barangay hall, at iba pang tatanggap ng donasyon.</p>
+  </div>
+
+  <!-- Progress stepper -->
+  <div style="background:#fff; padding:1rem 1.25rem 0; max-width:480px; margin:0 auto;">
+    <div class="stepper" id="reg-stepper" aria-label="Mga hakbang sa registration">
+      <div class="step-item active" id="si-1">
+        <div class="step-dot">1</div>
+        <div class="step-label">Organisasyon</div>
+      </div>
+      <div class="step-item" id="si-2">
+        <div class="step-dot">2</div>
+        <div class="step-label">Contact</div>
+      </div>
+      <div class="step-item" id="si-3">
+        <div class="step-dot">3</div>
+        <div class="step-label">Device</div>
+      </div>
+      <div class="step-item" id="si-4">
+        <div class="step-dot">4</div>
+        <div class="step-label">Training</div>
+      </div>
+      <div class="step-item" id="si-5">
+        <div class="step-dot">✓</div>
+        <div class="step-label">Tapos</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form container -->
+  <div class="reg-container" id="reg-main" style="max-width:480px; margin:0 auto;">
+
+    <!-- Recovery screen -->
+    <div class="recovery-screen" id="recovery-screen">
+      <span class="error-icon">⚠️</span>
+      <h2>Nagkaroon ng problema</h2>
+      <p id="recovery-msg" class="text-muted text-center">
+        Hindi ma-save ang iyong account. Siguraduhing may koneksyon.
+      </p>
+      <button class="btn btn-primary btn-lg btn-full" id="btn-retry">Subukan Muli</button>
+      <button class="btn btn-ghost btn-full"          id="btn-recovery-back">Bumalik</button>
+    </div>
+
+    <!-- ══ STEP 1: Org Profile ══ -->
+    <div class="step-panel active" id="step-1">
+      <div class="step-title">Ano ang pangalan ng inyong organisasyon?</div>
+      <div class="step-desc">
+        Ang account ay para sa organisasyon, hindi sa indibidwal. Maaaring magpalit ng tauhan nang hindi mawawala ang access.
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inp-orgname">Pangalan ng Organisasyon</label>
+        <input type="text" id="inp-orgname" class="form-input"
+               placeholder="hal. Lahug Soup Kitchen" maxlength="150" />
+        <div class="form-error" id="err-orgname"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inp-orgtype">Uri ng Organisasyon</label>
+        <select id="inp-orgtype" class="form-select">
+          <option value="">— Pumili —</option>
+          <option value="soup_kitchen">Soup Kitchen</option>
+          <option value="shelter">Shelter / Asylo</option>
+          <option value="church">Simbahan</option>
+          <option value="school">Paaralan</option>
+          <option value="barangay_hall">Barangay Hall</option>
+          <option value="ngo">NGO / Nonprofit</option>
+          <option value="other">Iba pa</option>
+        </select>
+        <div class="form-error" id="err-orgtype"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inp-barangay">Barangay (Cebu City)</label>
+        <select id="inp-barangay" class="form-select">
+          <option value="">— Pumili ng Barangay —</option>
+          <option>Apas</option><option>Banilad</option><option>Basak Pardo</option>
+          <option>Basak San Nicolas</option><option>Binaliw</option><option>Budlaan</option>
+          <option>Busay</option><option>Calamba</option><option>Cambinocot</option>
+          <option>Capitol Site</option><option>Carreta</option><option>Central</option>
+          <option>Cogon Pardo</option><option>Cogon Ramos</option><option>Day-as</option>
+          <option>Duljo-Fatima</option><option>Ermita</option><option>Guadalupe</option>
+          <option>Guba</option><option>Hippodromo</option><option>Inayawan</option>
+          <option>Kalunasan</option><option>Kamagayan</option><option>Kamputhaw</option>
+          <option>Kasambagan</option><option>Kinasang-an Pardo</option><option>Labangon</option>
+          <option>Lahug</option><option>Lorega</option><option>Lusaran</option>
+          <option>Luz</option><option>Mabini</option><option>Mabolo</option>
+          <option>Malubog</option><option>Mambaling</option><option>Pahina Central</option>
+          <option>Pahina San Nicolas</option><option>Pamutan</option><option>Pardo</option>
+          <option>Pari-an</option><option>Paril</option><option>Pasil</option>
+          <option>Pit-os</option><option>Poblacion Pardo</option><option>Pulangbato</option>
+          <option>Pung-ol-Sibugay</option><option>Punta Princesa</option><option>Quiot Pardo</option>
+          <option>Sambag I</option><option>Sambag II</option><option>San Antonio</option>
+          <option>San Jose</option><option>San Nicolas Central</option><option>San Roque</option>
+          <option>Santa Cruz</option><option>Santo Nino</option><option>Sapangdaku</option>
+          <option>Sawang Calero</option><option>Sinsin</option><option>Sirao</option>
+          <option>Sudlon I</option><option>Sudlon II</option><option>T. Padilla</option>
+          <option>Talamban</option><option>Taptap</option><option>Tejero</option>
+          <option>Tinago</option><option>Tinago</option><option>Tipolo</option>
+          <option>Toong</option><option>Zapatera</option>
+        </select>
+        <div class="form-error" id="err-barangay"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inp-address">Kumpletong Address</label>
+        <input type="text" id="inp-address" class="form-input"
+               placeholder="hal. 123 Gorordo Ave, Lahug" maxlength="200" />
+      </div>
+
+      <button class="btn btn-primary btn-lg btn-full" id="btn-1-next">
+        Susunod →
+      </button>
+    </div>
+
+    <!-- ══ STEP 2: Primary Contact + OTP ══ -->
+    <div class="step-panel" id="step-2">
+      <div class="step-title">Sino ang primary contact?</div>
+      <div class="step-desc">
+        Ang taong ito ang magiging pangunahing may-hawak ng account. Maaaring idagdag ang iba pang staff mamaya.
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inp-name">Buong Pangalan</label>
+        <input type="text" id="inp-name" class="form-input"
+               placeholder="hal. Ana Reyes" maxlength="100" />
+        <div class="form-error" id="err-name"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inp-designation">Posisyon / Titulo</label>
+        <input type="text" id="inp-designation" class="form-input"
+               placeholder="hal. Kitchen Manager, Barangay Secretary" maxlength="80" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inp-phone">Numero ng Telepono</label>
+        <div class="phone-input-wrap" id="phone-wrap">
+          <span class="phone-prefix">🇵🇭 +63</span>
+          <input type="tel" id="inp-phone" inputmode="numeric"
+                 placeholder="9171234567" maxlength="10"
+                 class="form-input" style="border-radius:0 var(--radius-md) var(--radius-md) 0; border-left:none;" />
+        </div>
+        <div class="form-error" id="err-phone"></div>
+      </div>
+
+      <!-- OTP section (shown after send) -->
+      <div id="otp-section" class="hidden">
+        <div style="background:var(--color-surface-low); border-radius:var(--radius-md); padding:var(--sp-4); margin-bottom:var(--sp-4); font-size:.88rem; color:var(--color-muted);">
+          Nagpadala ng 6-digit code sa <strong id="otp-phone-display"></strong>.
+          <br/><span style="font-size:.8rem;">(Demo: gamitin ang anumang 6-digit code.)</span>
+        </div>
+        <div class="otp-row" style="display:flex; gap:var(--sp-2); margin-bottom:var(--sp-4);">
+          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" />
+          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" />
+          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" />
+          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" />
+          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" />
+          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" />
+        </div>
+        <button class="btn btn-primary btn-full" id="btn-verify-otp" disabled>
+          I-verify ang OTP
+        </button>
+      </div>
+
+      <button class="btn btn-primary btn-lg btn-full" id="btn-send-otp">
+        Magpadala ng OTP →
+      </button>
+    </div>
+
+    <!-- ══ STEP 3: Device Check ══ -->
+    <div class="step-panel" id="step-3">
+      <div class="step-title">Sinusubukan ang inyong device...</div>
+      <div class="step-desc" id="device-desc">
+        Sinisigurado namin na compatible ang inyong device para sa verification.
+      </div>
+
+      <div id="device-checking" style="text-align:center; padding:var(--sp-8) 0;">
+        <div style="font-size:3rem; margin-bottom:var(--sp-4);">🔍</div>
+        <p style="color:var(--color-muted);">Tinitingnan ang camera...</p>
+      </div>
+
+      <!-- Result: Standard Mode -->
+      <div id="device-standard" class="hidden">
+        <div style="background:var(--color-success-lt); border-radius:var(--radius-md); padding:var(--sp-5); margin-bottom:var(--sp-5); text-align:center;">
+          <div style="font-size:2.5rem; margin-bottom:var(--sp-2);">📷</div>
+          <strong style="color:var(--color-success);">Standard Mode — QR Scanner</strong>
+          <p style="font-size:.85rem; color:var(--color-muted); margin-top:var(--sp-2);">
+            Compatible ang inyong device. Gagamitin ang QR scanner para sa verification.
+          </p>
+        </div>
+        <button class="btn btn-primary btn-lg btn-full" id="btn-3-standard">
+          Gamitin ang QR Scanner →
+        </button>
+        <button class="btn btn-ghost btn-full" id="btn-3-use-basic" style="margin-top:var(--sp-3);">
+          Mas gusto ang PIN mode
+        </button>
+      </div>
+
+      <!-- Result: Basic Mode -->
+      <div id="device-basic" class="hidden">
+        <div style="background:var(--color-warning-lt); border-radius:var(--radius-md); padding:var(--sp-5); margin-bottom:var(--sp-5); text-align:center;">
+          <div style="font-size:2.5rem; margin-bottom:var(--sp-2);">🔢</div>
+          <strong style="color:var(--color-accent-dk);">Basic Mode — PIN</strong>
+          <p style="font-size:.85rem; color:var(--color-muted); margin-top:var(--sp-2);">
+            Hindi kailangan ng QR scanner. Gagamitin mo lang ang 4-digit PIN na ibibigay ng volunteer.
+          </p>
+        </div>
+        <button class="btn btn-primary btn-lg btn-full" id="btn-3-basic">
+          Gamitin ang PIN Mode →
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ STEP 4: Training Acknowledgment ══ -->
+    <div class="step-panel" id="step-4">
+      <div class="step-title">Orientation at Pagsasanay</div>
+      <div class="step-desc">
+        Bago makatanggap ng mga delivery, kailangan muna ng maikling orientation mula sa inyong LGU coordinator.
+      </div>
+
+      <div style="background:var(--color-surface-low); border-radius:var(--radius-md); padding:var(--sp-5); margin-bottom:var(--sp-5); font-size:.88rem; line-height:1.6;">
+        <p style="margin-bottom:var(--sp-3);"><strong>Ang orientation ay sumasaklaw sa:</strong></p>
+        <ul style="padding-left:1.2rem; color:var(--color-muted);">
+          <li>Tamang pag-verify ng mga delivery</li>
+          <li>Paggamit ng QR scanner o PIN</li>
+          <li>Responsibilidad ng organisasyon</li>
+          <li>Pag-uulat ng mga isyu</li>
+        </ul>
+        <p style="margin-top:var(--sp-4); color:var(--color-muted);">Tatagal ng humigit-kumulang <strong>30 minuto</strong>.</p>
+      </div>
+
+      <label class="waiver-check-row" id="training-check-row"
+             style="display:flex; align-items:flex-start; gap:var(--sp-3); padding:var(--sp-4); background:var(--color-surface-lowest); border-radius:var(--radius-md); border:2px solid var(--color-border); cursor:pointer; margin-bottom:var(--sp-5);">
+        <input type="checkbox" id="chk-training" style="width:1.1rem; height:1.1rem; margin-top:2px; flex-shrink:0; accent-color:var(--color-primary);" />
+        <span style="font-size:.88rem; line-height:1.5;">
+          <strong>Naiintindihan naming kailangan naming dumalo sa 30-minutong orientation</strong>
+          bago kami makatanggap ng mga delivery mula sa ResQFood.
+        </span>
+      </label>
+
+      <button class="btn btn-primary btn-lg btn-full" id="btn-submit" disabled>
+        <span id="submit-label">Isumite ang Registration</span>
+      </button>
+
+      <p style="font-size:.78rem; color:var(--color-muted); text-align:center; margin-top:var(--sp-4);">
+        Ang inyong account ay magiging <strong>pending_training</strong> hanggang ma-activate ng LGU.
+      </p>
+    </div>
+
+    <!-- ══ SUCCESS ══ -->
+    <div class="step-panel" id="step-success">
+      <div class="completion-screen">
+        <div class="check-icon">✅</div>
+        <h2>Handa na ang inyong account!</h2>
+        <p class="text-muted" style="margin-bottom:var(--sp-6);">
+          Na-register ang <strong id="success-orgname"></strong>. Hihintayin lang ang activation ng LGU pagkatapos ng orientation.
+        </p>
+        <div style="background:var(--color-warning-lt); border-radius:var(--radius-md); padding:var(--sp-4); margin-bottom:var(--sp-6); font-size:.85rem;">
+          <strong>⏳ Status: Pending Training</strong><br />
+          Makikipag-ugnayan sa inyo ang inyong LGU coordinator para sa orientation schedule.
+        </div>
+        <a class="btn btn-primary btn-lg btn-full" href="../org-admin/index.html">
+          Pumunta sa Dashboard →
+        </a>
+        <a class="btn btn-ghost btn-full" href="index.html" style="margin-top:var(--sp-3); display:block; text-align:center;">
+          Bumalik sa Home
+        </a>
+      </div>
+    </div>
+
+  </div><!-- /reg-container -->
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <script type="module" src="../js/register/orgAdmin.js"></script>
+</body>
+</html>

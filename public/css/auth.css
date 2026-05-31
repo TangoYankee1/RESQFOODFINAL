@@ -1,11 +1,11 @@
 /* ResQFood — Auth / Registration styles */
 
-/* Hero strip at top of register pages */
+/* Hero strip — green gradient per DESIGN.md */
 .reg-hero {
-  background: var(--color-primary);
+  background: linear-gradient(135deg, #396632, #518048);
   padding: var(--sp-8) var(--sp-5) var(--sp-6);
   text-align: center;
-  color: #fff;
+  color: var(--color-on-primary);
 }
 .reg-hero .brand-mark {
   font-size: 1.5rem;
@@ -14,9 +14,10 @@
   color: var(--color-accent);
   display: block;
   margin-bottom: var(--sp-2);
+  font-family: var(--font-head);
 }
 .reg-hero h1 { font-size: 1.5rem; color: #fff; margin-bottom: var(--sp-2); }
-.reg-hero p  { font-size: .95rem; color: rgba(255,255,255,.75); margin-bottom: 0; }
+.reg-hero p  { font-size: .95rem; color: rgba(255,255,255,.80); margin-bottom: 0; }
 
 /* ── Role gateway cards ── */
 .role-grid {
@@ -27,8 +28,7 @@
 }
 
 .role-card {
-  background: var(--color-surface);
-  border: 2.5px solid var(--color-border);
+  background: var(--color-surface-lowest);
   border-radius: var(--radius-lg);
   padding: var(--sp-5) var(--sp-4);
   display: flex;
@@ -37,20 +37,18 @@
   gap: var(--sp-3);
   cursor: pointer;
   text-decoration: none;
-  color: var(--color-primary);
-  transition: border-color .18s, box-shadow .18s, transform .12s;
+  color: var(--color-on-surface);
+  transition: box-shadow .18s, transform .12s;
   text-align: center;
+  box-shadow: var(--shadow-sm);
 }
 .role-card:hover {
-  border-color: var(--color-primary);
   box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
 }
 .role-card.featured {
-  border-color: var(--color-accent);
-  background: #fffde7;
+  background: var(--color-success-lt);
 }
-.role-card.featured:hover { border-color: var(--color-accent-dk); }
 
 .role-card__icon {
   font-size: 2.5rem;
@@ -59,20 +57,20 @@
 .role-card__title {
   font-size: 1rem;
   font-weight: 700;
+  font-family: var(--font-head);
   line-height: 1.2;
+  color: var(--color-on-surface);
 }
 .role-card__tagline {
   font-size: .78rem;
   color: var(--color-muted);
   line-height: 1.4;
-  font-style: italic;
 }
 
 /* ── Registration step container ── */
 .reg-container {
-  background: var(--color-surface);
+  background: var(--color-surface-lowest);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-  margin-top: -var(--sp-4);
   padding: var(--sp-6) var(--sp-5);
   min-height: calc(100vh - 180px);
 }
@@ -83,7 +81,9 @@
 .step-title {
   font-size: 1.25rem;
   font-weight: 700;
+  font-family: var(--font-head);
   margin-bottom: var(--sp-2);
+  color: var(--color-on-surface);
 }
 .step-desc {
   font-size: .88rem;
@@ -105,15 +105,15 @@
   text-align: center;
   font-size: 1.5rem;
   font-weight: 700;
-  border: 2.5px solid var(--color-border);
+  border: none;
   border-radius: var(--radius-md);
   outline: none;
-  transition: border-color .18s;
-  background: var(--color-surface);
-  color: var(--color-primary);
+  transition: background .18s, box-shadow .18s;
+  background: var(--color-surface-high);
+  color: var(--color-on-surface);
 }
-.otp-input:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(0,25,60,.12); }
-.otp-input.filled { border-color: var(--color-primary); background: rgba(0,25,60,.04); }
+.otp-input:focus { background: var(--color-surface-lowest); box-shadow: 0 0 0 2px rgba(57,102,50,.20), var(--shadow-sm); }
+.otp-input.filled { background: var(--color-success-lt); }
 
 .otp-timer {
   text-align: center;
@@ -137,8 +137,7 @@
 
 /* Waiver scrollbox */
 .waiver-box {
-  background: var(--color-bg);
-  border: 2px solid var(--color-border);
+  background: var(--color-surface-low);
   border-radius: var(--radius-md);
   padding: var(--sp-5);
   max-height: 220px;
@@ -146,7 +145,7 @@
   font-size: .88rem;
   line-height: 1.7;
   margin-bottom: var(--sp-4);
-  color: var(--color-primary);
+  color: var(--color-on-surface);
   scroll-behavior: smooth;
 }
 .waiver-box ul { padding-left: var(--sp-5); margin: var(--sp-2) 0; }
@@ -185,7 +184,6 @@
 /* Error block for phone collision */
 .phone-collision-msg {
   background: var(--color-warning-lt);
-  border: 1px solid var(--color-warning);
   border-radius: var(--radius-md);
   padding: var(--sp-4);
   font-size: .88rem;
@@ -202,3 +200,16 @@
 }
 .recovery-screen.visible { display: flex; flex-direction: column; align-items: center; gap: var(--sp-4); }
 .recovery-screen .error-icon { font-size: 3rem; }
+
+/* Footer link row */
+.gateway-footer {
+  text-align: center;
+  padding: var(--sp-6) var(--sp-4);
+  font-size: .85rem;
+  color: var(--color-muted);
+}
+.gateway-footer a {
+  color: var(--color-primary);
+  font-weight: 700;
+  text-decoration: none;
+}
