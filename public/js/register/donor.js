@@ -3,11 +3,16 @@ import {
   setStepperState,
   showFieldError,
   clearFieldError,
+  buildDonorRegistrationPayload,
+  validateDonorRegistrationPayload,
 } from './shared.js';
+import { sendOTP, confirmOTP } from '../core/auth.js';
+import { signupWithProfile } from '../core/callables.js';
 
 // ── State ────────────────────────────────────────────────────────────────────
 let otpTimer   = null;
 let isBusiness = false;
+let pendingConfirmation = null;
 
 // ── Step navigation ──────────────────────────────────────────────────────────
 function goToStep(n) {
@@ -18,8 +23,8 @@ function goToStep(n) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ── STEP 1 — Phone (prototype: any number passes) ────────────────────────────
-document.getElementById('btn-send-otp').addEventListener('click', () => {
+// ── STEP 1 — Phone via real Firebase OTP ────────────────────────────────────
+document.getElementById('btn-send-otp').addEventListener('click', async () => {
   const raw = document.getElementById('inp-phone').value.trim();
   clearFieldError('phone-wrap', 'err-phone');
   document.getElementById('collision-msg').classList.remove('visible');
@@ -31,8 +36,15 @@ document.getElementById('btn-send-otp').addEventListener('click', () => {
   }
 
   const phone = '+63' + raw.replace(/\D/g, '').slice(-10);
-  showOtpSection(phone);
-  showToast('Demo mode: gamitin ang anumang 6-digit code.', 'info');
+
+  try {
+    pendingConfirmation = await sendOTP(phone, 'recaptcha-container');
+    showOtpSection(phone);
+    showToast('Na-send na ang OTP code sa iyong numero.', 'success');
+  } catch (err) {
+    console.error('sendOTP failed', err);
+    showFieldError('phone-wrap', 'err-phone', 'Hindi maipadala ang code sa iyong numero. Subukan muli.');
+  }
 });
 
 function showOtpSection(phone) {
@@ -80,12 +92,20 @@ function checkOtpComplete() {
   document.getElementById('btn-verify-otp').disabled = getOtpValue().length !== 6;
 }
 
-// Prototype: accept any 6-digit code
-document.getElementById('btn-verify-otp').addEventListener('click', () => {
-  if (getOtpValue().length < 6) return;
-  clearOtpTimer();
-  showToast('Na-verify ang numero!', 'success');
-  goToStep(2);
+document.getElementById('btn-verify-otp').addEventListener('click', async () => {
+  const code = getOtpValue();
+  if (code.length < 6) return;
+
+  try {
+    await confirmOTP(pendingConfirmation, code);
+    clearOtpTimer();
+    showToast('Na-verify ang numero!', 'success');
+    goToStep(2);
+  } catch (err) {
+    console.error('OTP verification failed', err);
+    clearFieldError('otp-group', 'err-otp');
+    showFieldError('otp-group', 'err-otp', 'Hindi valid ang code. Subukan muli.');
+  }
 });
 
 // OTP countdown timer (cosmetic)
@@ -111,11 +131,19 @@ function clearOtpTimer() {
   if (otpTimer) { clearInterval(otpTimer); otpTimer = null; }
 }
 
-document.getElementById('btn-resend').addEventListener('click', () => {
+document.getElementById('btn-resend').addEventListener('click', async () => {
+  const raw = document.getElementById('inp-phone').value.trim();
+  const phone = '+63' + raw.replace(/\D/g, '').slice(-10);
   otpInputs.forEach(i => { i.value = ''; i.classList.remove('filled'); });
+  try {
+    pendingConfirmation = await sendOTP(phone, 'recaptcha-container');
+    startOtpTimer(60);
+    showToast('Bagong OTP code ang ipinadala.', 'info');
+  } catch (err) {
+    console.error('resendOTP failed', err);
+    showToast('Hindi maipadala ang bagong code. Subukan muli.', 'error');
+  }
   checkOtpComplete();
-  startOtpTimer(60);
-  showToast('Demo mode: bagong code (gamitin ang anumang 6 digits).', 'info');
 });
 
 // ── STEP 2 — Identity & Location ─────────────────────────────────────────────
@@ -226,15 +254,38 @@ chkSafety.addEventListener('change',  checkWaiverState);
 chkPrivacy.addEventListener('change', checkWaiverState);
 document.getElementById('btn-4-back').addEventListener('click', () => goToStep(3));
 
-btnSubmit.addEventListener('click', () => {
+btnSubmit.addEventListener('click', async () => {
   if (!chkSafety.checked || !chkPrivacy.checked) return;
-  btnSubmit.disabled   = true;
-  btnSubmit.innerHTML  = '<span class="spinner"></span> Sine-save...';
-  // Prototype: simulate a brief save delay then advance
-  setTimeout(() => {
+
+  const payload = buildDonorRegistrationPayload();
+  const validation = validateDonorRegistrationPayload(payload);
+
+  if (!validation.valid) {
+    if (validation.errors.name) showFieldError('inp-name', 'err-name', validation.errors.name);
+    if (validation.errors.email) showFieldError('inp-email', 'err-email', validation.errors.email);
+    if (validation.errors.barangay) showFieldError('inp-barangay', 'err-barangay', validation.errors.barangay);
+    if (validation.errors.businessName) showFieldError('inp-business-name', 'err-business-name', validation.errors.businessName);
+    if (validation.errors.phone) showFieldError('phone-wrap', 'err-phone', validation.errors.phone);
+    return;
+  }
+
+  btnSubmit.disabled = true;
+  btnSubmit.innerHTML = '<span class="spinner"></span> Sine-save...';
+
+  try {
+    const result = await signupWithProfile(payload);
+    if (!result || result.success === false) {
+      throw new Error(result && result.reason ? result.reason : 'signup_failed');
+    }
+
     goToStep(5);
     showToast('Account na-create! Welcome, donor!', 'success');
-  }, 800);
+  } catch (err) {
+    console.error('signup failed', err);
+    showToast('Hindi ma-save ang account. Pakisubukan muli.', 'error');
+    btnSubmit.disabled = false;
+    btnSubmit.textContent = 'Gawin ang Account';
+  }
 });
 
 // ── Offline banner ────────────────────────────────────────────────────────────

@@ -1,0 +1,98 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function hasRole(role) {
+      return isSignedIn() && request.auth.token.role == role;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // users collection
+    match /users/{userId} {
+      // Users may create their own profile; role must be one of expected values.
+      allow create: if isOwner(userId)
+        && incoming().keys().hasAll(['role','fullName','phoneNumber','barangay'])
+        && incoming().role in ['donor','volunteer','orgAdmin','lguAdmin','systemAdmin'];
+
+      // Signed-in users can read user profiles (team coordination needs read access).
+      allow read: if isSignedIn();
+
+      // Owner can update limited fields; role change disallowed from client.
+      allow update: if isOwner(userId)
+        && incoming().role == existing().role
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'fullName','phoneNumber','barangay','status','updatedAt'
+        ]);
+
+      allow delete: if false;
+    }
+
+    // donations collection
+    match /donations/{donationId} {
+      // Creation by signed-in donors only; status must start 'pending'
+      allow create: if isSignedIn()
+        && incoming().donorId == request.auth.uid
+        && incoming().status == 'pending'
+        && incoming().safetyDeclared == true;
+
+      // Read: signed-in users can read (may be tuned later by role/org)
+      allow read: if isSignedIn();
+
+      // Updates: donors can cancel own pending donations (limited fields)
+      allow update: if isSignedIn() && (
+
+        // Donor cancelling their pending donation
+        (existing().donorId == request.auth.uid
+         && existing().status == 'pending'
+         && incoming().status == 'cancelled'
+         && incoming().diff(existing()).affectedKeys().hasOnly(['status','statusHistory','updatedAt']))
+
+        // Volunteer claiming -> only allow transition pending -> scheduled and volunteerId == request.auth.uid
+        || (request.auth.token.role == 'volunteer'
+            && existing().status == 'pending'
+            && incoming().status == 'scheduled'
+            && incoming().volunteerId == request.auth.uid
+            && incoming().diff(existing()).affectedKeys().hasOnly(['status','volunteerId','claimedAt','statusHistory','updatedAt']))
+
+        // Admins or orgAdmins advancing status for assigned organizations
+        || (request.auth.token.role in ['orgAdmin','lguAdmin','systemAdmin']
+            && incoming().diff(existing()).affectedKeys().hasOnly([
+              'status','pickedUpAt','enRouteAt','deliveredAt','verifiedBy','verifiedAt','statusHistory','updatedAt'
+            ]))
+      );
+
+      allow delete: if false;
+    }
+
+    // notifications - write only by trusted server (admin claim)
+    match /notifications/{notificationId} {
+      allow read: if isSignedIn() && request.auth.uid == resource.data.recipientUid;
+      allow create: if isSignedIn() && request.auth.token.admin == true;
+      allow update, delete: if false;
+    }
+
+    // auditLogs - write only by trusted server
+    match /auditLogs/{logId} {
+      allow read: if isSignedIn() && request.auth.token.admin == true;
+      allow create: if isSignedIn() && request.auth.token.admin == true;
+      allow update, delete: if false;
+    }
+
+  }
+}

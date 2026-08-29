@@ -2,80 +2,117 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ── Helpers ────────────────────────────────────────────────────────────
+    // Helpers
     function isSignedIn() {
       return request.auth != null;
+    }
+
+    function hasRole(role) {
+      return isSignedIn() && request.auth.token.role == role;
     }
 
     function isOwner(uid) {
       return isSignedIn() && request.auth.uid == uid;
     }
 
-    function incomingData() {
+    function incoming() {
       return request.resource.data;
     }
 
-    function existingData() {
+    function existing() {
       return resource.data;
     }
 
-    // ── users/{userId} ────────────────────────────────────────────────────
+    // users collection
     match /users/{userId} {
-
-      // Donors can create their own profile (and only with the required consent fields)
+      // Users may create their own profile; role must NOT be supplied by client.
+      // Role assignment is an admin-only operation (use admin callable `assignRole`).
       allow create: if isOwner(userId)
-        && incomingData().role == 'donor'
-        && incomingData().keys().hasAll([
-             'fullName', 'contactNumber', 'role',
-             'liabilityWaiverSigned', 'privacyConsentSigned'
-           ])
-        && incomingData().liabilityWaiverSigned == true
-        && incomingData().privacyConsentSigned  == true;
+        && incoming().keys().hasAny(['fullName','phoneNumber','barangay'])
+        && !incoming().keys().hasAny(['role']);
 
-      // Owner can read their own profile; admins and volunteers can read
-      // any profile (for mission board / coordination)
+      // Signed-in users can read user profiles (team coordination needs read access).
       allow read: if isSignedIn();
 
-      // Owner can update, but may NOT change their own role (no escalation)
+      // Owner can update limited fields; role change disallowed from client.
       allow update: if isOwner(userId)
-        && incomingData().role == existingData().role;
+        && incoming().role == existing().role
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'fullName','phoneNumber','barangay','status','updatedAt'
+        ]);
 
       allow delete: if false;
     }
 
-    // ── donations/{donationId} ────────────────────────────────────────────
+    // donations collection
     match /donations/{donationId} {
-
-      // Donors can create donations for themselves, status must start as
-      // "pending", and both safety flags must be set
+      // Creation by signed-in donors only; status must start 'pending'
       allow create: if isSignedIn()
-        && incomingData().donorId       == request.auth.uid
-        && incomingData().status        == 'pending'
-        && incomingData().safetyDeclared   == true
-        && incomingData().postingConfirmed == true;
+        && incoming().donorId == request.auth.uid
+        && incoming().status == 'pending'
+        && incoming().safetyDeclared == true;
 
-      // Donors can read their own donations; volunteers/admins can read all
+      // Read: signed-in users can read (may be tuned later by role/org)
       allow read: if isSignedIn();
 
-      // Donors can only cancel their OWN donations while still pending
-      allow update: if isSignedIn()
-        && existingData().donorId == request.auth.uid
-        && existingData().status  == 'pending'
-        && incomingData().status  == 'cancelled'
-        // Prevent other field tampering on cancel
-        && incomingData().diff(existingData()).affectedKeys()
-             .hasOnly(['status', 'statusHistory', 'updatedAt'])
+      // Updates: donors can cancel own pending donations (limited fields)
+      allow update: if isSignedIn() && (
 
-        // Volunteers and admins can advance status (handled via separate path below)
-        || isSignedIn()
-        && existingData().donorId != request.auth.uid
-        && incomingData().diff(existingData()).affectedKeys()
-             .hasOnly([
-               'status', 'volunteerId', 'claimedAt', 'pickedUpAt',
-               'enRouteAt', 'deliveredAt', 'verifiedBy', 'verifiedAt',
-               'statusHistory', 'updatedAt'
-             ]);
+        // Donor cancelling their pending donation
+        (existing().donorId == request.auth.uid
+         && existing().status == 'pending'
+         && incoming().status == 'cancelled'
+         && incoming().diff(existing()).affectedKeys().hasOnly(['status','statusHistory','updatedAt']))
 
+        // Volunteer claiming -> only allow transition pending -> scheduled and volunteerId == request.auth.uid
+        || (request.auth.token.role == 'volunteer'
+            && existing().status == 'pending'
+            && incoming().status == 'scheduled'
+            && incoming().volunteerId == request.auth.uid
+            && incoming().diff(existing()).affectedKeys().hasOnly(['status','volunteerId','claimedAt','statusHistory','updatedAt']))
+
+        // Admins or orgAdmins advancing status for assigned organizations
+        || (request.auth.token.role in ['orgAdmin','lguAdmin','systemAdmin']
+            && incoming().diff(existing()).affectedKeys().hasOnly([
+              'status','pickedUpAt','enRouteAt','deliveredAt','verifiedBy','verifiedAt','statusHistory','updatedAt'
+            ]))
+      );
+
+      allow delete: if false;
+    }
+
+    // qrCodes - tokens representing QR claims; clients may create/read, but
+    // must NOT mark codes as used. Only trusted server-side code may update
+    // `used`/`usedBy`/`usedAt` fields (server SDK bypasses rules).
+    match /qrCodes/{qrId} {
+      allow create: if isSignedIn();
+      allow read: if isSignedIn();
+      // Prevent clients from updating QR documents (server should mark used)
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // notifications - write only by trusted server (admin claim)
+    match /notifications/{notificationId} {
+      allow read: if isSignedIn() && request.auth.uid == resource.data.recipientUid;
+      // Only system admins or back-end services with admin claim may create notifications
+      allow create: if isSignedIn() && (request.auth.token.role == 'systemAdmin' || request.auth.token.admin == true);
+      allow update, delete: if false;
+    }
+
+    // auditLogs - write only by trusted server
+    match /auditLogs/{logId} {
+      allow read: if isSignedIn() && (request.auth.token.role == 'systemAdmin' || request.auth.token.admin == true);
+      allow create: if isSignedIn() && (request.auth.token.role == 'systemAdmin' || request.auth.token.admin == true);
+      allow update, delete: if false;
+    }
+
+    // verificationRequests - created by uploader, updated by admins
+    match /verificationRequests/{reqId} {
+      allow create: if isSignedIn() && incoming().uploaderUid == request.auth.uid && incoming().status == 'pending' && incoming().keys().hasAll(['uploaderUid','type','storagePath','status','createdAt']);
+      allow read: if isSignedIn();
+      // Only admins may update review fields
+      allow update: if isSignedIn() && (request.auth.token.role in ['orgAdmin','lguAdmin','systemAdmin'] || request.auth.token.admin == true);
       allow delete: if false;
     }
 

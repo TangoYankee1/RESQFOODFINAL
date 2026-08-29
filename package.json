@@ -4,11 +4,15 @@
   "private": true,
   "scripts": {
     "build:css": "tailwindcss -i public/css/input.css -o public/css/tailwind.css --minify",
-    "watch:css": "tailwindcss -i public/css/input.css -o public/css/tailwind.css --watch"
+    "watch:css": "tailwindcss -i public/css/input.css -o public/css/tailwind.css --watch",
+    "smoke:local": "node tests/invite-test.js && node tests/assignRole-test.js && node tests/qr-test.js && node tests/rules/signup-rules-test.js"
   },
   "devDependencies": {
     "@tailwindcss/container-queries": "^0.1.1",
     "@tailwindcss/forms": "^0.5.7",
     "tailwindcss": "^3.4.4"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.10.0"
   }
 }

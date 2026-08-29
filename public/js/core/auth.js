@@ -30,6 +30,13 @@ export async function sendOTP(phoneNumber, containerId) {
   return signInWithPhoneNumber(auth, phoneNumber, verifier);
 }
 
+export async function confirmOTP(confirmationResult, otpCode) {
+  if (!confirmationResult) {
+    throw new Error('No phone verification session was created.');
+  }
+  return confirmationResult.confirm(String(otpCode).trim());
+}
+
 // Returns the current user or null, wrapped in a Promise
 export function getCurrentUser() {
   return new Promise((resolve) => {

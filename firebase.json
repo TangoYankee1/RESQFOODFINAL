@@ -1,18 +1,42 @@
 {
   "hosting": {
     "public": "public",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
     "rewrites": [
-      { "source": "/register/**", "destination": "/register/index.html" },
-      { "source": "/donor/**", "destination": "/donor/index.html" },
-      { "source": "/volunteer/**", "destination": "/volunteer/index.html" },
-      { "source": "/org-admin/**", "destination": "/org-admin/index.html" },
-      { "source": "/admin/**", "destination": "/admin/index.html" }
+      {
+        "source": "/register/**",
+        "destination": "/register/index.html"
+      },
+      {
+        "source": "/donor/**",
+        "destination": "/donor/index.html"
+      },
+      {
+        "source": "/volunteer/**",
+        "destination": "/volunteer/index.html"
+      },
+      {
+        "source": "/org-admin/**",
+        "destination": "/org-admin/index.html"
+      },
+      {
+        "source": "/admin/**",
+        "destination": "/admin/index.html"
+      }
     ],
     "headers": [
       {
         "source": "/sw.js",
-        "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
       }
     ]
   },
@@ -28,5 +52,47 @@
       "source": "functions",
       "codebase": "default"
     }
-  ]
+  ],
+  "emulators": {
+    "apphosting": {
+      "port": 5002,
+      "rootDirectory": "./",
+      "startCommand": "npm run dev"
+    },
+    "auth": {
+      "port": 9099
+    },
+    "functions": {
+      "port": 5001
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "database": {
+      "port": 9000
+    },
+    "hosting": {
+      "port": 5000
+    },
+    "pubsub": {
+      "port": 8085
+    },
+    "storage": {
+      "port": 9199
+    },
+    "eventarc": {
+      "port": 9299
+    },
+    "dataconnect": {
+      "port": 9399,
+      "dataDir": "dataconnect/.dataconnect/pgliteData"
+    },
+    "tasks": {
+      "port": 9499
+    },
+    "ui": {
+      "enabled": true
+    },
+    "singleProjectMode": true
+  }
 }

@@ -33,8 +33,11 @@ const RETRY_DELAY_MS = 1500;
 
 export async function atomicWriteUserProfile(uid, data, attempt = 1) {
   try {
+    // Ensure clients cannot set privileged fields like `role`.
+    const safe = { ...data };
+    if ('role' in safe) delete safe.role;
     await setDoc(doc(db, 'users', uid), {
-      ...data,
+      ...safe,
       createdAt: serverTimestamp(),
     });
   } catch (err) {
@@ -98,4 +101,51 @@ export function clearFieldError(fieldId, errorId) {
   const error = document.getElementById(errorId);
   if (field) field.classList.remove('error');
   if (error) { error.textContent = ''; error.classList.remove('visible'); }
+}
+
+export function buildDonorRegistrationPayload() {
+  const phone = document.getElementById('inp-phone')?.value?.trim() || '';
+  const name = document.getElementById('inp-name')?.value?.trim() || '';
+  const email = document.getElementById('inp-email')?.value?.trim() || '';
+  const barangay = document.getElementById('inp-barangay')?.value?.trim() || '';
+  const address = document.getElementById('inp-street')?.value?.trim() || '';
+  const donorType = document.getElementById('toggle-business')?.classList.contains('active') ? 'business' : 'individual';
+  const businessName = donorType === 'business' ? (document.getElementById('inp-business-name')?.value?.trim() || '') : '';
+
+  return {
+    fullName: name,
+    phone: normalizePhone(phone),
+    email: email || null,
+    barangay,
+    address: address || null,
+    donorType,
+    businessName: businessName || null,
+    profileComplete: true,
+  };
+}
+
+export function validateDonorRegistrationPayload(payload) {
+  const errors = {};
+
+  if (!payload.fullName || payload.fullName.length < 3 || payload.fullName.length > 100) {
+    errors.name = 'Ang pangalan ay dapat 3–100 karakter.';
+  }
+
+  if (payload.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) {
+    errors.email = 'Hindi valid ang email address.';
+  }
+
+  if (!payload.barangay) {
+    errors.barangay = 'Piliin ang iyong barangay.';
+  }
+
+  if (payload.donorType === 'business' && (!payload.businessName || payload.businessName.length < 2)) {
+    errors.businessName = 'Ilagay ang pangalan ng iyong negosyo.';
+  }
+
+  if (!payload.phone || !isValidPHPhone(payload.phone)) {
+    errors.phone = 'Mangyaring maglagay ng tamang Philippine mobile number.';
+  }
+
+  return { valid: Object.keys(errors).length === 0, errors };
 }
