@@ -1,10 +1,14 @@
 // Replace each value below with your Firebase project settings.
 // Found in: Firebase Console → Project Settings → Your apps → SDK setup and configuration
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getAuth,
+  connectAuthEmulator,
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   enableIndexedDbPersistence,
   getFirestore,
+  connectFirestoreEmulator,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -26,6 +30,18 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const isLocalDev = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+
+if (isLocalDev) {
+  try {
+    connectAuthEmulator(auth, "http://localhost:9099");
+    connectFirestoreEmulator(db, "localhost", 8080);
+    console.log("Using Firebase emulators for local development.");
+  } catch (err) {
+    console.warn("Emulator connection skipped:", err);
+  }
+}
+
 // Enable offline persistence for Firestore (donations queue while offline)
 enableIndexedDbPersistence(db).catch((err) => {
   if (err.code === "failed-precondition") {
