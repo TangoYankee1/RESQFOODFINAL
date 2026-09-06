@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const { FieldValue } = require('firebase-admin/firestore');
+const admin = require('firebase-admin');
 
 function hashToken(token) {
   return crypto.createHash('sha256').update(token).digest('hex');
@@ -21,7 +21,7 @@ async function createInvite(firestore, createdBy, kind = 'lgu', meta = {}, expir
     kind,
     meta: meta || {},
     createdBy: createdBy || null,
-    createdAt: FieldValue.serverTimestamp(),
+    createdAt: now,
     expiresAt,
     used: false,
     usedBy: null,
@@ -36,7 +36,7 @@ async function createInvite(firestore, createdBy, kind = 'lgu', meta = {}, expir
     action: 'create_invite',
     actorUid: createdBy || null,
     details: { kind, meta },
-    createdAt: FieldValue.serverTimestamp()
+    createdAt: now
   });
   return { success: true, token, inviteId: docRef.id };
 }
@@ -67,7 +67,7 @@ async function consumeInvite(firestore, token, actorUid) {
   const auditRef = firestore.collection('auditLogs').doc();
   try {
     await firestore.runTransaction(async (tx) => {
-      tx.update(inviteRef, { used: true, usedBy: actorUid || null, usedAt: FieldValue.serverTimestamp() });
+      tx.update(inviteRef, { used: true, usedBy: actorUid || null, usedAt: now });
       tx.set(auditRef, {
         logId: auditRef.id,
         entityType: 'invite',
@@ -75,7 +75,7 @@ async function consumeInvite(firestore, token, actorUid) {
         action: 'consume_invite',
         actorUid: actorUid || null,
         details: { inviteId: inviteRef.id },
-        createdAt: FieldValue.serverTimestamp()
+        createdAt: now
       });
     });
     return { success: true, inviteId: inviteRef.id, meta: data.meta };

@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const { FieldValue } = require('firebase-admin/firestore');
+const admin = require('firebase-admin');
 
 function hashToken(token){
   return crypto.createHash('sha256').update(token).digest('hex');
@@ -22,8 +22,9 @@ async function verifyQr(firestore, token, verifierUid){
   const qrRef = firestore.collection('qrCodes').doc(doc.id);
   const auditRef = firestore.collection('auditLogs').doc();
   try{
+    const now = new Date();
     await firestore.runTransaction(async (tx)=>{
-      tx.update(qrRef, { used: true, usedBy: verifierUid || null, usedAt: FieldValue.serverTimestamp() });
+      tx.update(qrRef, { used: true, usedBy: verifierUid || null, usedAt: now });
       tx.set(auditRef, {
         logId: auditRef.id,
         entityType: 'qrCode',
@@ -31,7 +32,7 @@ async function verifyQr(firestore, token, verifierUid){
         action: 'verify_qr',
         actorUid: verifierUid || null,
         details: { donationId: data.donationId || null },
-        createdAt: FieldValue.serverTimestamp()
+        createdAt: now
       });
     });
     return { success: true, donationId: data.donationId || null };

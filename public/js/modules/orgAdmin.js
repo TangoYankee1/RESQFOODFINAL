@@ -48,6 +48,10 @@ const MOCK_VERIFIED_TODAY = [
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  if (sessionStorage.getItem('org_registration_pending') === 'true') {
+    MOCK_ORG.status = 'pending_training';
+    MOCK_ORG.name = 'Organization application';
+  }
   renderGreeting();
   renderStats();
   renderIncoming();
@@ -85,6 +89,14 @@ function renderStats() {
 function renderIncoming() {
   const container = document.getElementById('panel-incoming');
   if (!container) return;
+
+  if (MOCK_ORG.status !== 'active') {
+    container.innerHTML = `<div class="empty-state">
+      <span class="empty-icon">⏳</span>
+      <p>Makikita ang deliveries pagkatapos ma-approve ang organization at makumpleto ang orientation.</p>
+    </div>`;
+    return;
+  }
 
   if (!MOCK_INCOMING.length) {
     container.innerHTML = `<div class="empty-state">

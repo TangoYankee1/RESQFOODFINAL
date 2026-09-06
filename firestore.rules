@@ -109,7 +109,13 @@ service cloud.firestore {
 
     // verificationRequests - created by uploader, updated by admins
     match /verificationRequests/{reqId} {
-      allow create: if isSignedIn() && incoming().uploaderUid == request.auth.uid && incoming().status == 'pending' && incoming().keys().hasAll(['uploaderUid','type','storagePath','status','createdAt']);
+      allow create: if isSignedIn()
+        && incoming().uploaderUid == request.auth.uid
+        && incoming().targetUid == request.auth.uid
+        && incoming().type in ['volunteer_id', 'org_authorization', 'lgu_authorization']
+        && incoming().status == 'pending'
+        && incoming().storagePath.matches('authorization-letters/' + request.auth.uid + '/(volunteer-id|organization|lgu)/.*')
+        && incoming().keys().hasAll(['requestId','uploaderUid','targetUid','type','storagePath','status','createdAt']);
       allow read: if isSignedIn();
       // Only admins may update review fields
       allow update: if isSignedIn() && (request.auth.token.role in ['orgAdmin','lguAdmin','systemAdmin'] || request.auth.token.admin == true);

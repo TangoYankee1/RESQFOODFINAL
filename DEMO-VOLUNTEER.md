@@ -9,7 +9,7 @@ Their MVP feature is the **QR Scanner**: they scan the donor's QR code at pickup
 ## Pre-Demo Checklist
 - [ ] Have `public/donor/qr-display.html` open on a **second device** (phone or tablet) — you'll scan this
 - [ ] OR have the donor QR page open on the same screen to show side-by-side
-- [ ] Open browser to `public/register/index.html` or jump to `public/volunteer/index.html`
+- [ ] Open browser to `public/register/index.html` and choose the volunteer registration route
 - [ ] Ensure camera permission is allowed in the browser
 - [ ] Test the scanner beforehand — verify `html5-qrcode` loads (`public/volunteer/scanner.html`)
 - [ ] Know the fallback: if camera fails, explain the PIN fallback verbally
@@ -22,7 +22,7 @@ Their MVP feature is the **QR Scanner**: they scan the donor's QR code at pickup
 **What to say:**
 > "The volunteer is the hero of the chain. They move the food from donor to beneficiary. Let's walk through how they join."
 
-**Click:** Volunteer card → `register/volunteer.html`
+**Open:** `register/volunteer.html` directly. The registration gateway currently exposes donor onboarding only; volunteer onboarding is available by its direct route while it is being rolled out.
 
 ---
 
@@ -32,10 +32,10 @@ Keep this brisk. Highlight the unique volunteer elements.
 | Step | What to highlight | Time |
 |------|-------------------|------|
 | Step 1 — Phone OTP | Same as donor — password-free. | ~20s |
-| Step 2 — Identity | Name, barangay, age range. | ~15s |
-| Step 3 — Availability | "This is unique to volunteers — they set when they're free. Reduces ghost pickups." | ~20s |
-| Step 4 — Transport | Show the options (paa, bisikleta, motor, sasakyan). | ~15s |
-| Step 5 — Commitment | Scroll and check. "No ghost pickups — they agree to show up or cancel in advance." | ~20s |
+| Step 2 — Identity | Name, barangay, and commitment. | ~15s |
+| Step 3 — ID & Referral | **New trust-layer step.** Upload any file for the ID (dashed upload box). Say: "This isn't verified instantly — it goes into an LGU review queue. It removes the anonymity that let bad actors hide before." Leave the referral code blank to show the no-referral path still works. | ~25s |
+| Step 4 — Availability | "This is unique to volunteers — they set when they're free. Reduces ghost pickups." | ~20s |
+| Step 5 — Emergency and consent | Emergency contact, optional team code, and responsibility acknowledgment. | ~20s |
 | Success | Click through to dashboard | ~5s |
 
 **Skip shortcut:** Navigate directly to `public/volunteer/index.html`
@@ -111,9 +111,11 @@ Brief visit.
 ## Key Talking Points
 1. **Urgency system** — urgent missions surface automatically; volunteers see what matters first
 2. **Reliability score** — both donors and volunteers build reputations; bad actors are visible
-3. **QR checksum** — cannot be forged or screenshot-replayed from a different donation
-4. **One-tap status updates** — eliminates phone calls; everyone knows where the food is
-5. **PIN fallback** — the system works even without a smartphone camera
+3. **ID + referral gate** — removes anonymity at registration; no referral just means manual LGU review instead of a rejection
+4. **Probation period for new volunteers** — first missions require mandatory org-admin verification and cap donation size until reliability is earned
+5. **QR checksum** — cannot be forged or screenshot-replayed from a different donation
+6. **One-tap status updates** — eliminates phone calls; everyone knows where the food is
+7. **PIN fallback** — the system works even without a smartphone camera
 
 ## Things to Avoid During Demo
 - Don't demonstrate scanning on a low-quality screen — the QR won't decode. Use a phone showing `qr-display.html` directly.
@@ -132,9 +134,9 @@ Brief visit.
 ## Demo Duration
 | Segment | Time |
 |---------|------|
-| Registration | 1.5 min |
+| Registration (incl. ID & Referral step) | 2 min |
 | Mission board | 1 min |
 | Active mission status | 1 min |
 | **QR Scanner demo** | **2 min** |
 | History | 30s |
-| **Total** | **~6 min** |
+| **Total** | **~6.5 min** |

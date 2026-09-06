@@ -10,6 +10,10 @@ import {
   getFirestore,
   connectFirestoreEmulator,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  connectStorageEmulator,
+  getStorage,
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCxZ6L3z8lv3lD5qkFs3Ssz2fxJpQliP5c",
@@ -30,12 +34,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 const isLocalDev = location.hostname === "localhost" || location.hostname === "127.0.0.1";
 
 if (isLocalDev) {
   try {
     connectAuthEmulator(auth, "http://localhost:9099");
     connectFirestoreEmulator(db, "localhost", 8080);
+    connectStorageEmulator(storage, "localhost", 9199);
     console.log("Using Firebase emulators for local development.");
   } catch (err) {
     console.warn("Emulator connection skipped:", err);
@@ -51,4 +57,4 @@ enableIndexedDbPersistence(db).catch((err) => {
   }
 });
 
-export { app, auth, db };
+export { app, auth, db, storage };

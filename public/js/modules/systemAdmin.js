@@ -1,4 +1,4 @@
-// LGU System Admin dashboard — mock data, Chart.js charts, CSV export
+// LGU Admin dashboard — mock data, Chart.js charts, CSV export
 
 const MOCK_ADMIN = { name: 'Maria Santos', barangay: 'Lahug' };
 

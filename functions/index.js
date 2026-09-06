@@ -18,9 +18,12 @@ const { claimDonation } = require('./lib/claim');
 const { transitionDonationStatus } = require('./lib/lifecycle');
 const { sendNotification } = require('./lib/notify');
 const { signupWithProfile } = require('./lib/authSignup');
+const { signupVolunteerWithProfile } = require('./lib/volunteerSignup');
+const { signupOrgAdminWithProfile } = require('./lib/orgAdminSignup');
 const { assignRole } = require('./lib/assignRole');
 const { createInvite, validateInvite, consumeInvite } = require('./lib/invite');
 const { verifyQr } = require('./lib/qr');
+const { reviewVerificationRequest } = require('./lib/reviewVerification');
 
 if(!admin.apps || !admin.apps.length) admin.initializeApp();
 const db = admin.firestore();
@@ -108,6 +111,41 @@ async function signupWithProfileHandler(data, context){
 
 exports.signupWithProfileHandler = signupWithProfileHandler;
 exports.signupWithProfile = functions.https.onCall(signupWithProfileHandler);
+
+async function signupVolunteerWithProfileHandler(data, context){
+  if(!context || !context.auth) throw new functions.https.HttpsError('unauthenticated', 'Auth required');
+  const result = await signupVolunteerWithProfile(db, admin.auth(), context.auth.uid, data || {});
+  if(!result.success) {
+    const code = result.reason === 'role_conflict' ? 'already-exists' : 'invalid-argument';
+    throw new functions.https.HttpsError(code, result.reason || 'failed');
+  }
+  return result;
+}
+
+exports.signupVolunteerWithProfileHandler = signupVolunteerWithProfileHandler;
+exports.signupVolunteerWithProfile = functions.https.onCall(signupVolunteerWithProfileHandler);
+
+async function signupOrgAdminWithProfileHandler(data, context){
+  if(!context || !context.auth) throw new functions.https.HttpsError('unauthenticated', 'Auth required');
+  const result = await signupOrgAdminWithProfile(db, context.auth.uid, data || {});
+  if(!result.success) {
+    const code = result.reason === 'role_conflict' ? 'already-exists' : 'invalid-argument';
+    throw new functions.https.HttpsError(code, result.reason || 'failed');
+  }
+  return result;
+}
+
+exports.signupOrgAdminWithProfile = functions.https.onCall(signupOrgAdminWithProfileHandler);
+
+async function reviewVerificationRequestHandler(data, context){
+  if(!context || !context.auth) throw new functions.https.HttpsError('unauthenticated', 'Auth required');
+  if(context.auth.token.role !== 'systemAdmin') throw new functions.https.HttpsError('permission-denied', 'Only system admins may review verification requests');
+  const result = await reviewVerificationRequest(db, admin.auth(), context.auth.uid, data && data.requestId, data && data.decision, data && data.note);
+  if(!result.success) throw new functions.https.HttpsError('failed-precondition', result.reason || 'review_failed');
+  return result;
+}
+
+exports.reviewVerificationRequest = functions.https.onCall(reviewVerificationRequestHandler);
 
 // Admin-only callable to assign roles
 async function assignRoleHandler(data, context){

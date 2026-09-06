@@ -1,4 +1,4 @@
-const { FieldValue } = require('firebase-admin/firestore');
+const admin = require('firebase-admin');
 
 /**
  * Assign a role to a user. Must be called by a system-admin.
@@ -21,8 +21,9 @@ async function assignRole(firestore, authAdmin, actorUid, actorRole, targetUid, 
     // Update users/{uid}.role and write audit log in a transaction
     const userRef = firestore.collection('users').doc(targetUid);
     const auditRef = firestore.collection('auditLogs').doc();
+    const now = new Date();
     await firestore.runTransaction(async (tx) => {
-      tx.set(userRef, { role, updatedAt: FieldValue.serverTimestamp() }, { merge: true });
+      tx.set(userRef, { role, updatedAt: now }, { merge: true });
       tx.set(auditRef, {
         logId: auditRef.id,
         entityType: 'user',
@@ -30,7 +31,7 @@ async function assignRole(firestore, authAdmin, actorUid, actorRole, targetUid, 
         action: 'assign_role',
         actorUid: actorUid || null,
         details: { role },
-        createdAt: FieldValue.serverTimestamp()
+        createdAt: now
       });
     });
     return { success: true };

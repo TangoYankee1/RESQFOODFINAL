@@ -12,6 +12,16 @@ async function signupWithProfile(profile) {
   return fn(profile).then(r => r.data);
 }
 
+async function signupVolunteerWithProfile(profile) {
+  const fn = httpsCallable(functions, 'signupVolunteerWithProfile');
+  return fn(profile).then(r => r.data);
+}
+
+async function signupOrgAdminWithProfile(profile) {
+  const fn = httpsCallable(functions, 'signupOrgAdminWithProfile');
+  return fn(profile).then(r => r.data);
+}
+
 async function createInvite(payload){
   const fn = httpsCallable(functions, 'createInvite');
   return fn(payload).then(r => r.data);
@@ -37,4 +47,9 @@ async function verifyQr(payload){
   return fn(payload).then(r => r.data);
 }
 
-export { signupWithProfile, createInvite, validateInvite, consumeInvite, assignRole, verifyQr };
+async function reviewVerificationRequest(payload){
+  const fn = httpsCallable(functions, 'reviewVerificationRequest');
+  return fn(payload).then(r => r.data);
+}
+
+export { signupWithProfile, signupVolunteerWithProfile, signupOrgAdminWithProfile, createInvite, validateInvite, consumeInvite, assignRole, verifyQr, reviewVerificationRequest };

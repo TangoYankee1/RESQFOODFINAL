@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ResQFood — LGU Dashboard</title>
+  <title>ResQFood — LGU Admin Dashboard</title>
   <link rel="stylesheet" href="../css/base.css" />
   <link rel="stylesheet" href="../css/admin.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -44,7 +44,7 @@
     <main class="admin-main" id="admin-main">
       <div class="admin-main-inner">
 
-        <h1 class="page-title">Dashboard — Barangay Lahug</h1>
+        <h1 class="page-title">LGU Dashboard — Barangay Lahug</h1>
         <p class="page-subtitle">Real-time na pangkalahatang-tanaw ng food rescue operations.</p>
 
         <!-- Date range -->
@@ -132,6 +132,14 @@
           </a>
         </div>
 
+        <p class="section-head">Pending Verification Review</p>
+        <div class="data-table-wrap">
+          <table class="data-table" id="verification-review-table">
+            <thead><tr><th>Type</th><th>Target</th><th>Submitted</th><th>Action</th></tr></thead>
+            <tbody id="verification-review-body"><tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--color-muted);">Loading review queue...</td></tr></tbody>
+          </table>
+        </div>
+
         <!-- Active missions -->
         <p class="section-head">Active Missions (Real-time)</p>
         <div class="data-table-wrap">
@@ -171,5 +179,6 @@
   </div>
 
   <script src="../js/modules/systemAdmin.js"></script>
+  <script type="module" src="../js/modules/verificationReview.js?v=review-v1"></script>
 </body>
 </html>

@@ -31,7 +31,18 @@ This registration is **invitation-only** — no public access.
 **What to say before opening:**
 > "Notice there's no 'System Admin' option on the role gateway. You can only reach this page via a unique invitation link sent by the ResQFood team. This prevents demo accounts, leaked credentials, and the LGU later claiming they never signed up."
 
-Type in the URL bar: `register/lgu-invite.html` (or append `?token=LAHUG-2026-DEMO`)
+Open an invite link such as `register/lgu-invite.html?token=<server-issued-token>`. The token is validated server-side, expires, and can only be consumed once.
+
+The current registration sequence is:
+
+1. Validate invitation and enter official email
+2. Verify the coordinator phone with OTP
+3. Enter identity, designation, and barangay
+4. Upload an authorization document for manual review
+5. Read and acknowledge the audit responsibility policy
+6. Submit and remain pending until an authorized reviewer approves the application
+
+The browser never assigns the `lguAdmin` role. Approval and role assignment remain administrative actions.
 
 | Step | What to highlight | Time |
 |------|-------------------|------|

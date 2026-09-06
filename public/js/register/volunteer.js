@@ -1,240 +1,383 @@
-// Volunteer registration — pure UI step navigator, no Firebase
-import { showFieldError, clearFieldError, showToast, setStepperState } from './shared.js';
+import { sendOTP, confirmOTP } from '../core/auth.js';
+import { signupVolunteerWithProfile } from '../core/callables.js';
+import { auth, db, storage } from '../core/firebaseConfig.js';
+import { collection, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { ref, uploadBytes } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
+import {
+  normalizePhone,
+  isValidPHPhone,
+  showToast,
+  setStepperState,
+  showFieldError,
+  clearFieldError,
+} from './shared.js';
 
-const BARANGAYS = [
-  'Lahug','Apas','Banilad','Camputhaw','Capitol Site','Carreta',
-  'Cogon Ramos','Ermita','Guadalupe','Kasambagan','Mabolo',
-  'Mabini','Pahina Central','Pari-an','Poblacion Pardo','Sambag I',
-  'Sambag II','San Antonio','San Jose','Sta. Cruz','Sto. Niño',
-  'T. Padilla','Talamban','Tejero','Tinago','Zapatera',
-];
+let otpTimer = null;
+let pendingConfirmation = null;
+let verificationRequestId = null;
+const $ = (id) => document.getElementById(id);
+const phone = () => normalizePhone($('v-inp-phone').value);
 
-let currentStep   = 1;
-let commitLevel   = null;
-let selectedBrgy  = [];
+function goToStep(n) {
+  document.querySelectorAll('.step-panel').forEach((panel) => panel.classList.remove('active'));
+  const panel = document.getElementById(`step-${n}`);
+  if (panel) panel.classList.add('active');
+  setStepperState(n, 6);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
-// ── Boot ──────────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  renderBarangayChips();
-  bindStep1();
-  bindStep2();
-  bindStep3();
-  bindStep4();
-  bindStep5();
-  bindStep6();
-  setupOnline();
+function clearField(fieldId, errorId) {
+  clearFieldError(fieldId, errorId);
+}
+
+function showError(fieldId, errorId, message) {
+  showFieldError(fieldId, errorId, message);
+}
+
+function buildVolunteerPayload() {
+  const availability = {};
+  document.querySelectorAll('[data-slot]').forEach((input) => {
+    availability[input.dataset.slot] = input.checked;
+  });
+
+  return {
+    fullName: $('v-inp-name').value.trim(),
+    nickname: $('v-inp-nickname').value.trim(),
+    phone: phone(),
+    barangay: $('v-inp-barangay').value,
+    preferredBarangays: [...$('barangay-chips').querySelectorAll('input:checked')].map((input) => input.value),
+    availability,
+    transport: $('v-inp-transport').value,
+    commitment: $('v-inp-commitment').value,
+    verificationRequestId,
+    trustStatus: 'pending_review',
+    referralCode: $('v-inp-referral').value.trim() || null,
+    emergencyContact: {
+      name: $('v-inp-ec-name').value.trim(),
+      phone: normalizePhone($('v-inp-ec-phone').value),
+    },
+    teamCode: $('v-inp-team').value.trim() || null,
+  };
+}
+
+// Step 1 OTP flow
+$('v-btn-send-otp').addEventListener('click', async () => {
+  clearField('v-inp-phone', 'v-err-phone');
+  const raw = $('v-inp-phone').value.trim();
+
+  if (!/^\d{10}$/.test(raw.replace(/\D/g, '').slice(-10))) {
+    showError('v-inp-phone', 'v-err-phone', 'Maglagay ng valid na Philippine mobile number.');
+    return;
+  }
+
+  try {
+    pendingConfirmation = await sendOTP(phone(), 'recaptcha-container');
+    $('v-btn-send-otp').classList.add('hidden');
+    $('v-inp-phone').disabled = true;
+    $('v-otp-section').classList.remove('hidden');
+    $('v-otp-phone-display').textContent = phone();
+    startOtpTimer(60);
+    $('v-btn-verify-otp').disabled = true;
+    showToast('Naipadala na ang OTP.', 'success');
+  } catch (failure) {
+    console.error('Volunteer OTP failed', failure);
+    showError('v-inp-phone', 'v-err-phone', 'Hindi maipadala ang OTP. Subukan muli.');
+  }
 });
 
-// ── Step navigation ───────────────────────────────────────────────────────────
-function goToStep(n) {
-  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
-  const panel = document.getElementById(`step-${n === 7 ? 'success' : n}`);
-  if (panel) panel.classList.add('active');
-  updateStepper(n);
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  currentStep = n;
-}
-
-function updateStepper(n) {
-  setStepperState(n, 6);
-}
-
-// ── Step 1: Phone / OTP ───────────────────────────────────────────────────────
-function bindStep1() {
-  const sendBtn   = document.getElementById('v-btn-send-otp');
-  const verifyBtn = document.getElementById('v-btn-verify-otp');
-  const otpSec    = document.getElementById('v-otp-section');
-  const resendLnk = document.getElementById('v-resend-link');
-
-  sendBtn?.addEventListener('click', () => {
-    const phone = document.getElementById('v-inp-phone').value.trim();
-    clearFieldError('v-inp-phone', 'v-err-phone');
-    if (!phone || !/^\d{10}$/.test(phone)) {
-      showFieldError('v-inp-phone', 'v-err-phone', 'Ilagay ang valid na 10-digit na numero.');
-      return;
+const otpInputs = document.querySelectorAll('.otp-input');
+otpInputs.forEach((input, idx) => {
+  function moveToNextIfNeeded() {
+    if (input.value && idx < otpInputs.length - 1) {
+      requestAnimationFrame(() => otpInputs[idx + 1].focus());
     }
-    otpSec?.classList.remove('hidden');
-    sendBtn.style.display = 'none';
-    showToast('Na-send ang OTP! (Demo: anumang 6 digits)', 'success');
-    startOtpTimer();
+  }
+
+  input.addEventListener('input', (event) => {
+    const val = event.target.value.replace(/\D/g, '').slice(-1);
+    event.target.value = val;
+    event.target.classList.toggle('filled', Boolean(val));
+    if (val) moveToNextIfNeeded();
+    checkOtpComplete();
   });
 
-  verifyBtn?.addEventListener('click', () => {
-    const otp = document.getElementById('v-inp-otp').value.trim();
-    clearFieldError('v-inp-otp', 'v-err-otp');
-    if (!otp || otp.length !== 6 || !/^\d{6}$/.test(otp)) {
-      showFieldError('v-inp-otp', 'v-err-otp', 'Ilagay ang 6-digit na code.');
-      return;
+  input.addEventListener('keydown', (event) => {
+    if (event.key === 'Backspace' && !input.value && idx > 0) {
+      otpInputs[idx - 1].focus();
+      otpInputs[idx - 1].value = '';
+      otpInputs[idx - 1].classList.remove('filled');
     }
+  });
+
+  input.addEventListener('paste', (event) => {
+    event.preventDefault();
+    const pasted = event.clipboardData.getData('text').replace(/\D/g, '');
+    [...pasted.slice(0, 6)].forEach((char, i) => {
+      if (otpInputs[i]) {
+        otpInputs[i].value = char;
+        otpInputs[i].classList.add('filled');
+      }
+    });
+    const nextIndex = Math.min(pasted.length, otpInputs.length - 1);
+    if (otpInputs[nextIndex]) requestAnimationFrame(() => otpInputs[nextIndex].focus());
+    checkOtpComplete();
+  });
+});
+
+function getOtpValue() {
+  return [...otpInputs].map((input) => input.value).join('');
+}
+
+function checkOtpComplete() {
+  const complete = getOtpValue().length === 6;
+  $('v-btn-verify-otp').disabled = !complete;
+  if (complete && pendingConfirmation) {
+    $('v-btn-verify-otp').click();
+  }
+}
+
+$('v-btn-verify-otp').addEventListener('click', async () => {
+  clearField('v-inp-otp', 'v-err-otp');
+  const code = getOtpValue();
+  if (code.length < 6) return;
+
+  try {
+    await confirmOTP(pendingConfirmation, code);
+    clearOtpTimer();
+    showToast('Na-verify ang numero!', 'success');
     goToStep(2);
-  });
+  } catch (failure) {
+    console.error('Volunteer OTP verification failed', failure);
+    showError('v-inp-otp', 'v-err-otp', 'Hindi valid ang OTP. Subukan muli.');
+  }
+});
 
-  resendLnk?.addEventListener('click', () => {
-    showToast('Na-send muli ang OTP!', 'info');
-    startOtpTimer();
-  });
-}
+function startOtpTimer(seconds) {
+  clearOtpTimer();
+  let remaining = seconds;
+  const resendBtn = $('v-btn-resend');
+  const countdownEl = $('otp-countdown');
+  resendBtn.disabled = true;
 
-function startOtpTimer() {
-  const timerEl = document.getElementById('v-otp-timer');
-  if (!timerEl) return;
-  let secs = 60;
-  timerEl.textContent = `(${secs}s)`;
-  const iv = setInterval(() => {
-    secs--;
-    timerEl.textContent = secs > 0 ? `(${secs}s)` : '';
-    if (secs <= 0) clearInterval(iv);
+  otpTimer = setInterval(() => {
+    remaining -= 1;
+    countdownEl.textContent = `Mag-expire sa ${remaining}s. `;
+    if (remaining <= 0) {
+      clearOtpTimer();
+      countdownEl.textContent = '';
+      resendBtn.disabled = false;
+    }
   }, 1000);
 }
 
-// ── Step 2: Identity + Commitment ─────────────────────────────────────────────
-function bindStep2() {
-  document.getElementById('v-btn-2-back')?.addEventListener('click', () => goToStep(1));
-  document.getElementById('v-btn-2-next')?.addEventListener('click', () => {
-    if (!validateStep2()) return;
-    const nickname = document.getElementById('v-inp-nickname').value.trim()
-      || document.getElementById('v-inp-name').value.trim().split(' ')[0];
-    const certEl = document.getElementById('cert-name-display');
-    if (certEl) certEl.textContent = nickname;
-    goToStep(3);
+function clearOtpTimer() {
+  if (otpTimer) {
+    clearInterval(otpTimer);
+    otpTimer = null;
+  }
+}
+
+$('v-btn-resend').addEventListener('click', async () => {
+  const raw = $('v-inp-phone').value.trim();
+  otpInputs.forEach((input) => {
+    input.value = '';
+    input.classList.remove('filled');
   });
-
-  document.getElementById('cc-regular')?.addEventListener('click', () => selectCommit('regular'));
-  document.getElementById('cc-backup')?.addEventListener('click',  () => selectCommit('backup'));
-}
-
-function selectCommit(level) {
-  commitLevel = level;
-  document.getElementById('cc-regular')?.classList.toggle('selected', level === 'regular');
-  document.getElementById('cc-backup')?.classList.toggle('selected',  level === 'backup');
-}
-
-function validateStep2() {
-  let ok = true;
-  const name     = document.getElementById('v-inp-name').value.trim();
-  const nickname = document.getElementById('v-inp-nickname').value.trim();
-
-  clearFieldError('v-inp-name',     'v-err-name');
-  clearFieldError('v-inp-nickname', 'v-err-nickname');
-
-  if (!name || name.length < 3) {
-    showFieldError('v-inp-name', 'v-err-name', 'Ilagay ang iyong buong pangalan (min 3 chars).');
-    ok = false;
+  try {
+    pendingConfirmation = await sendOTP(phone(), 'recaptcha-container');
+    startOtpTimer(60);
+    showToast('Bagong OTP code ang ipinadala.', 'info');
+  } catch (failure) {
+    console.error('resendOTP failed', failure);
+    showToast('Hindi maipadala ang bagong code. Subukan muli.', 'error');
   }
-  if (!nickname || nickname.length < 2) {
-    showFieldError('v-inp-nickname', 'v-err-nickname', 'Ilagay ang palayaw (min 2 chars).');
-    ok = false;
-  }
-  if (!commitLevel) {
-    const e = document.getElementById('v-err-commitment');
-    if (e) { e.textContent = 'Piliin ang iyong commitment level.'; e.classList.add('visible'); }
-    ok = false;
-  }
-  return ok;
+  checkOtpComplete();
+});
+
+const barangays = ['Lahug', 'Mabolo', 'Banilad', 'Apas', 'Talamban', 'Guadalupe', 'Pardo', 'Tisa'];
+barangays.forEach((barangay) => {
+  const label = document.createElement('label');
+  label.innerHTML = `<input type="checkbox" value="${barangay}" /> ${barangay}`;
+  $('barangay-chips').appendChild(label);
+});
+
+function updateSelectionCounts() {
+  const slotCount = document.querySelectorAll('[data-slot]:checked').length;
+  const barangayCount = $('barangay-chips').querySelectorAll('input:checked').length;
+  $('availability-count').textContent = `${slotCount} napili`;
+  $('barangay-count').textContent = `${barangayCount} napili`;
 }
 
-// ── Step 3: Availability + Barangays ─────────────────────────────────────────
-function renderBarangayChips() {
-  const container = document.getElementById('barangay-chips');
-  if (!container) return;
-  container.innerHTML = BARANGAYS.map(b => `
-    <div class="barangay-chip" data-brgy="${b}">${b}</div>
-  `).join('');
-  container.querySelectorAll('.barangay-chip').forEach(chip => {
-    chip.addEventListener('click', () => toggleBarangay(chip));
-  });
-}
+document.querySelectorAll('[data-slot], #barangay-chips input').forEach((input) => {
+  input.addEventListener('change', updateSelectionCounts);
+});
+updateSelectionCounts();
 
-function toggleBarangay(chip) {
-  const brgy = chip.dataset.brgy;
-  if (selectedBrgy.includes(brgy)) {
-    selectedBrgy = selectedBrgy.filter(b => b !== brgy);
-    chip.classList.remove('selected');
-  } else if (selectedBrgy.length < 10) {
-    selectedBrgy.push(brgy);
-    chip.classList.add('selected');
-  } else {
-    showToast('Maximum 10 barangays na.', 'error');
+$('v-btn-2-back').addEventListener('click', () => goToStep(1));
+$('v-btn-2-next').addEventListener('click', () => {
+  let valid = true;
+
+  const name = $('v-inp-name').value.trim();
+  clearField('v-inp-name', 'v-err-name');
+  if (name.length < 3 || name.length > 100) {
+    showError('v-inp-name', 'v-err-name', 'Ang pangalan ay dapat 3-100 karakter.');
+    valid = false;
   }
-}
 
-function bindStep3() {
-  document.getElementById('v-btn-3-back')?.addEventListener('click', () => goToStep(2));
-  document.getElementById('v-btn-3-next')?.addEventListener('click', () => {
-    if (!validateStep3()) return;
+  const nickname = $('v-inp-nickname').value.trim();
+  clearField('v-inp-nickname', 'v-err-nickname');
+  if (nickname.length < 2) {
+    showError('v-inp-nickname', 'v-err-nickname', 'Maglagay ng palayaw.');
+    valid = false;
+  }
+
+  clearField('v-inp-barangay', 'v-err-barangay');
+  if (!$('v-inp-barangay').value) {
+    showError('v-inp-barangay', 'v-err-barangay', 'Pumili ng barangay.');
+    valid = false;
+  }
+
+  clearField('v-inp-commitment', 'v-err-commitment');
+  if (!$('v-inp-commitment').value) {
+    showError('v-inp-commitment', 'v-err-commitment', 'Pumili ng commitment.');
+    valid = false;
+  }
+
+  if (valid) goToStep(3);
+});
+
+$('v-inp-id').addEventListener('change', () => {
+  const file = $('v-inp-id').files[0];
+  $('v-id-file-name').textContent = file ? file.name : 'Pumili ng file';
+});
+
+$('v-btn-3-back').addEventListener('click', () => goToStep(2));
+$('v-btn-3-next').addEventListener('click', async () => {
+  const file = $('v-inp-id').files[0];
+  clearField('v-inp-id', 'v-err-id');
+  if (!file) {
+    showError('v-inp-id', 'v-err-id', 'Kailangan ang valid ID para sa trust review.');
+    return;
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    showError('v-inp-id', 'v-err-id', 'Ang file ay dapat 10 MB o mas maliit.');
+    return;
+  }
+  if (!['image/jpeg', 'image/png', 'application/pdf'].includes(file.type)) {
+    showError('v-inp-id', 'v-err-id', 'JPG, PNG, o PDF lamang ang tinatanggap.');
+    return;
+  }
+
+  const nextButton = $('v-btn-3-next');
+  nextButton.disabled = true;
+  nextButton.textContent = 'Ina-upload...';
+  try {
+    const uid = auth.currentUser?.uid;
+    if (!uid) throw new Error('missing_auth');
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '-');
+    const storagePath = `authorization-letters/${uid}/volunteer-id/${Date.now()}-${safeName}`;
+    await uploadBytes(ref(storage, storagePath), file, { contentType: file.type });
+
+    const requestRef = doc(collection(db, 'verificationRequests'));
+    verificationRequestId = requestRef.id;
+    await setDoc(requestRef, {
+      requestId: requestRef.id,
+      uploaderUid: uid,
+      targetUid: uid,
+      type: 'volunteer_id',
+      storagePath,
+      referralCode: $('v-inp-referral').value.trim() || null,
+      status: 'pending',
+      reviewerUid: null,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+    showToast('Naipasa ang ID para sa LGU review.', 'success');
     goToStep(4);
+  } catch (failure) {
+    console.error('Volunteer ID upload failed', failure);
+    showError('v-inp-id', 'v-err-id', 'Hindi ma-upload ang ID. Subukan muli.');
+  } finally {
+    nextButton.disabled = false;
+    nextButton.textContent = 'Susunod →';
+  }
+});
+
+const commitmentButtons = document.querySelectorAll('[data-value]');
+commitmentButtons.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    commitmentButtons.forEach((button) => button.classList.remove('active'));
+    btn.classList.add('active');
+    $('v-inp-commitment').value = btn.dataset.value;
   });
-}
+});
 
-function validateStep3() {
-  const slots    = document.querySelectorAll('.avail-grid input[type="checkbox"]:checked');
-  const availErr = document.getElementById('v-err-avail');
-  const brgyErr  = document.getElementById('v-err-barangay');
+$('v-btn-4-next').addEventListener('click', () => {
+  const selectedSlots = [...document.querySelectorAll('[data-slot]:checked')];
+  const preferred = [...$('barangay-chips').querySelectorAll('input:checked')];
+  let valid = true;
 
-  if (availErr) { availErr.textContent = ''; availErr.classList.remove('visible'); }
-  if (brgyErr)  { brgyErr.textContent  = ''; brgyErr.classList.remove('visible'); }
-
-  let ok = true;
-  if (slots.length === 0) {
-    if (availErr) { availErr.textContent = 'Piliin ang kahit isang oras ng availability.'; availErr.classList.add('visible'); }
-    ok = false;
+  clearField('v-err-avail', 'v-err-avail');
+  if (!selectedSlots.length) {
+    showError('v-err-avail', 'v-err-avail', 'Pumili ng kahit isang availability.');
+    valid = false;
   }
-  if (selectedBrgy.length === 0) {
-    if (brgyErr) { brgyErr.textContent = 'Piliin ang kahit isang barangay.'; brgyErr.classList.add('visible'); }
-    ok = false;
+
+  clearField('barangay-chips', 'v-err-preferred');
+  if (!preferred.length || preferred.length > 10) {
+    showError('barangay-chips', 'v-err-preferred', 'Pumili ng 1 hanggang 10 barangay.');
+    valid = false;
   }
-  return ok;
-}
 
-// ── Step 4: Emergency Contact ─────────────────────────────────────────────────
-function bindStep4() {
-  document.getElementById('v-btn-4-back')?.addEventListener('click', () => goToStep(3));
-  document.getElementById('v-btn-4-next')?.addEventListener('click', () => {
-    if (!validateStep4()) return;
-    goToStep(5);
-  });
-}
-
-function validateStep4() {
-  const name  = document.getElementById('v-inp-ec-name').value.trim();
-  const phone = document.getElementById('v-inp-ec-phone').value.trim();
-  let ok = true;
-
-  clearFieldError('v-inp-ec-name',  'v-err-ec-name');
-  clearFieldError('v-inp-ec-phone', 'v-err-ec-phone');
-
-  if (!name || name.length < 3) {
-    showFieldError('v-inp-ec-name', 'v-err-ec-name', 'Ilagay ang pangalan ng kontak (min 3 chars).');
-    ok = false;
+  clearField('v-inp-transport', 'v-err-transport');
+  if (!$('v-inp-transport').value) {
+    showError('v-inp-transport', 'v-err-transport', 'Pumili ng transportasyon.');
+    valid = false;
   }
-  if (!phone || !/^\d{10}$/.test(phone)) {
-    showFieldError('v-inp-ec-phone', 'v-err-ec-phone', 'Ilagay ang valid na 10-digit na numero.');
-    ok = false;
+
+  if (valid) goToStep(5);
+});
+
+$('v-btn-4-back').addEventListener('click', () => goToStep(3));
+$('v-btn-5-back').addEventListener('click', () => goToStep(4));
+$('v-btn-submit').addEventListener('click', async () => {
+  let valid = true;
+
+  clearField('v-inp-ec-name', 'v-err-ec-name');
+  if ($('v-inp-ec-name').value.trim().length < 3) {
+    showError('v-inp-ec-name', 'v-err-ec-name', 'Maglagay ng emergency contact.');
+    valid = false;
   }
-  return ok;
-}
 
-// ── Step 5: Team Code ─────────────────────────────────────────────────────────
-function bindStep5() {
-  document.getElementById('v-btn-5-back')?.addEventListener('click', () => goToStep(4));
-  document.getElementById('v-btn-5-next')?.addEventListener('click', () => goToStep(6));
-  document.getElementById('v-skip-team')?.addEventListener('click', () => goToStep(6));
-}
+  clearField('v-inp-ec-phone', 'v-err-ec-phone');
+  if (!isValidPHPhone(normalizePhone($('v-inp-ec-phone').value))) {
+    showError('v-inp-ec-phone', 'v-err-ec-phone', 'Maglagay ng valid na contact number.');
+    valid = false;
+  }
 
-// ── Step 6: Certificate Preview + Submit ──────────────────────────────────────
-function bindStep6() {
-  document.getElementById('v-btn-6-back')?.addEventListener('click', () => goToStep(5));
-  document.getElementById('v-btn-submit')?.addEventListener('click', () => {
-    const btn = document.getElementById('v-btn-submit');
-    if (btn) { btn.disabled = true; btn.textContent = '⏳ Sine-save...'; }
-    setTimeout(() => goToStep(7), 900);
-  });
-}
+  clearField('v-chk-terms', 'v-err-terms');
+  if (!$('v-chk-terms').checked) {
+    showError('v-chk-terms', 'v-err-terms', 'Kailangan ang iyong pagsang-ayon.');
+    valid = false;
+  }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-function setupOnline() {
-  const update = () => document.body.classList.toggle('offline', !navigator.onLine);
-  window.addEventListener('online',  update);
-  window.addEventListener('offline', update);
-  update();
+  if (!valid) return;
+
+  $('v-btn-submit').disabled = true;
+  try {
+    await signupVolunteerWithProfile(buildVolunteerPayload());
+    showToast('Nagawa na ang volunteer account.', 'success');
+    window.location.href = '../volunteer/index.html';
+  } catch (failure) {
+    console.error('Volunteer signup failed', failure);
+    showToast('Hindi ma-save ang account. Subukan muli.', 'error');
+    $('v-btn-submit').disabled = false;
+  }
+});
+
+function updateOnline() {
+  document.body.classList.toggle('offline', !navigator.onLine);
 }
+window.addEventListener('online', updateOnline);
+window.addEventListener('offline', updateOnline);
+updateOnline();

@@ -3,53 +3,53 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ResQFood — Redirecting</title>
-  <meta http-equiv="refresh" content="0; url=donor.html" />
+  <title>ResQFood - Organization Registration</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/auth.css" />
+  <link rel="stylesheet" href="../css/volunteer-register.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    .org-step-note { border-left: 4px solid var(--color-accent); padding-left: var(--sp-4); margin-bottom: var(--sp-6); }
+    .org-kicker { color: var(--color-accent-dk); font-size: .68rem; font-weight: 800; letter-spacing: .12em; }
+    .device-card { background: var(--color-surface-low); border-radius: var(--radius-md); padding: var(--sp-5); text-align: center; }
+    .device-icon { font-size: 2.5rem; display: block; margin-bottom: var(--sp-3); }
+    .device-status { color: var(--color-muted); font-size: .85rem; margin: var(--sp-3) 0 0; }
+    .org-summary { background: var(--color-success-lt); border-radius: var(--radius-md); padding: var(--sp-4); margin-bottom: var(--sp-5); font-size: .88rem; }
+    .org-summary strong { display: block; color: var(--color-primary); font-size: 1.05rem; margin-bottom: .2rem; }
+    .step-panel { display: none; }
+    .step-panel.active { display: block; }
+  </style>
 </head>
-<body style="margin:0; min-height:100vh; display:grid; place-items:center; font-family:Arial,sans-serif; background:#f5f2ee; color:#1f2937;">
-  <div style="text-align:center; padding:2rem;">
-    <p>Redirecting to donor registration…</p>
-    <p><a href="donor.html">Click here if you are not redirected.</a></p>
+<body>
+  <div id="offline-banner">📶 Offline mode. Subukan muli kapag may koneksyon.</div>
+  <div class="reg-hero"><span class="brand-mark">🍱 RESQFOOD</span><h1>Mag-register bilang Organization</h1><p>Isang account para sa buong feeding team.</p></div>
+  <div style="background:#fff; padding:1rem 1.25rem 0; max-width:520px; margin:0 auto;">
+    <div class="stepper" id="reg-stepper" aria-label="Mga hakbang sa organization registration">
+      <div class="step-item active" id="si-1"><div class="step-dot">1</div><div class="step-label">OTP</div></div>
+      <div class="step-item" id="si-2"><div class="step-dot">2</div><div class="step-label">Org Profile</div></div>
+      <div class="step-item" id="si-3"><div class="step-dot">3</div><div class="step-label">Contact</div></div>
+      <div class="step-item" id="si-4"><div class="step-dot">4</div><div class="step-label">Authorization</div></div>
+      <div class="step-item" id="si-5"><div class="step-dot">5</div><div class="step-label">Device</div></div>
+      <div class="step-item" id="si-6"><div class="step-dot">6</div><div class="step-label">Training</div></div>
+      <div class="step-item" id="si-7"><div class="step-dot">✓</div><div class="step-label">Pending</div></div>
+    </div>
   </div>
-  <script>
-    window.location.replace('donor.html');
-  </script>
-</body>
-</html>
-
-        <span id="submit-label">Isumite ang Registration</span>
-      </button>
-
-      <p style="font-size:.78rem; color:var(--color-muted); text-align:center; margin-top:var(--sp-4);">
-        Ang inyong account ay magiging <strong>pending_training</strong> hanggang ma-activate ng LGU.
-      </p>
-    </div>
-
-    <!-- ══ SUCCESS ══ -->
-    <div class="step-panel" id="step-success">
-      <div class="completion-screen">
-        <div class="check-icon">✅</div>
-        <h2>Handa na ang inyong account!</h2>
-        <p class="text-muted" style="margin-bottom:var(--sp-6);">
-          Na-register ang <strong id="success-orgname"></strong>. Hihintayin lang ang activation ng LGU pagkatapos ng orientation.
-        </p>
-        <div style="background:var(--color-warning-lt); border-radius:var(--radius-md); padding:var(--sp-4); margin-bottom:var(--sp-6); font-size:.85rem;">
-          <strong>⏳ Status: Pending Training</strong><br />
-          Makikipag-ugnayan sa inyo ang inyong LGU coordinator para sa orientation schedule.
-        </div>
-        <a class="btn btn-primary btn-lg btn-full" href="../org-admin/index.html">
-          Pumunta sa Dashboard →
-        </a>
-        <a class="btn btn-ghost btn-full" href="index.html" style="margin-top:var(--sp-3); display:block; text-align:center;">
-          Bumalik sa Home
-        </a>
-      </div>
-    </div>
-
-  </div><!-- /reg-container -->
-
+  <main class="reg-container" id="reg-main" style="max-width:520px; margin:0 auto;">
+    <section class="step-panel active" id="step-1">
+      <div class="step-title">I-verify ang coordinator</div><div class="step-desc">Magpapadala kami ng 6-digit code sa mobile number ng taong mamamahala sa organization account.</div>
+      <div class="form-group"><label class="form-label" for="o-inp-phone">Numero ng Telepono</label><div class="phone-input-wrap"><span class="phone-prefix">🇵🇭 +63</span><input id="o-inp-phone" type="tel" inputmode="numeric" maxlength="10" placeholder="9171234567" autocomplete="tel" /></div><div class="form-hint">Halimbawa: 9171234567 (huwag ilagay ang unang 0)</div><div class="form-error" id="o-err-phone"></div></div>
+      <div id="recaptcha-container"></div><button class="btn btn-primary btn-full btn-lg" id="o-btn-send-otp" type="button">Magpadala ng Code</button>
+      <div id="o-otp-section" class="hidden" style="margin-top:2rem;"><div class="step-desc">Ilagay ang code na natanggap sa <strong id="o-otp-phone"></strong></div><div class="otp-group" aria-label="OTP input"><input class="otp-input" type="text" inputmode="numeric" maxlength="1" /><input class="otp-input" type="text" inputmode="numeric" maxlength="1" /><input class="otp-input" type="text" inputmode="numeric" maxlength="1" /><input class="otp-input" type="text" inputmode="numeric" maxlength="1" /><input class="otp-input" type="text" inputmode="numeric" maxlength="1" /><input class="otp-input" type="text" inputmode="numeric" maxlength="1" /></div><div class="form-error" id="o-err-otp"></div><div class="otp-timer"><span id="o-otp-countdown"></span><button class="resend-btn" id="o-btn-resend" type="button" disabled>Magpadala ulit</button></div><button class="btn btn-primary btn-full btn-lg" id="o-btn-verify-otp" type="button" disabled>I-verify ang Code</button></div>
+    </section>
+    <section class="step-panel" id="step-2"><div class="org-step-note"><span class="org-kicker">ORGANIZATION FIRST</span><div class="step-title">Ano ang pangalan ng inyong organization?</div><div class="step-desc">Ang account ay para sa organization, kaya hindi mawawala ang access kapag nagbago ang staff.</div></div><div class="form-group"><label class="form-label" for="o-inp-name">Pangalan ng Organization</label><input id="o-inp-name" class="form-input" maxlength="150" placeholder="Halimbawa: Lahug Soup Kitchen" /><div class="form-error" id="o-err-name"></div></div><div class="form-group"><label class="form-label" for="o-inp-type">Uri ng Organization</label><select id="o-inp-type" class="form-select"><option value="">Pumili</option><option value="soup_kitchen">Soup Kitchen</option><option value="feeding_program">Barangay Feeding Program</option><option value="church_group">Church / Community Group</option><option value="nonprofit">Nonprofit Organization</option></select><div class="form-error" id="o-err-type"></div></div><div class="form-group"><label class="form-label" for="o-inp-barangay">Barangay</label><select id="o-inp-barangay" class="form-select"><option value="">Pumili</option><option>Lahug</option><option>Mabolo</option><option>Banilad</option><option>Apas</option><option>Talamban</option><option>Guadalupe</option><option>Pardo</option><option>Tisa</option></select><div class="form-error" id="o-err-barangay"></div></div><div class="step-nav"><button class="btn btn-ghost btn-back" id="o-btn-2-back" type="button">← Bumalik</button><button class="btn btn-primary btn-next" id="o-btn-2-next" type="button">Susunod →</button></div></section>
+    <section class="step-panel" id="step-3"><div class="step-title">Sino ang coordinator?</div><div class="step-desc">Ito ang primary contact para sa orientation, delivery notifications, at account recovery.</div><div class="form-group"><label class="form-label" for="o-inp-contact">Buong Pangalan</label><input id="o-inp-contact" class="form-input" maxlength="100" autocomplete="name" placeholder="Ana Santos" /><div class="form-error" id="o-err-contact"></div></div><div class="form-group"><label class="form-label" for="o-inp-designation">Designation</label><input id="o-inp-designation" class="form-input" maxlength="80" placeholder="Program Coordinator" /><div class="form-error" id="o-err-designation"></div></div><div class="step-nav"><button class="btn btn-ghost btn-back" id="o-btn-3-back" type="button">← Bumalik</button><button class="btn btn-primary btn-next" id="o-btn-3-next" type="button">Susunod →</button></div></section>
+    <section class="step-panel" id="step-4"><div class="step-title">Patunayan ang organization</div><div class="step-desc">Mag-upload ng authorization document para ma-review ng LGU. PDF, JPG, o PNG lamang, hanggang 10 MB.</div><div class="form-group"><label class="form-label" for="o-inp-doc">Authorization document</label><label class="upload-card" for="o-inp-doc"><span class="upload-icon">↑</span><span><strong id="o-file-name">Pumili ng file</strong><small>Authorization letter, permit, o organization proof</small></span></label><input id="o-inp-doc" class="file-input" type="file" accept="image/jpeg,image/png,application/pdf" /><div class="form-error" id="o-err-doc"></div></div><div class="form-group"><label class="form-label" for="o-inp-invite">Invite code <span class="optional">Opsyonal kung may manual review</span></label><input id="o-inp-invite" class="form-input" maxlength="80" placeholder="Ilagay ang code mula sa LGU" /></div><div class="step-nav"><button class="btn btn-ghost btn-back" id="o-btn-4-back" type="button">← Bumalik</button><button class="btn btn-primary btn-next" id="o-btn-4-next" type="button">I-submit ang Document</button></div></section>
+    <section class="step-panel" id="step-5"><div class="step-title">Device check</div><div class="step-desc">Titingnan namin kung may camera ang device. Hindi kailangan ng technical setup.</div><div class="device-card"><span class="device-icon">📷</span><strong id="o-device-mode">Hindi pa nasusuri</strong><p class="device-status" id="o-device-status">Pindutin ang button para piliin ang QR o PIN mode.</p><button class="btn btn-primary btn-full" id="o-btn-device" type="button">Buksan ang Camera</button></div><div class="step-nav"><button class="btn btn-ghost btn-back" id="o-btn-5-back" type="button">← Bumalik</button><button class="btn btn-primary btn-next" id="o-btn-5-next" type="button" disabled>Susunod →</button></div></section>
+    <section class="step-panel" id="step-6"><div class="step-title">Training at responsibilidad</div><div class="step-desc">Bago maging active ang organization, kailangan ang orientation at malinaw na receiving process.</div><div class="org-summary"><strong id="o-summary-name">Organization</strong><span>Pending LGU review</span></div><label class="checkbox-row" for="o-chk-training"><input id="o-chk-training" type="checkbox" /><span>Nauunawaan ko na kailangan ng 30-minutong orientation bago makatanggap ng deliveries.</span></label><div class="form-error" id="o-err-training"></div><label class="checkbox-row" for="o-chk-responsibility" style="margin-top:var(--sp-3);"><input id="o-chk-responsibility" type="checkbox" /><span>Ako ay responsable sa tamang pag-scan, pag-verify, at pag-record ng mga deliveries.</span></label><div class="form-error" id="o-err-responsibility"></div><div class="step-nav"><button class="btn btn-ghost btn-back" id="o-btn-6-back" type="button">← Bumalik</button><button class="btn btn-primary btn-next" id="o-btn-submit" type="button">I-submit ang Registration</button></div></section>
+    <section class="step-panel" id="step-7"><div class="completion-screen"><div class="check-icon">✓</div><h2>Na-submit na ang application</h2><p class="text-muted">Pending review ang organization account. Makikipag-ugnayan ang LGU coordinator para sa verification at orientation.</p><a class="btn btn-primary btn-full" href="../org-admin/index.html">Buksan ang Org Dashboard</a></div></section>
+  </main>
   <div id="toast-container" aria-live="polite"></div>
-
   <script type="module" src="../js/register/orgAdmin.js"></script>
 </body>
 </html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResQFood - App Admin Dashboard</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/admin.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="admin-topbar">
+    <span class="brand">🍱 RESQFOOD</span>
+    <span class="topbar-barangay">Global Operations</span>
+    <span class="admin-name">App Admin</span>
+    <span class="mfa-badge">🔐 System Admin</span>
+    <button class="signout-btn" id="btn-signout">Sign out</button>
+  </header>
+
+  <div id="offline-banner">📶 Offline ka ngayon. Ilang features ay hindi available.</div>
+
+  <div class="admin-layout">
+    <nav class="admin-sidenav" aria-label="App admin navigation">
+      <a class="nav-link active" href="index.html"><span class="nav-icon">🛡️</span>Overview</a>
+      <a class="nav-link" href="users.html"><span class="nav-icon">👥</span>All Users</a>
+      <a class="nav-link" href="audit.html"><span class="nav-icon">📋</span>Global Audit</a>
+      <a class="nav-link" href="../admin/index.html"><span class="nav-icon">🏛️</span>LGU Admin</a>
+    </nav>
+
+    <main class="admin-main">
+      <div class="admin-main-inner">
+        <h1 class="page-title">App Admin Overview</h1>
+        <p class="page-subtitle">System-wide controls for roles, invitations, reviews, and audit records.</p>
+
+        <div class="metrics-grid">
+          <div class="metric-card"><div class="m-icon">👥</div><span class="m-val">—</span><div class="m-lbl">Registered users</div><div class="m-delta">Connect to live data next</div></div>
+          <div class="metric-card accent"><div class="m-icon">🏛️</div><span class="m-val">—</span><div class="m-lbl">LGU administrators</div><div class="m-delta">Review and assign access</div></div>
+          <div class="metric-card success"><div class="m-icon">⏳</div><span class="m-val">—</span><div class="m-lbl">Pending reviews</div><div class="m-delta">Verification queue</div></div>
+          <div class="metric-card warning"><div class="m-icon">🔑</div><span class="m-val">—</span><div class="m-lbl">Active invites</div><div class="m-delta">Short-lived access</div></div>
+        </div>
+
+        <p class="section-head">System Controls</p>
+        <div class="quick-actions">
+          <a class="qa-card" href="users.html"><span class="qa-icon">👥</span><div><span class="qa-label">Manage Users</span><div class="qa-sub">Roles and account status</div></div></a>
+          <a class="qa-card" href="audit.html"><span class="qa-icon">📋</span><div><span class="qa-label">Global Audit Trail</span><div class="qa-sub">Review system actions</div></div></a>
+          <a class="qa-card" href="../register/lgu-invite.html"><span class="qa-icon">✉️</span><div><span class="qa-label">LGU Invite Flow</span><div class="qa-sub">Invitation-only registration</div></div></a>
+          <a class="qa-card" href="../admin/index.html"><span class="qa-icon">🏛️</span><div><span class="qa-label">Open LGU Dashboard</span><div class="qa-sub">Barangay operations</div></div></a>
+        </div>
+
+        <div class="alert alert-info" style="margin-top:var(--sp-6);">
+          <span>ℹ️</span>
+          <span>This App Admin surface is the capstone control room. Production access must be protected by Firebase Auth and the <strong>systemAdmin</strong> claim.</span>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="toast-container" aria-live="polite"></div>
+  <script type="module" src="../js/modules/appAdmin.js"></script>
+</body>
+</html>

@@ -3,313 +3,52 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ResQFood — Redirecting</title>
-  <meta http-equiv="refresh" content="0; url=donor.html" />
-</head>
-<body style="margin:0; min-height:100vh; display:grid; place-items:center; font-family:Arial,sans-serif; background:#f5f2ee; color:#1f2937;">
-  <div style="text-align:center; padding:2rem;">
-    <p>Redirecting to donor registration…</p>
-    <p><a href="donor.html">Click here if you are not redirected.</a></p>
-  </div>
-  <script>
-    window.location.replace('donor.html');
-  </script>
-</body>
-</html>
-    .policy-bar {
-      display: flex;
-      align-items: center;
-      gap: var(--sp-2);
-      font-size: .78rem;
-      font-weight: 600;
-      margin-top: var(--sp-2);
-    }
-    .policy-bar .pi { color: var(--color-muted); }
-    .policy-bar .pass { color: var(--color-success); }
-    .policy-bar .fail { color: var(--color-danger); }
-    .policy-item { margin-right: var(--sp-3); }
-    .audit-scroll-box {
-      height: 160px;
-      overflow-y: auto;
-      background: var(--color-surface-low);
-      border-radius: var(--radius-md);
-      padding: var(--sp-4);
-      font-size: .85rem;
-      line-height: 1.7;
-      color: var(--color-muted);
-      margin-bottom: var(--sp-4);
-      border: 1px solid var(--color-border);
-    }
-    .file-upload-area {
-      border: 2px dashed var(--color-border-solid);
-      border-radius: var(--radius-md);
-      padding: var(--sp-6);
-      text-align: center;
-      cursor: pointer;
-      transition: border-color .15s, background .15s;
-      margin-bottom: var(--sp-4);
-    }
-    .file-upload-area:hover { border-color: var(--color-primary); background: var(--color-surface-low); }
-    .file-upload-area.file-selected { border-color: var(--color-success); background: var(--color-success-lt); }
-    .file-icon { font-size: 2rem; display: block; margin-bottom: var(--sp-2); }
-    #file-input { display: none; }
+  <title>ResQFood - LGU Registration</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/auth.css" />
+  <link rel="stylesheet" href="../css/volunteer-register.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    .lgu-note { border-left: 4px solid var(--color-accent); padding-left: var(--sp-4); margin-bottom: var(--sp-6); }
+    .lgu-kicker { color: var(--color-accent-dk); font-size: .68rem; font-weight: 800; letter-spacing: .12em; }
+    .invite-state { padding: var(--sp-4); border-radius: var(--radius-md); background: var(--color-success-lt); color: var(--color-primary); font-weight: 700; margin-bottom: var(--sp-5); }
+    .audit-policy { max-height: 180px; overflow-y: auto; padding: var(--sp-4); border-radius: var(--radius-md); background: var(--color-surface-low); font-size: .84rem; line-height: 1.6; margin-bottom: var(--sp-4); }
+    .step-panel { display:none; } .step-panel.active { display:block; }
   </style>
 </head>
 <body>
-  <div id="offline-banner">📶 Offline mode. Subukan muli kapag may koneksyon.</div>
-
-  <!-- Hero -->
-  <div class="reg-hero" style="background: linear-gradient(135deg, #1e3a2f, var(--color-primary));">
-    <span class="brand-mark">🍱 RESQFOOD</span>
-    <h1>LGU Admin Registration</h1>
-    <p>Para sa mga opisyal ng barangay na itinalaga bilang ResQFood liaison.</p>
-  </div>
-
-  <!-- Stepper -->
-  <div style="background:#fff; padding:1rem 1.25rem 0; max-width:480px; margin:0 auto;">
-    <div class="stepper" id="reg-stepper" aria-label="Mga hakbang sa registration">
-      <div class="step-item active" id="si-1">
-        <div class="step-dot">1</div>
-        <div class="step-label">Token</div>
-      </div>
-      <div class="step-item" id="si-2">
-        <div class="step-dot">2</div>
-        <div class="step-label">Email</div>
-      </div>
-      <div class="step-item" id="si-3">
-        <div class="step-dot">3</div>
-        <div class="step-label">Dokumento</div>
-      </div>
-      <div class="step-item" id="si-4">
-        <div class="step-dot">4</div>
-        <div class="step-label">MFA</div>
-      </div>
-      <div class="step-item" id="si-5">
-        <div class="step-dot">✓</div>
-        <div class="step-label">Tapos</div>
-      </div>
+  <div id="offline-banner">📶 Offline mode. Kailangan ng koneksyon para sa invite verification.</div>
+  <div class="reg-hero"><span class="brand-mark">🍱 RESQFOOD</span><h1>LGU Administrator</h1><p>Invitation-only registration para sa local governance.</p></div>
+  <div style="background:#fff; padding:1rem 1.25rem 0; max-width:520px; margin:0 auto;">
+    <div class="stepper" aria-label="Mga hakbang sa LGU registration">
+      <div class="step-item active" id="si-1"><div class="step-dot">1</div><div class="step-label">Invite</div></div>
+      <div class="step-item" id="si-2"><div class="step-dot">2</div><div class="step-label">OTP</div></div>
+      <div class="step-item" id="si-3"><div class="step-dot">3</div><div class="step-label">Identity</div></div>
+      <div class="step-item" id="si-4"><div class="step-dot">4</div><div class="step-label">Document</div></div>
+      <div class="step-item" id="si-5"><div class="step-dot">5</div><div class="step-label">Policy</div></div>
+      <div class="step-item" id="si-6"><div class="step-dot">✓</div><div class="step-label">Pending</div></div>
     </div>
   </div>
-
-  <div class="reg-container" id="reg-main" style="max-width:480px; margin:0 auto;">
-
-    <!-- Recovery -->
-    <div class="recovery-screen" id="recovery-screen">
-      <span class="error-icon">⚠️</span>
-      <h2>Nagkaroon ng problema</h2>
-      <p id="recovery-msg" class="text-muted text-center">Subukan muli.</p>
-      <button class="btn btn-primary btn-lg btn-full" id="btn-retry">Subukan Muli</button>
-    </div>
-
-    <!-- ══ STEP 1: Token + Gov Email ══ -->
-    <div class="step-panel active" id="step-1">
-      <div class="step-title">I-verify ang inyong invitation</div>
-      <div class="step-desc">
-        Ang LGU registration ay para lamang sa mga may invitation token.
-        <br/><span style="font-size:.82rem; color:var(--color-muted);">(Demo: gamitin ang anumang token na may 6+ karakter.)</span>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label" for="inp-token">Invitation Token</label>
-        <input type="text" id="inp-token" class="form-input"
-               placeholder="hal. LAHUG-2026-ABC" />
-        <div class="form-error" id="err-token"></div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label" for="inp-barangay-lgu">Barangay</label>
-        <select id="inp-barangay-lgu" class="form-select">
-          <option value="">— Pumili —</option>
-          <option>Lahug</option><option>Mabolo</option><option>Banilad</option>
-          <option>Apas</option><option>Talamban</option><option>Guadalupe</option>
-          <option>Pardo</option><option>Tisa</option><option>Basak</option>
-          <option>Carreta</option><option>Sambag I</option><option>Sambag II</option>
-        </select>
-        <div class="form-error" id="err-barangay-lgu"></div>
-      </div>
-
-      <button class="btn btn-primary btn-lg btn-full" id="btn-1-next">
-        I-verify ang Token →
-      </button>
-    </div>
-
-    <!-- ══ STEP 2: Government Email ══ -->
-    <div class="step-panel" id="step-2">
-      <div class="step-title">Official na Email ng Barangay</div>
-      <div class="step-desc">
-        Gamitin ang inyong opisyal na government email address.
-        <br/><span style="font-size:.82rem; color:var(--color-muted);">(Demo: anumang valid email ang tatanggapin.)</span>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label" for="inp-gov-email">Government Email</label>
-        <input type="email" id="inp-gov-email" class="form-input"
-               placeholder="hal. maria.santos@lahug.barangay.gov.ph" />
-        <div class="form-error" id="err-gov-email"></div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label" for="inp-fullname">Buong Pangalan</label>
-        <input type="text" id="inp-fullname" class="form-input"
-               placeholder="hal. Maria Dela Cruz Santos" maxlength="100" />
-        <div class="form-error" id="err-fullname"></div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label" for="inp-designation">Posisyon / Titulo</label>
-        <input type="text" id="inp-designation" class="form-input"
-               placeholder="hal. Barangay Secretary, SK Chairman" maxlength="80" />
-        <div class="form-error" id="err-designation"></div>
-      </div>
-
-      <!-- Email OTP sim -->
-      <div id="email-otp-section" class="hidden">
-        <div style="background:var(--color-surface-low); border-radius:var(--radius-md); padding:var(--sp-4); margin-bottom:var(--sp-4); font-size:.88rem; color:var(--color-muted);">
-          Nagpadala ng verification link sa <strong id="email-display"></strong>.
-          <br/><span style="font-size:.8rem;">(Demo: i-click ang "I-verify" para ituloy.)</span>
-        </div>
-        <button class="btn btn-primary btn-full" id="btn-verify-email">
-          ✅ Email Verified — Ituloy
-        </button>
-      </div>
-
-      <button class="btn btn-primary btn-lg btn-full" id="btn-send-email-verify">
-        Magpadala ng Verification →
-      </button>
-    </div>
-
-    <!-- ══ STEP 3: Authorization Letter + Password ══ -->
-    <div class="step-panel" id="step-3">
-      <div class="step-title">Authorization Letter at Password</div>
-      <div class="step-desc">
-        Mag-upload ng signed authorization letter mula sa Barangay Captain, at gumawa ng secure na password.
-      </div>
-
-      <!-- File upload -->
-      <p class="form-label" style="margin-bottom:var(--sp-2);">Authorization Letter (PDF o JPG)</p>
-      <div class="file-upload-area" id="file-upload-area" onclick="document.getElementById('file-input').click()">
-        <span class="file-icon" id="file-icon">📄</span>
-        <div id="file-placeholder">
-          <strong>I-tap para pumili ng file</strong>
-          <div style="font-size:.8rem; color:var(--color-muted); margin-top:var(--sp-1);">PDF o JPG, hanggang 5MB</div>
-        </div>
-        <div id="file-selected-name" class="hidden" style="font-weight:700; color:var(--color-success);"></div>
-        <input type="file" id="file-input" accept=".pdf,.jpg,.jpeg,.png" />
-      </div>
-      <div class="form-error" id="err-file"></div>
-
-      <!-- Password -->
-      <div class="form-group">
-        <label class="form-label" for="inp-password">Password (12+ karakter)</label>
-        <div style="position:relative;">
-          <input type="password" id="inp-password" class="form-input"
-                 placeholder="Gumawa ng malakas na password" maxlength="64"
-                 style="padding-right:3rem;" />
-          <button type="button" id="btn-toggle-pw"
-                  style="position:absolute; right:var(--sp-3); top:50%; transform:translateY(-50%);
-                         background:none; border:none; cursor:pointer; font-size:1rem;">👁</button>
-        </div>
-        <div class="policy-bar" id="policy-bar">
-          <span class="policy-item pi" id="pol-len">12+ karakter</span>
-          <span class="policy-item pi" id="pol-upper">A-Z</span>
-          <span class="policy-item pi" id="pol-num">0-9</span>
-          <span class="policy-item pi" id="pol-sym">!@#</span>
-        </div>
-        <div class="form-error" id="err-password"></div>
-      </div>
-
-      <button class="btn btn-primary btn-lg btn-full" id="btn-3-next">
-        Susunod →
-      </button>
-    </div>
-
-    <!-- ══ STEP 4: MFA + Audit Acknowledgment ══ -->
-    <div class="step-panel" id="step-4">
-      <div class="step-title">MFA at Patunay ng Transparency</div>
-
-      <!-- MFA sim -->
-      <div style="background:var(--color-surface-low); border-radius:var(--radius-md); padding:var(--sp-5); margin-bottom:var(--sp-5);">
-        <p style="font-weight:700; margin-bottom:var(--sp-3);">📱 Two-Factor Authentication (MFA)</p>
-        <p style="font-size:.85rem; color:var(--color-muted); margin-bottom:var(--sp-4);">
-          Para sa dagdag na seguridad, kailangan ng SMS verification sa bawat pag-login.
-        </p>
-        <div class="form-group">
-          <label class="form-label" for="inp-mfa-phone">Numero para sa MFA</label>
-          <div class="phone-input-wrap">
-            <span class="phone-prefix">🇵🇭 +63</span>
-            <input type="tel" id="inp-mfa-phone" inputmode="numeric"
-                   placeholder="9171234567" maxlength="10"
-                   class="form-input" style="border-radius:0 var(--radius-md) var(--radius-md) 0; border-left:none;" />
-          </div>
-        </div>
-        <div id="mfa-otp-section" class="hidden">
-          <div style="font-size:.85rem; color:var(--color-muted); margin-bottom:var(--sp-3);">
-            (Demo: i-type ang anumang 6-digit code.)
-          </div>
-          <div class="otp-row" style="display:flex; gap:var(--sp-2); margin-bottom:var(--sp-3);">
-            <input class="otp-input" type="text" inputmode="numeric" maxlength="1" />
-            <input class="otp-input" type="text" inputmode="numeric" maxlength="1" />
-            <input class="otp-input" type="text" inputmode="numeric" maxlength="1" />
-            <input class="otp-input" type="text" inputmode="numeric" maxlength="1" />
-            <input class="otp-input" type="text" inputmode="numeric" maxlength="1" />
-            <input class="otp-input" type="text" inputmode="numeric" maxlength="1" />
-          </div>
-          <button class="btn btn-primary btn-full" id="btn-verify-mfa" disabled>
-            I-verify ang MFA
-          </button>
-        </div>
-        <button class="btn btn-ghost btn-full" id="btn-send-mfa" style="margin-top:var(--sp-2);">
-          📱 Magpadala ng MFA Code
-        </button>
-      </div>
-
-      <!-- Audit acknowledgment -->
-      <div style="margin-bottom:var(--sp-5);">
-        <p style="font-weight:700; margin-bottom:var(--sp-3);">📋 Patunay ng Transparency</p>
-        <div class="audit-scroll-box" id="audit-scroll-box">
-          <p><strong>Paunawa sa Pag-audit:</strong></p>
-          <p>Ang lahat ng iyong aksyon sa dashboard — pagtingin ng datos, pag-export ng report, pag-suspend ng user, at pag-activate ng organisasyon — ay <strong>nare-record at hindi mabubura</strong>.</p>
-          <p>Ito ay alinsunod sa Republic Act 10173 (Data Privacy Act of 2012) at sa transparency requirements ng lokal na pamahalaan.</p>
-          <p>Ang bawat entry sa audit trail ay may kasamang timestamp, iyong pangalan, at detalye ng aksyon. Ang rekord na ito ay maaaring tingnan ng mga authorized na opisyal ng barangay at ng ResQFood team.</p>
-          <p>Sa pag-check ng kahon sa ibaba, kinikilala mo ang iyong responsibilidad bilang System Admin ng ResQFood para sa inyong barangay.</p>
-        </div>
-        <label style="display:flex; align-items:flex-start; gap:var(--sp-3); cursor:pointer;">
-          <input type="checkbox" id="chk-audit" style="width:1.1rem; height:1.1rem; margin-top:2px; accent-color:var(--color-primary);" disabled />
-          <span style="font-size:.85rem; line-height:1.5;">
-            <strong>Naiintindihan at tinatanggap ko</strong> ang patakaran sa pag-audit ng ResQFood.
-          </span>
-        </label>
-        <div id="scroll-hint" style="font-size:.78rem; color:var(--color-muted); margin-top:var(--sp-2);">
-          ↑ I-scroll ang itaas para ma-unlock ang checkbox.
-        </div>
-      </div>
-
-      <button class="btn btn-primary btn-lg btn-full" id="btn-submit" disabled>
-        <span id="submit-label">Isumite ang Registration</span>
-      </button>
-    </div>
-
-    <!-- ══ SUCCESS ══ -->
-    <div class="step-panel" id="step-success">
-      <div class="completion-screen">
-        <div class="check-icon">🏛️</div>
-        <h2>Welcome, Admin!</h2>
-        <p class="text-muted" style="margin-bottom:var(--sp-5);">
-          Na-activate ang inyong LGU Admin account para sa <strong id="success-barangay"></strong>.
-          Lahat ng inyong aksyon ay nire-record para sa transparency.
-        </p>
-        <div style="background:var(--color-success-lt); border-radius:var(--radius-md); padding:var(--sp-4); margin-bottom:var(--sp-6); font-size:.85rem; color:var(--color-success);">
-          <strong>✅ MFA Active · Audit Enabled · Account Active</strong>
-        </div>
-        <a class="btn btn-primary btn-lg btn-full" href="../admin/index.html">
-          Pumunta sa Dashboard →
-        </a>
-      </div>
-    </div>
-
-  </div>
-
+  <main class="reg-container" id="reg-main" style="max-width:520px; margin:0 auto;">
+    <section class="step-panel active" id="step-1">
+      <div class="lgu-note"><span class="lgu-kicker">INVITATION ONLY</span><div class="step-title">Suriin ang iyong invite</div><div class="step-desc">Ang invite ay short-lived at one-time use lamang. Hindi ito nagbibigay ng admin role nang kusa.</div></div>
+      <div class="invite-state" id="invite-state">Sinusuri ang invitation...</div>
+      <div class="form-group"><label class="form-label" for="lgu-inp-email">Official email</label><input id="lgu-inp-email" class="form-input" type="email" placeholder="name@barangay.gov.ph" autocomplete="email" /><div class="form-hint">Gagamitin ito bilang contact record. Ang LGU reviewer pa rin ang mag-aapruba ng account.</div><div class="form-error" id="lgu-err-email"></div></div>
+      <button class="btn btn-primary btn-full btn-lg" id="lgu-btn-invite-next" type="button" disabled>Magpatuloy →</button>
+    </section>
+    <section class="step-panel" id="step-2">
+      <div class="step-title">I-verify ang mobile number</div><div class="step-desc">Magpapadala kami ng 6-digit OTP sa invited LGU coordinator.</div>
+      <div class="form-group"><label class="form-label" for="lgu-inp-phone">Numero ng Telepono</label><div class="phone-input-wrap"><span class="phone-prefix">🇵🇭 +63</span><input id="lgu-inp-phone" type="tel" inputmode="numeric" maxlength="10" placeholder="9171234567" /></div><div class="form-error" id="lgu-err-phone"></div></div>
+      <div id="recaptcha-container"></div><button class="btn btn-primary btn-full btn-lg" id="lgu-btn-send-otp" type="button">Magpadala ng Code</button>
+      <div id="lgu-otp-section" class="hidden" style="margin-top:2rem;"><div class="step-desc">Ilagay ang 6-digit code</div><div class="otp-group" aria-label="OTP input"><input class="otp-input" type="text" inputmode="numeric" maxlength="1" /><input class="otp-input" type="text" inputmode="numeric" maxlength="1" /><input class="otp-input" type="text" inputmode="numeric" maxlength="1" /><input class="otp-input" type="text" inputmode="numeric" maxlength="1" /><input class="otp-input" type="text" inputmode="numeric" maxlength="1" /><input class="otp-input" type="text" inputmode="numeric" maxlength="1" /></div><div class="form-error" id="lgu-err-otp"></div><div class="otp-timer"><span id="lgu-otp-countdown"></span><button class="resend-btn" id="lgu-btn-resend" type="button" disabled>Magpadala ulit</button></div><button class="btn btn-primary btn-full btn-lg" id="lgu-btn-verify-otp" type="button" disabled>I-verify ang Code</button></div>
+    </section>
+    <section class="step-panel" id="step-3"><div class="step-title">Iyong opisyal na identity</div><div class="step-desc">Ang information na ito ay bahagi ng manual LGU review.</div><div class="form-group"><label class="form-label" for="lgu-inp-name">Buong Pangalan</label><input id="lgu-inp-name" class="form-input" maxlength="100" autocomplete="name" /><div class="form-error" id="lgu-err-name"></div></div><div class="form-group"><label class="form-label" for="lgu-inp-designation">Designation</label><input id="lgu-inp-designation" class="form-input" maxlength="80" placeholder="Barangay Coordinator" /><div class="form-error" id="lgu-err-designation"></div></div><div class="form-group"><label class="form-label" for="lgu-inp-barangay">Barangay</label><input id="lgu-inp-barangay" class="form-input" maxlength="80" placeholder="Lahug" /><div class="form-error" id="lgu-err-barangay"></div></div><div class="step-nav"><button class="btn btn-ghost btn-back" id="lgu-btn-3-back" type="button">← Bumalik</button><button class="btn btn-primary btn-next" id="lgu-btn-3-next" type="button">Susunod →</button></div></section>
+    <section class="step-panel" id="step-4"><div class="step-title">Authorization letter</div><div class="step-desc">Mag-upload ng authorization letter o opisyal na dokumento para sa manual verification. PDF, JPG, o PNG hanggang 10 MB.</div><label class="upload-card" for="lgu-inp-doc"><span class="upload-icon">↑</span><span><strong id="lgu-file-name">Pumili ng file</strong><small>Hindi ito auto-approved; rerebyuhin ito ng authorized reviewer.</small></span></label><input id="lgu-inp-doc" class="file-input" type="file" accept="image/jpeg,image/png,application/pdf" /><div class="form-error" id="lgu-err-doc"></div><div class="step-nav"><button class="btn btn-ghost btn-back" id="lgu-btn-4-back" type="button">← Bumalik</button><button class="btn btn-primary btn-next" id="lgu-btn-4-next" type="button">I-submit ang Document</button></div></section>
+    <section class="step-panel" id="step-5"><div class="step-title">Audit responsibility</div><div class="step-desc">Basahin ang policy bago isumite ang application.</div><div class="audit-policy"><strong>Para sa LGU administrator:</strong><br />Ang bawat approval, suspension, export, at verification action ay dapat may malinaw na dahilan at audit record. Hindi dapat gamitin ang account para baguhin ang records nang walang authority. Ang authorization document ay sasailalim sa manual review. Ang registration na ito ay pending hanggang ma-approve ng authorized reviewer.</div><label class="checkbox-row" for="lgu-chk-audit"><input id="lgu-chk-audit" type="checkbox" /><span>Nabasa ko at tinatanggap ko ang audit responsibility policy.</span></label><div class="form-error" id="lgu-err-audit"></div><div class="step-nav"><button class="btn btn-ghost btn-back" id="lgu-btn-5-back" type="button">← Bumalik</button><button class="btn btn-primary btn-next" id="lgu-btn-submit" type="button">Isumite ang Application</button></div></section>
+    <section class="step-panel" id="step-6"><div class="completion-screen"><div class="check-icon">✓</div><h2>Pending review ang application</h2><p class="text-muted">Na-save ang iyong application. Hindi pa aktibo ang LGU admin role hanggang ma-verify ang invite, identity, at authorization document.</p><a class="btn btn-primary btn-full" href="../admin/index.html">Buksan ang Admin Area</a></div></section>
+  </main>
   <div id="toast-container" aria-live="polite"></div>
-  <script type="module" src="../js/register/lgu.js"></script>
+  <script type="module" src="../js/register/lgu.js?v=lgu-v1"></script>
 </body>
 </html>

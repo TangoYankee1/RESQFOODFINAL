@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResQFood - App Admin Users</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/admin.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="admin-topbar"><span class="brand">🍱 RESQFOOD</span><span class="topbar-barangay">Global Operations</span><span class="admin-name">App Admin</span><span class="mfa-badge">🔐 System Admin</span><button class="signout-btn" id="btn-signout">Sign out</button></header>
+  <div id="offline-banner">📶 Offline ka ngayon. Ilang features ay hindi available.</div>
+  <div class="admin-layout">
+    <nav class="admin-sidenav" aria-label="App admin navigation"><a class="nav-link" href="index.html"><span class="nav-icon">🛡️</span>Overview</a><a class="nav-link active" href="users.html"><span class="nav-icon">👥</span>All Users</a><a class="nav-link" href="audit.html"><span class="nav-icon">📋</span>Global Audit</a><a class="nav-link" href="../admin/index.html"><span class="nav-icon">🏛️</span>LGU Admin</a></nav>
+    <main class="admin-main"><div class="admin-main-inner"><h1 class="page-title">All Users</h1><p class="page-subtitle">Global account and role oversight. Role assignment remains server-controlled.</p><div class="filter-bar"><button class="filter-btn active">All</button><button class="filter-btn">Donors</button><button class="filter-btn">Volunteers</button><button class="filter-btn">Org Admins</button><button class="filter-btn">LGU Admins</button></div><div class="alert alert-info" style="margin-top:var(--sp-5);"><span>ℹ️</span><span>This App Admin view is ready for live user queries. Suspension and role changes must go through audited server callables.</span></div><div class="data-table-wrap" style="margin-top:var(--sp-5);"><table class="data-table"><thead><tr><th>User</th><th>Role</th><th>Status</th><th>Scope</th><th>Action</th></tr></thead><tbody><tr><td><strong>Local App Admin</strong></td><td><span class="badge badge-verified">systemAdmin</span></td><td>Active</td><td>Global</td><td>Protected</td></tr><tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--color-muted);">Live user query integration pending.</td></tr></tbody></table></div></div></main>
+  </div>
+  <script type="module" src="../js/modules/appAdmin.js?v=app-admin-users-v1"></script>
+</body>
+</html>

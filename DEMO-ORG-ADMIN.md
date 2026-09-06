@@ -28,11 +28,13 @@ This registration is **org-first, not person-first** — the most distinctive de
 
 | Step | What to highlight | Time |
 |------|-------------------|------|
-| Step 1 — Org Profile | "Notice: we're registering the *organization* first, not the person. If staff rotates, the account survives." Fill in org name, type (Soup Kitchen), barangay. | ~30s |
-| Step 2 — Primary Contact + OTP | Name, phone OTP. Same flow as other roles. | ~25s |
-| Step 3 — Device Check | **This is unique.** Click "Buksan ang Camera." If camera is detected → Standard Mode (QR). If not → Basic Mode (PIN). "The system auto-selects based on hardware capability — no technical decision required from the staff." | ~25s |
-| Step 4 — Training Acknowledgment | "Before receiving any deliveries, the org must attend a 30-minute orientation. The account stays 'pending_training' until LGU marks them active." | ~20s |
-| Success | Dashboard | ~5s |
+| Step 1 — Phone OTP | Verify the coordinator first, matching donor and volunteer onboarding. | ~20s |
+| Step 2 — Org Profile | "We're registering the *organization* first, not the person. If staff rotates, the account survives." | ~25s |
+| Step 3 — Primary Contact | Name and designation of the coordinator responsible for receiving deliveries. | ~15s |
+| Step 4 — Authorization Document | Upload an authorization letter, permit, or organization proof. The file is sent to an LGU review queue. | ~25s |
+| Step 5 — Device Check | Camera detected → Standard Mode (QR); no camera → Basic Mode (PIN). | ~20s |
+| Step 6 — Training + Responsibility | Acknowledge orientation and responsibility for accurate delivery verification. | ~20s |
+| Success | Pending review state, not immediate activation. | ~5s |
 
 **Skip shortcut:** Navigate to `public/org-admin/index.html`
 

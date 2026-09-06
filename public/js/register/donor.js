@@ -60,11 +60,17 @@ function showOtpSection(phone) {
 const otpInputs = document.querySelectorAll('.otp-input');
 
 otpInputs.forEach((input, idx) => {
+  function moveToNextIfNeeded() {
+    if (input.value && idx < otpInputs.length - 1) {
+      requestAnimationFrame(() => otpInputs[idx + 1].focus());
+    }
+  }
+
   input.addEventListener('input', (e) => {
     const val = e.target.value.replace(/\D/g, '').slice(-1);
     e.target.value = val;
-    val ? e.target.classList.add('filled') : e.target.classList.remove('filled');
-    if (val && idx < otpInputs.length - 1) otpInputs[idx + 1].focus();
+    e.target.classList.toggle('filled', Boolean(val));
+    if (val) moveToNextIfNeeded();
     checkOtpComplete();
   });
 
@@ -80,8 +86,13 @@ otpInputs.forEach((input, idx) => {
     e.preventDefault();
     const pasted = e.clipboardData.getData('text').replace(/\D/g, '');
     [...pasted.slice(0, 6)].forEach((char, i) => {
-      if (otpInputs[i]) { otpInputs[i].value = char; otpInputs[i].classList.add('filled'); }
+      if (otpInputs[i]) {
+        otpInputs[i].value = char;
+        otpInputs[i].classList.add('filled');
+      }
     });
+    const nextIndex = Math.min(pasted.length, otpInputs.length - 1);
+    if (otpInputs[nextIndex]) requestAnimationFrame(() => otpInputs[nextIndex].focus());
     checkOtpComplete();
   });
 });
@@ -89,7 +100,11 @@ otpInputs.forEach((input, idx) => {
 function getOtpValue() { return [...otpInputs].map(i => i.value).join(''); }
 
 function checkOtpComplete() {
-  document.getElementById('btn-verify-otp').disabled = getOtpValue().length !== 6;
+  const complete = getOtpValue().length === 6;
+  document.getElementById('btn-verify-otp').disabled = !complete;
+  if (complete && pendingConfirmation) {
+    document.getElementById('btn-verify-otp').click();
+  }
 }
 
 document.getElementById('btn-verify-otp').addEventListener('click', async () => {

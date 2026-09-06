@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResQFood - Global Audit</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/admin.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="admin-topbar"><span class="brand">🍱 RESQFOOD</span><span class="topbar-barangay">Global Operations</span><span class="admin-name">App Admin</span><span class="mfa-badge">🔐 System Admin</span><button class="signout-btn" id="btn-signout">Sign out</button></header>
+  <div id="offline-banner">📶 Offline ka ngayon. Ilang features ay hindi available.</div>
+  <div class="admin-layout">
+    <nav class="admin-sidenav" aria-label="App admin navigation"><a class="nav-link" href="index.html"><span class="nav-icon">🛡️</span>Overview</a><a class="nav-link" href="users.html"><span class="nav-icon">👥</span>All Users</a><a class="nav-link active" href="audit.html"><span class="nav-icon">📋</span>Global Audit</a><a class="nav-link" href="../admin/index.html"><span class="nav-icon">🏛️</span>LGU Admin</a></nav>
+    <main class="admin-main"><div class="admin-main-inner"><h1 class="page-title">Global Audit Trail</h1><p class="page-subtitle">Read-only system-wide record of invites, reviews, role changes, and sensitive actions.</p><div class="alert alert-warning"><span>🔒</span><span>Audit records are append-only. Editing and deletion are unavailable from this interface.</span></div><div class="data-table-wrap" style="margin-top:var(--sp-5);"><table class="data-table"><thead><tr><th>Timestamp</th><th>Actor</th><th>Action</th><th>Entity</th><th>Details</th></tr></thead><tbody><tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--color-muted);">Live audit query integration pending.</td></tr></tbody></table></div></div></main>
+  </div>
+  <script type="module" src="../js/modules/appAdmin.js?v=app-admin-audit-v1"></script>
+</body>
+</html>
