@@ -1,13 +1,12 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fil">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ResQFood — I-verify ang Delivery</title>
   <link rel="stylesheet" href="../css/base.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <link rel="stylesheet" href="/vendor/fonts/fonts.css" />
+  <script src="/vendor/html5-qrcode.min.js"></script>
   <style>
     body {
       background: var(--color-surface-low);
@@ -194,7 +193,7 @@
     <span class="role-chip">Org Admin</span>
   </header>
 
-  <div id="offline-banner">📶 Offline ka ngayon. Ang verification ay mase-save pagbalik ng signal.</div>
+  <div id="offline-banner">📶 Offline ka ngayon. Kumonekta muna bago mag-confirm.</div>
 
   <main class="verify-body">
 
@@ -208,7 +207,8 @@
     <div id="qr-mode">
 
       <!-- Camera prompt -->
-      <div id="camera-prompt" class="start-camera-area">
+      <section class="card" style="padding:1rem"><label for="qr-proof-text">QR text (kung walang camera)</label><textarea id="qr-proof-text" class="form-input" rows="3"></textarea><button class="btn btn-ghost" id="btn-preview-qr">Suriin ang QR</button><p>Kailangan ng koneksyon. Ang pag-scan ay preview lamang; pindutin ang confirm para matapos.</p></section>
+<div id="camera-prompt" class="start-camera-area">
         <span class="camera-icon">📸</span>
         <p class="section-title" style="text-align:center;">I-scan ang QR ng Volunteer</p>
         <p style="font-size:.88rem; color:var(--color-muted); margin-bottom:var(--sp-5);">
@@ -248,8 +248,14 @@
       <div class="pin-container">
         <p class="section-title" style="text-align:center;">Ilagay ang 4-Digit PIN</p>
         <p class="pin-label">
-          Sabihin sa volunteer na ibigay ang 4-digit PIN mula sa kanilang active mission screen.
+          Ilagay ang Donation ID at ang 4-digit PIN na ibinigay ng volunteer.
         </p>
+        <div style="margin-bottom:var(--sp-4);">
+          <input id="pin-donation-id" class="pin-digit" type="text" inputmode="text"
+                 placeholder="Donation ID" autocomplete="off"
+                 aria-label="Donation ID"
+                 style="width:100%; height:3rem; font-size:1rem; letter-spacing:normal; text-align:center;" />
+        </div>
         <div class="pin-inputs">
           <input class="pin-digit" id="pin-0" type="number" maxlength="1" inputmode="numeric" aria-label="PIN digit 1" />
           <input class="pin-digit" id="pin-1" type="number" maxlength="1" inputmode="numeric" aria-label="PIN digit 2" />

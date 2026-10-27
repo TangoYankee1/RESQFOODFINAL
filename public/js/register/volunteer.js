@@ -15,6 +15,7 @@ import {
 let otpTimer = null;
 let pendingConfirmation = null;
 let verificationRequestId = null;
+let otpBusy = false;
 const $ = (id) => document.getElementById(id);
 const phone = () => normalizePhone($('v-inp-phone').value);
 
@@ -50,6 +51,7 @@ function buildVolunteerPayload() {
     transport: $('v-inp-transport').value,
     commitment: $('v-inp-commitment').value,
     verificationRequestId,
+    termsAccepted: $('v-chk-terms').checked,
     trustStatus: 'pending_review',
     referralCode: $('v-inp-referral').value.trim() || null,
     emergencyContact: {
@@ -65,11 +67,14 @@ $('v-btn-send-otp').addEventListener('click', async () => {
   clearField('v-inp-phone', 'v-err-phone');
   const raw = $('v-inp-phone').value.trim();
 
-  if (!/^\d{10}$/.test(raw.replace(/\D/g, '').slice(-10))) {
+  if (!isValidPHPhone(phone())) {
     showError('v-inp-phone', 'v-err-phone', 'Maglagay ng valid na Philippine mobile number.');
     return;
   }
 
+  if (otpBusy) return;
+  otpBusy = true;
+  $('v-btn-send-otp').disabled = true;
   try {
     pendingConfirmation = await sendOTP(phone(), 'recaptcha-container');
     $('v-btn-send-otp').classList.add('hidden');
@@ -82,6 +87,8 @@ $('v-btn-send-otp').addEventListener('click', async () => {
   } catch (failure) {
     console.error('Volunteer OTP failed', failure);
     showError('v-inp-phone', 'v-err-phone', 'Hindi maipadala ang OTP. Subukan muli.');
+  } finally {
+    otpBusy = false; $('v-btn-send-otp').disabled = false;
   }
 });
 
@@ -137,9 +144,11 @@ function checkOtpComplete() {
 }
 
 $('v-btn-verify-otp').addEventListener('click', async () => {
+  if (otpBusy || !pendingConfirmation) return;
   clearField('v-inp-otp', 'v-err-otp');
   const code = getOtpValue();
   if (code.length < 6) return;
+  otpBusy = true; $('v-btn-verify-otp').disabled = true;
 
   try {
     await confirmOTP(pendingConfirmation, code);
@@ -149,6 +158,8 @@ $('v-btn-verify-otp').addEventListener('click', async () => {
   } catch (failure) {
     console.error('Volunteer OTP verification failed', failure);
     showError('v-inp-otp', 'v-err-otp', 'Hindi valid ang OTP. Subukan muli.');
+  } finally {
+    otpBusy = false; $('v-btn-verify-otp').disabled = getOtpValue().length !== 6;
   }
 });
 
@@ -161,7 +172,7 @@ function startOtpTimer(seconds) {
 
   otpTimer = setInterval(() => {
     remaining -= 1;
-    countdownEl.textContent = `Mag-expire sa ${remaining}s. `;
+    countdownEl.textContent = `Puwedeng mag-resend sa ${remaining}s. `;
     if (remaining <= 0) {
       clearOtpTimer();
       countdownEl.textContent = '';
@@ -178,7 +189,9 @@ function clearOtpTimer() {
 }
 
 $('v-btn-resend').addEventListener('click', async () => {
-  const raw = $('v-inp-phone').value.trim();
+  if (otpBusy) return;
+  otpBusy = true; $('v-btn-resend').disabled = true;
+  pendingConfirmation = null;
   otpInputs.forEach((input) => {
     input.value = '';
     input.classList.remove('filled');
@@ -190,6 +203,9 @@ $('v-btn-resend').addEventListener('click', async () => {
   } catch (failure) {
     console.error('resendOTP failed', failure);
     showToast('Hindi maipadala ang bagong code. Subukan muli.', 'error');
+    $('v-btn-resend').disabled = false;
+  } finally {
+    otpBusy = false;
   }
   checkOtpComplete();
 });
@@ -367,7 +383,8 @@ $('v-btn-submit').addEventListener('click', async () => {
   try {
     await signupVolunteerWithProfile(buildVolunteerPayload());
     showToast('Nagawa na ang volunteer account.', 'success');
-    window.location.href = '../volunteer/index.html';
+    document.querySelectorAll('.step-panel').forEach(panel => panel.classList.remove('active'));
+    $('step-success').classList.add('active');
   } catch (failure) {
     console.error('Volunteer signup failed', failure);
     showToast('Hindi ma-save ang account. Subukan muli.', 'error');

@@ -1,6 +1,6 @@
 import { sendOTP, confirmOTP } from '../core/auth.js';
-import { validateInvite, consumeInvite } from '../core/callables.js?v=lgu-v1';
-import { auth, db, storage } from '../core/firebaseConfig.js?v=lgu-v1';
+import { validateInvite, signupLguWithProfile } from '../core/callables.js';
+import { auth, db, storage } from '../core/firebaseConfig.js';
 import { collection, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { ref, uploadBytes } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
 import { normalizePhone, showToast, setStepperState, showFieldError, clearFieldError } from './shared.js';
@@ -38,6 +38,11 @@ async function loadInvite() {
     inviteMeta = result.meta || {};
     state.textContent = `Valid na invite${inviteMeta.barangay ? ` para sa ${inviteMeta.barangay}` : ''}.`;
     $('lgu-inp-barangay').value = inviteMeta.barangay || '';
+    $('lgu-inp-barangay').readOnly = Boolean(inviteMeta.barangay);
+    if (inviteMeta.email) {
+      $('lgu-inp-email').value = inviteMeta.email;
+      $('lgu-inp-email').readOnly = true;
+    }
     $('lgu-btn-invite-next').disabled = false;
   } catch (failure) {
     console.error('LGU invite validation failed', failure);
@@ -174,9 +179,7 @@ $('lgu-btn-submit').addEventListener('click', async () => {
   try {
     const uid = auth.currentUser?.uid;
     if (!uid || !inviteId || !documentRequestId) throw new Error('incomplete_registration');
-    await setDoc(doc(db, 'users', uid), { fullName: $('lgu-inp-name').value.trim(), phoneNumber: phone(), email: $('lgu-inp-email').value.trim(), designation: $('lgu-inp-designation').value.trim(), barangay: $('lgu-inp-barangay').value.trim(), requestedRole: 'lguAdmin', status: 'pending_review', verificationRequestId: documentRequestId, inviteId, auditAcknowledged: true, createdAt: serverTimestamp(), updatedAt: serverTimestamp() }, { merge: true });
-    const consumed = await consumeInvite({ token: inviteToken });
-    if (!consumed.success) throw new Error(consumed.reason || 'invite_consume_failed');
+    await signupLguWithProfile({ fullName: $('lgu-inp-name').value.trim(), phone: phone(), email: $('lgu-inp-email').value.trim(), designation: $('lgu-inp-designation').value.trim(), barangay: $('lgu-inp-barangay').value.trim(), verificationRequestId: documentRequestId, token: inviteToken, auditAcknowledged: true });
     sessionStorage.setItem('lgu_registration_pending', 'true');
     goToStep(6);
     showToast('Na-submit ang LGU application.', 'success');

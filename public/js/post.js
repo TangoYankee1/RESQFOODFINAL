@@ -1,4 +1,9 @@
-import { buildPayload, generateFallbackPin, generateUUID } from './qr/generator.js';
+import { bootGuardedPage } from './core/guard-boot.js';
+import { createDonation, uploadImage, patchDocument, fetchDoc } from './core/data.js';
+import { listDonationDestinations } from './core/callables.js';
+import { handleError } from './core/errors.js';
+import { toast } from './core/ui.js';
+import { esc, compressImage } from './core/utils.js';
 
 // ── Time guardrail map (hours) ────────────────────────────────────────────────
 const MAX_HOLD_HOURS = {
@@ -7,24 +12,54 @@ const MAX_HOLD_HOURS = {
 };
 
 // ── State ─────────────────────────────────────────────────────────────────────
-const DONOR_ID   = 'DEMO_DONOR';
-let donationId   = generateUUID();
+let donorSession = null;   // set by the donor route guard → { user, role }
 let compressedBlob = null;
 let holdTimer    = null;
+let submitting = false;
+let postAttempt = null;
 
 const state = {
-  foodType: '', quantityKg: 0, description: '',
+  foodType: '', quantityKg: 0, description: '', orgId: '', orgName: '',
   pickupWindowEnd: null, pickupAddress: '', pickupWindowStart: null,
 };
 
 // ── Boot (no auth guard) ──────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
+function initPost(session) {
+  donorSession = session;
   prefillAddress();
   initStep1();
   initStep2();
   initStep3();
   setupOnlineStatus();
-});
+  loadDestinations();
+  document.getElementById('btn-retry-org')?.addEventListener('click', loadDestinations);
+}
+
+async function loadDestinations() {
+  const select = document.getElementById('inp-org'), retry = document.getElementById('btn-retry-org');
+  select.disabled = true;
+  select.innerHTML = '<option value="">Naglo-load...</option>';
+  retry.hidden = true;
+  clearErr('inp-org', 'err-org');
+  try {
+    const result = await listDonationDestinations();
+    select.innerHTML = '<option value="">Pumili ng tatanggap</option>';
+    result.organizations.forEach(org => {
+      const option = document.createElement('option');
+      option.value = org.id; option.textContent = `${org.name} (${org.barangay})`; select.append(option);
+    });
+    if (!result.organizations.length) throw new Error('Wala pang aktibong organization. Makipag-ugnayan sa admin.');
+    select.disabled = false;
+  } catch (err) {
+    select.innerHTML = '<option value="">Walang maipakitang organization</option>';
+    showErr('inp-org', 'err-org', err.message?.startsWith('Wala pang') ? err.message : 'Hindi makuha ang organizations. Subukan muli.');
+    retry.hidden = false;
+  }
+}
+
+// Donor-only. Blocks render until auth+role resolve; redirects anonymous
+// direct-URL visits to login with ?next= preserved (see core/guard-boot.js).
+bootGuardedPage({ roles: ['donor'] }, initPost);
 
 // ── Step helpers ──────────────────────────────────────────────────────────────
 function goToStep(n) {
@@ -45,9 +80,12 @@ function updateStepper(current) {
 }
 
 // ── Address prefill (hardcoded for demo) ──────────────────────────────────────
-function prefillAddress() {
+async function prefillAddress() {
   const el = document.getElementById('inp-pickup-addr');
-  if (el && !el.value) el.value = 'Lahug, Cebu City';
+  try {
+    const profile = await fetchDoc(`users/${donorSession.user.uid}`);
+    if (el && !el.value) el.value = profile?.address || profile?.barangay || '';
+  } catch (err) { handleError(err, { scope: 'donor.post.profile' }); }
 
   const now = new Date();
   now.setMinutes(Math.ceil(now.getMinutes() / 15) * 15, 0, 0);
@@ -89,7 +127,7 @@ function updateGuardrailInfo(foodType) {
   const hintEl = document.getElementById('guardrail-hint');
   const maxH   = MAX_HOLD_HOURS[foodType];
   if (!infoEl || !hintEl || !maxH) { infoEl?.classList.add('hidden'); return; }
-  hintEl.textContent = `⏱ Ang ${foodType} ay ligtas lamang sa loob ng ${maxH} oras. `
+  hintEl.textContent = `⏱ Pickup limit para sa ${foodType}: ${maxH} oras mula sa posting. `
     + `Dapat ma-pickup bago: ${formatTime(new Date(Date.now() + maxH * 3600_000))}.`;
   infoEl.classList.remove('hidden');
 }
@@ -105,11 +143,11 @@ function validateGuardrail(foodType, winEndValue) {
 
   if (pickupEnd <= latestSafe) {
     resultEl.className   = 'guardrail-ok';
-    resultEl.textContent = `✓ Ligtas ang oras na ito para sa ${foodType}.`;
+    resultEl.textContent = `✓ Pasok sa pickup policy para sa ${foodType}.`;
     if (btn) btn.disabled = false;
   } else {
     resultEl.className   = 'guardrail-warn';
-    resultEl.textContent = `✕ Masyadong late ang pickup window. Ibahin ang oras para sa kaligtasan.`;
+    resultEl.textContent = `✕ Masyadong late ang pickup window. Ibahin ang oras ayon sa pickup policy.`;
     if (btn) btn.disabled = true;
   }
 }
@@ -124,7 +162,7 @@ function validateStep1() {
   if (!foodType) { showErr('inp-food-type', 'err-food-type', 'Piliin ang uri ng pagkain.'); valid = false; }
 
   clearErr('inp-qty', 'err-qty');
-  if (!qty || parseFloat(qty) <= 0 || parseFloat(qty) > 500) {
+  if (!qty || !Number.isFinite(Number(qty)) || Number(qty) < 0.1 || Number(qty) > 500) {
     showErr('inp-qty', 'err-qty', 'Ilagay ang tamang dami (0.1 – 500 kg).');
     valid = false;
   }
@@ -135,9 +173,9 @@ function validateStep1() {
     valid = false;
   } else {
     const maxH = MAX_HOLD_HOURS[foodType] ?? 2;
-    if (new Date(winEnd) > new Date(Date.now() + maxH * 3600_000)) {
+    if (!Number.isFinite(new Date(winEnd).getTime()) || new Date(winEnd) <= new Date() || new Date(winEnd) > new Date(Date.now() + maxH * 3600_000)) {
       showErr('inp-window-end', 'err-window-end',
-        'Ang pickup window ay lagpas sa ligtas na oras para sa uri ng pagkaing ito.');
+        'Ang pickup window ay lagpas sa pickup policy para sa uri ng pagkaing ito.');
       valid = false;
     }
   }
@@ -150,6 +188,9 @@ function initStep2() {
   document.getElementById('btn-p2-next')?.addEventListener('click', () => {
     if (!validateStep2()) return;
     state.pickupAddress    = document.getElementById('inp-pickup-addr').value.trim();
+    const selectedOrg = document.getElementById('inp-org');
+    state.orgId = selectedOrg.value;
+    state.orgName = selectedOrg.selectedOptions[0]?.textContent || '';
     state.pickupWindowStart = new Date(document.getElementById('inp-window-start').value);
     goToStep(3);
     buildReviewSummary();
@@ -170,19 +211,27 @@ function initStep2() {
   fileInput?.addEventListener('change', async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (!['image/jpeg','image/png','image/webp'].includes(file.type) || file.size > 10 * 1024 * 1024) {
+      toast('JPG, PNG, o WebP lamang, hanggang 10 MB bago i-compress.', 'error');
+      fileInput.value = ''; return;
+    }
     try {
       compressedBlob = await compressImage(file, 800);
       const url = URL.createObjectURL(compressedBlob);
       if (preview) { preview.src = url; preview.style.display = 'block'; }
       if (uploadText) uploadText.style.display = 'none';
     } catch (_) {
-      compressedBlob = file;
+      compressedBlob = null;
+      if (preview) preview.style.display = 'none';
+      toast('Hindi mabasa ang larawan. Pumili ng ibang file.', 'error');
     }
   });
 }
 
 function validateStep2() {
   let valid = true;
+  clearErr('inp-org', 'err-org');
+  if (!document.getElementById('inp-org').value) { showErr('inp-org', 'err-org', 'Pumili ng aktibong tatanggap.'); valid = false; }
   const addr  = document.getElementById('inp-pickup-addr').value.trim();
   const start = document.getElementById('inp-window-start').value;
 
@@ -196,7 +245,7 @@ function validateStep2() {
   if (!start) {
     showErr('inp-window-start', 'err-window-start', 'Ilagay ang oras ng simula ng pickup.');
     valid = false;
-  } else if (state.pickupWindowEnd && new Date(start) >= state.pickupWindowEnd) {
+  } else if (!Number.isFinite(new Date(start).getTime()) || new Date(start).getTime() < Date.now() - 300000 || (state.pickupWindowEnd && new Date(start) >= state.pickupWindowEnd)) {
     showErr('inp-window-start', 'err-window-start',
       'Ang simula ay dapat mas maaga kaysa sa deadline ng pickup.');
     valid = false;
@@ -211,7 +260,7 @@ function initStep3() {
   const chk     = document.getElementById('chk-post-confirm');
   const holdBtn = document.getElementById('btn-hold-submit');
 
-  chk?.addEventListener('change', () => { if (holdBtn) holdBtn.disabled = !chk.checked; });
+  chk?.addEventListener('change', () => { if (holdBtn) holdBtn.disabled = !chk.checked || submitting; });
 
   holdBtn?.addEventListener('mousedown',   startHold);
   holdBtn?.addEventListener('touchstart',  startHold, { passive: true });
@@ -219,12 +268,17 @@ function initStep3() {
   holdBtn?.addEventListener('mouseleave',  cancelHold);
   holdBtn?.addEventListener('touchend',    cancelHold);
   holdBtn?.addEventListener('touchcancel', cancelHold);
+  holdBtn?.addEventListener('keydown', event => {
+    if (['Space','Enter'].includes(event.code)) { event.preventDefault(); if (!event.repeat) startHold(); }
+  });
+  holdBtn?.addEventListener('keyup', event => { if (['Space','Enter'].includes(event.code)) { event.preventDefault(); cancelHold(); } });
 }
 
 function startHold() {
   const btn = document.getElementById('btn-hold-submit');
   const chk = document.getElementById('chk-post-confirm');
   if (!chk?.checked || btn?.disabled) return;
+  cancelHold();
   btn.classList.add('holding');
   holdTimer = setTimeout(() => {
     btn.classList.remove('holding');
@@ -251,6 +305,7 @@ function buildReviewSummary() {
   if (endDisplay) endDisplay.textContent = state.pickupWindowEnd ? formatTime(state.pickupWindowEnd) : '—';
 
   const rows = [
+    ['Tatanggap', state.orgName],
     ['Uri ng Pagkain',   state.foodType],
     ['Dami',             `${state.quantityKg} kg`],
     ['Paglalarawan',     state.description || '(walang paglalarawan)'],
@@ -267,49 +322,69 @@ function buildReviewSummary() {
     </div>`).join('');
 }
 
-// ── Submit → write to sessionStorage → navigate to QR display ────────────────
-function submitDonation() {
+// ── Submit → create donation on the server → navigate to QR display ──────────
+async function submitDonation() {
+  if (submitting || !document.getElementById('chk-post-confirm')?.checked) return;
+  if (!navigator.onLine) { toast('Offline ka. Kumonekta muna bago mag-post.', 'error'); return; }
+  submitting = true;
   const holdBtn   = document.getElementById('btn-hold-submit');
   const holdLabel = document.getElementById('hold-label');
   if (holdBtn)  holdBtn.disabled   = true;
   if (holdLabel) holdLabel.textContent = '⏳ Sine-save...';
 
-  const fallbackPin = generateFallbackPin();
-  const qrPayload   = buildPayload(donationId, DONOR_ID, state.foodType, state.quantityKg);
+  try {
+    // Server validates identity, destination, pickup policy, and declaration.
+    const payload = {
+      donorId: donorSession.user.uid,
+      foodType: state.foodType,
+      quantityKg: state.quantityKg,
+      description: state.description,
+      pickupAddress: state.pickupAddress,
+      pickupWindowStart: state.pickupWindowStart,
+      pickupWindowEnd: state.pickupWindowEnd,
+      orgId: state.orgId, safetyDeclared: true, postingConfirmed: true,
+    };
+    const signature = JSON.stringify(payload);
+    let attempt = postAttempt;
+    if (!attempt) { try { attempt = JSON.parse(sessionStorage.getItem('donor_post_attempt')); } catch (_) {} }
+    if (!attempt || attempt.signature !== signature) attempt = { signature, requestId: crypto.randomUUID() };
+    postAttempt = attempt;
+    try { sessionStorage.setItem('donor_post_attempt', JSON.stringify(attempt)); } catch (_) {}
+    const id = await createDonation({ ...payload, requestId: attempt.requestId });
 
-  sessionStorage.setItem('qr_payload',     qrPayload);
-  sessionStorage.setItem('qr_pin',         fallbackPin);
-  sessionStorage.setItem('qr_food_type',   state.foodType);
-  sessionStorage.setItem('qr_qty',         String(state.quantityKg));
-  sessionStorage.setItem('qr_donation_id', donationId);
+    // Optional photo: upload to the donor's own folder, then link it. A failed
+    // upload must not lose the donation — warn and continue.
+    if (compressedBlob) {
+      try {
+        const url = await uploadImage(`donation-images/${donorSession.user.uid}/${id}.jpg`, compressedBlob);
+        await patchDocument(`donations/${id}`, { imageUrl: url });
+      } catch (imgErr) {
+        handleError(imgErr, { scope: 'donor.post.image' });
+        toast('Na-save ang donation, pero hindi na-upload ang litrato.', 'warning');
+      }
+    }
 
-  window.location.href = 'qr-display.html';
+    try { sessionStorage.removeItem('donor_post_attempt'); } catch (_) {}
+    window.location.href = `qr-display.html?donationId=${encodeURIComponent(id)}`;
+  } catch (err) {
+    const h = handleError(err, { scope: 'donor.post.submit' });
+    const reasons = {
+      destination_inactive: 'Hindi na aktibo ang napiling organization. Pumili muli.',
+      outside_pickup_policy: 'I-update ang pickup window; lagpas na ito sa oras ng posting.',
+      invalid_pickup_window: 'Suriin ang simula at deadline ng pickup.',
+      invalid_quantity: 'Ang dami ay dapat 0.1 hanggang 500 kg.',
+      request_conflict: 'Nabago ang post habang nagre-retry. Bumalik sa review at subukan muli.',
+    };
+    toast(reasons[err.message] || h.message, 'error', 6000);
+    if (holdBtn)  holdBtn.disabled   = false;
+    if (holdLabel) holdLabel.textContent = '🍱 I-post ang Donation';
+  } finally {
+    submitting = false;
+  }
 }
 
 // ── Image compression (browser-side, no upload) ───────────────────────────────
-function compressImage(file, maxWidth) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = reject;
-    reader.onload  = (e) => {
-      const img = new Image();
-      img.onerror = reject;
-      img.onload  = () => {
-        const ratio   = Math.min(1, maxWidth / img.width);
-        const canvas  = document.createElement('canvas');
-        canvas.width  = Math.round(img.width  * ratio);
-        canvas.height = Math.round(img.height * ratio);
-        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-        canvas.toBlob(
-          blob => blob ? resolve(blob) : reject(new Error('Canvas empty')),
-          'image/jpeg', 0.82,
-        );
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
-}
+
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
 function toLocalDatetimeStr(date) {
@@ -324,10 +399,6 @@ function formatTime(date) {
 
 function formatDateTime(date) {
   return date.toLocaleString('fil', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-}
-
-function esc(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 function showErr(fieldId, errId, msg) {

@@ -16,7 +16,8 @@ async function assignRole(firestore, authAdmin, actorUid, actorRole, targetUid, 
   if (!ALLOWED_ROLES.includes(role)) return { success: false, reason: 'invalid_role' };
   try {
     // Set custom claim
-    await authAdmin.setCustomUserClaims(targetUid, { role });
+    const account = await authAdmin.getUser(targetUid);
+    await authAdmin.setCustomUserClaims(targetUid, { ...account.customClaims, role });
 
     // Update users/{uid}.role and write audit log in a transaction
     const userRef = firestore.collection('users').doc(targetUid);

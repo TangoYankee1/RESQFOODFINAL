@@ -1,0 +1,9 @@
+﻿MODULES: activeMission.js, adminAudit.js, adminDonations.js, adminUsers.js, appAdmin.js, appAdminLogin.js, donor.js, orgAdmin.js, orgHistory.js, rewards.js, systemAdmin.js, verificationReview.js, volunteer.js
+EXIST: activeMission=True adminUsers=True adminDonations=True orgHistory=True adminAudit=True
+WIRED:
+  admin/users.html => MODULE
+  admin/audit.html => MODULE
+  volunteer/active-mission.html => MODULE
+  org-admin/history.html => MODULE
+  admin/donations.html => MODULE
+CDN_FILES: NONE

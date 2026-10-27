@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fil">
 <head>
   <meta charset="UTF-8" />
@@ -6,10 +6,9 @@
   <title>ResQFood — QR ng Donation</title>
   <link rel="stylesheet" href="../css/base.css" />
   <link rel="stylesheet" href="../css/donor.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/vendor/fonts/fonts.css" />
   <!-- qrcode.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="/vendor/qrcode.min.js"></script>
   <style>
     body {
       background: var(--color-primary);
@@ -177,10 +176,10 @@
   </header>
 
   <!-- Success message -->
-  <div style="text-align:center; padding: 0 1.5rem 1rem;">
+  <div id="post-success" style="text-align:center; padding: 0 1.5rem 1rem;">
     <div style="font-size:2.5rem; margin-bottom:.5rem;">🎉</div>
     <h1 style="font-size:1.4rem; color:var(--color-accent); margin-bottom:.5rem;">
-      Na-post ang iyong Donation!
+      Pickup Code ng Donation
     </h1>
     <p style="font-size:.88rem; color:rgba(255,255,255,.75);">
       Hintayin ang volunteer na mag-claim. Makikita mo ang update sa dashboard.
@@ -193,15 +192,17 @@
 
     <div id="qr-container" aria-label="QR code ng donation"></div>
 
-    <div class="food-info">
+    <p id="credential-status" role="status"></p><p id="qr-expiry"></p><div class="food-info">
       <div id="food-display">—</div>
       <div class="muted" id="created-display">—</div>
     </div>
 
     <!-- PIN block -->
     <div class="pin-block">
-      <div class="pin-label">Fallback PIN</div>
+      <div class="pin-label">Pickup PIN (kailangan ng koneksyon sa pag-verify)</div>
       <div class="pin-value" id="pin-display" aria-label="4-digit PIN">——</div>
+      <p id="pin-expiry" role="status"></p>
+      <button type="button" class="btn btn-primary" id="btn-regenerate" disabled>Gumawa ng Bagong QR/PIN</button><p>Papalitan nito ang dating QR/PIN. Ipakita lamang ang pinakabagong code.</p>
     </div>
   </div>
 
@@ -209,7 +210,7 @@
   <div class="instruction-box">
     <span class="instruction-icon">📸</span>
     <p>
-      <strong>I-screenshot ang QR na ito.</strong><br />
+      <strong>Ipakita sa aktuwal na pickup.</strong><br />
       Ipakita sa volunteer tuwing pickup. Kung hindi ma-scan ang QR,
       ibigay ang PIN bilang backup.
     </p>
@@ -234,97 +235,6 @@
 
   <div id="toast-container" aria-live="polite"></div>
 
-  <script type="module">
-    import { generateQR } from '../js/qr/generator.js';
-
-    // ── Load data from sessionStorage (with demo fallbacks) ──────────────────
-    const foodType   = sessionStorage.getItem('qr_food_type')   || 'Kanin at Ulam';
-    const qty        = sessionStorage.getItem('qr_qty')         || '3.5';
-    const donationId = sessionStorage.getItem('qr_donation_id') || 'DEMO-001';
-    const pin        = sessionStorage.getItem('qr_pin')         || '4829';
-    let   payload    = sessionStorage.getItem('qr_payload');
-
-    // Build a demo payload when none exists (direct navigation or expired session)
-    if (!payload) {
-      const { buildPayload } = await import('../js/qr/generator.js');
-      payload = buildPayload(donationId, 'DEMO_DONOR', foodType, Number(qty));
-    }
-
-    // ── Render QR ────────────────────────────────────────────────────────────
-    try {
-      generateQR('qr-container', payload);
-    } catch (e) {
-      document.getElementById('qr-container').textContent =
-        'QR hindi ma-render. Gamitin ang PIN.';
-    }
-
-    // ── Populate display fields ───────────────────────────────────────────────
-    document.getElementById('pin-display').textContent  = pin ?? '——';
-    document.getElementById('food-display').textContent = foodType && qty
-      ? `${foodType} · ${qty} kg`
-      : '—';
-    document.getElementById('created-display').textContent =
-      new Date().toLocaleString('fil', {
-        month: 'short', day: 'numeric',
-        hour: '2-digit', minute: '2-digit',
-      });
-
-    // ── Share button ─────────────────────────────────────────────────────────
-    document.getElementById('btn-share')?.addEventListener('click', async () => {
-      const shareData = {
-        title: 'ResQFood Donation',
-        text:  `May sobrang ${foodType ?? 'pagkain'} (${qty ?? '?'} kg) na available! PIN: ${pin}`,
-        url:   `${location.origin}/donor/index.html`,
-      };
-      if (navigator.share) {
-        try {
-          await navigator.share(shareData);
-        } catch (_) {}
-      } else {
-        // Fallback: copy to clipboard
-        await copyToClipboard(shareData.text);
-        showToast('Na-copy ang impormasyon!', 'success');
-      }
-    });
-
-    // ── Copy link button ──────────────────────────────────────────────────────
-    document.getElementById('btn-copy-link')?.addEventListener('click', async () => {
-      const text = donationId ?? pin ?? 'walang ID';
-      await copyToClipboard(text);
-      showToast('Na-copy ang donation ID!', 'success');
-    });
-
-    // ── Clear session data after 5 min to avoid stale state ──────────────────
-    setTimeout(() => {
-      ['qr_payload', 'qr_pin', 'qr_food_type', 'qr_qty', 'qr_donation_id']
-        .forEach(k => sessionStorage.removeItem(k));
-    }, 5 * 60 * 1000);
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
-    async function copyToClipboard(text) {
-      try {
-        await navigator.clipboard.writeText(text);
-      } catch (_) {
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        ta.style.position = 'fixed';
-        ta.style.opacity  = '0';
-        document.body.appendChild(ta);
-        ta.focus(); ta.select();
-        document.execCommand('copy');
-        ta.remove();
-      }
-    }
-
-    function showToast(message, type = 'info', duration = 3000) {
-      const container = document.getElementById('toast-container');
-      if (!container) return;
-      const t = document.createElement('div');
-      t.className = `toast toast-${type}`;
-      t.textContent = message;
-      container.appendChild(t);
-      setTimeout(() => t.remove(), duration);
-    }
-  </script>
+  <script type="module" src="../js/modules/donorQr.js"></script>
 </body>
 </html>

@@ -10,6 +10,16 @@ function hashToken(token) {
  * Returns plaintext token for delivery.
  */
 async function createInvite(firestore, createdBy, kind = 'lgu', meta = {}, expiresHours = 72) {
+  if (kind !== 'lgu' || !Number.isFinite(Number(expiresHours)) || Number(expiresHours) < 1 || Number(expiresHours) > 168) {
+    return { success: false, reason: 'invalid_invite_options' };
+  }
+  if (!meta || typeof meta !== 'object' || Array.isArray(meta)) return { success: false, reason: 'invalid_metadata' };
+  const email = String(meta.email || '').trim().toLowerCase();
+  const allowedDomain = String(meta.allowedDomain || '').trim().toLowerCase();
+  if ((email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) || (allowedDomain && !/^[a-z0-9.-]+\.[a-z]{2,}$/.test(allowedDomain))) {
+    return { success: false, reason: 'invalid_metadata' };
+  }
+  meta = { ...meta, ...(email ? { email } : {}), ...(allowedDomain ? { allowedDomain } : {}) };
   const token = crypto.randomBytes(24).toString('hex');
   const tokenHash = hashToken(token);
   const docRef = firestore.collection('invites').doc();
@@ -67,6 +77,9 @@ async function consumeInvite(firestore, token, actorUid) {
   const auditRef = firestore.collection('auditLogs').doc();
   try {
     await firestore.runTransaction(async (tx) => {
+      const latest = await tx.get(inviteRef);
+      if (!latest.exists || latest.data().used) throw new Error('used');
+      if (latest.data().expiresAt.toDate() <= new Date()) throw new Error('expired');
       tx.update(inviteRef, { used: true, usedBy: actorUid || null, usedAt: now });
       tx.set(auditRef, {
         logId: auditRef.id,
@@ -80,8 +93,9 @@ async function consumeInvite(firestore, token, actorUid) {
     });
     return { success: true, inviteId: inviteRef.id, meta: data.meta };
   } catch (err) {
+    if (['used','expired'].includes(err.message)) return { success: false, reason: err.message };
     console.error('consumeInvite error:', err);
-    return { success: false, reason: 'internal' };
+    return { success: false, reason: ['used','expired'].includes(err.message) ? err.message : 'internal' };
   }
 }
 

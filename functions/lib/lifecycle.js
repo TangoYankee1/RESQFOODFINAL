@@ -1,37 +1,26 @@
-const { FieldValue } = require('firebase-admin/firestore');
-
 const ALLOWED_TRANSITIONS = {
   donor: {
     pending: ['cancelled']
   },
   volunteer: {
-    pending: ['scheduled'],
-    scheduled: ['pickedUp'],
+    scheduled: ['pending'],
     pickedUp: ['enRoute'],
     enRoute: ['delivered']
   },
-  orgAdmin: {
-    scheduled: ['pickedUp'],
-    pickedUp: ['enRoute'],
-    enRoute: ['delivered'],
-    delivered: ['verified']
-  },
-  lguAdmin: {
-    delivered: ['verified']
-  },
-  systemAdmin: {
-    pending: ['cancelled', 'scheduled'],
-    scheduled: ['pickedUp'],
-    pickedUp: ['enRoute'],
-    enRoute: ['delivered'],
-    delivered: ['verified']
-  }
+  orgAdmin: {}, // Receipt confirmation requires the atomic handover command.
+  // Administrators supervise accounts and reports; they do not impersonate handlers.
+  lguAdmin: {},
+  systemAdmin: {}
 };
 
 async function transitionDonationStatus(firestore, donationId, actorUid, nextStatus, actorRole){
   const donationRef = firestore.collection('donations').doc(donationId);
 
   return firestore.runTransaction(async (tx) => {
+    const actor = await tx.get(firestore.collection('users').doc(actorUid));
+    if (!actor.exists || actor.data().role !== actorRole || actor.data().status !== 'active') {
+      return { success: false, reason: 'permission-denied' };
+    }
     const snapshot = await tx.get(donationRef);
     if(!snapshot.exists){
       return { success: false, reason: 'not_found' };
@@ -59,12 +48,14 @@ async function transitionDonationStatus(firestore, donationId, actorUid, nextSta
     const now = new Date();
     tx.update(donationRef, {
       status: nextStatus,
+      ...(nextStatus === 'pending' ? { volunteerId: null, volunteerName: null } : {}),
       updatedAt: now,
-      statusHistory: FieldValue.arrayUnion({ status: nextStatus, actorUid, actorRole, at: now })
+      statusHistory: [...(current.statusHistory || []), { status: nextStatus, actorUid, actorRole, at: now }]
     });
 
     const auditRef = firestore.collection('auditLogs').doc();
     tx.set(auditRef, {
+      action: 'donation_status_changed', entityType: 'donation', entityId: donationId, createdAt: now,
       type: 'donationStatusChanged',
       donationId,
       actorUid,

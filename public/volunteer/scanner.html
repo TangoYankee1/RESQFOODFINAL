@@ -1,13 +1,12 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fil">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ResQFood — QR Scanner</title>
   <link rel="stylesheet" href="../css/base.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <link rel="stylesheet" href="/vendor/fonts/fonts.css" />
+  <script src="/vendor/html5-qrcode.min.js"></script>
   <style>
     body {
       background: var(--color-surface-low);
@@ -157,7 +156,8 @@
   <main class="scanner-body">
 
     <!-- Camera start prompt (shown first) -->
-    <div id="camera-prompt" class="start-camera-area">
+    <section class="card" style="padding:1rem"><label for="qr-proof-text">QR text (kung walang camera)</label><textarea id="qr-proof-text" class="form-input" rows="3"></textarea><button class="btn btn-ghost" id="btn-preview-qr">Suriin ang QR</button><p>Kailangan ng koneksyon. Ang pag-scan ay preview lamang; pindutin ang confirm para matapos.</p></section>
+<div id="camera-prompt" class="start-camera-area">
       <span class="camera-icon">📸</span>
       <p class="section-title" style="text-align:center;">I-scan ang QR ng Donor</p>
       <p style="font-size:.88rem; color:var(--color-muted); margin-bottom:var(--sp-5);">
@@ -204,7 +204,7 @@
 
   </main>
 
-  <div id="toast-container" aria-live="polite"></div>
+  <section id="pickup-pin-mode" class="card" style="padding:1rem"><h2>Pickup gamit ang PIN</h2><label for="pin-donation-id">Donation ID</label><input id="pin-donation-id" class="form-input"><div class="pin-inputs"><input class="pin-digit" inputmode="numeric" maxlength="1" aria-label="PIN digit 1" style="width:3rem"><input class="pin-digit" inputmode="numeric" maxlength="1" aria-label="PIN digit 2" style="width:3rem"><input class="pin-digit" inputmode="numeric" maxlength="1" aria-label="PIN digit 3" style="width:3rem"><input class="pin-digit" inputmode="numeric" maxlength="1" aria-label="PIN digit 4" style="width:3rem"></div><p id="pin-error" role="alert"></p><button id="btn-confirm-pin" class="btn btn-primary" disabled>Confirm Pickup gamit ang PIN</button></section><div id="toast-container" aria-live="polite"></div>
 
   <script type="module" src="../js/qr/scanner.js"></script>
 </body>

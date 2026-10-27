@@ -3,82 +3,44 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ResQFood — Sumali</title>
+  <title>ResQFood - Sumali</title>
+  <link rel="stylesheet" href="/vendor/fonts/fonts.css" />
   <link rel="stylesheet" href="../css/base.css" />
   <link rel="stylesheet" href="../css/auth.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <style>
-    .role-grid { grid-template-columns: 1fr 1fr; }
-    @media (max-width: 360px) { .role-grid { grid-template-columns: 1fr; } }
-
-    .gateway-footer {
-      text-align: center;
-      padding: var(--sp-6) var(--sp-4);
-      font-size: .85rem;
-      color: var(--color-muted);
-    }
-    .gateway-footer a {
-      color: var(--color-primary);
-      font-weight: 700;
-      text-decoration: none;
-    }
-  </style>
+  <link rel="stylesheet" href="../css/icons.css" />
+  <link rel="stylesheet" href="../css/gateway.css" />
 </head>
-<body>
-  <div id="offline-banner">📶 Offline ka ngayon. Ilang features ay hindi available.</div>
-
-  <div class="reg-hero">
-    <span class="brand-mark">🍱 RESQFOOD</span>
+<body class="role-gateway">
+  <div id="offline-banner">Offline ka ngayon. Ilang features ay hindi available.</div>
+  <header class="reg-hero">
+    <a class="brand-mark" href="/" aria-label="ResQFood home"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/icons/ui.svg#restaurant"></use></svg> RESQFOOD</a>
     <h1>Sino ka sa ating komunidad?</h1>
     <p>Piliin ang iyong papel para makapagsimula.</p>
-  </div>
-
-  <div class="page-content" style="max-width:520px;">
-    <div class="role-grid" role="list">
-
-      <!-- DONOR -->
-      <a class="role-card featured" href="donor.html" id="card-donor"
-         role="listitem" aria-label="Mag-register bilang Food Donor">
-        <span class="role-card__icon">🍱</span>
-        <span class="role-card__title">May sobrang pagkain?</span>
-        <span class="role-card__tagline">
-          I-post ang sobrang ulam o paninda para maihatid sa nangangailangan.
-        </span>
-      </a>
-
-      <a class="role-card" href="volunteer.html" id="card-volunteer"
-         role="listitem" aria-label="Mag-register bilang Volunteer">
-        <span class="role-card__icon">🚲</span>
-        <span class="role-card__title">Gusto mong tumulong?</span>
-        <span class="role-card__tagline">
-          Sumali bilang volunteer at maghatid ng pagkain sa mga nangangailangan.
-        </span>
-      </a>
-
-      <a class="role-card" href="org-admin.html" id="card-org-admin"
-         role="listitem" aria-label="Mag-register bilang Organization Admin">
-        <span class="role-card__icon">🏠</span>
-        <span class="role-card__title">Kumakatawan sa organization?</span>
-        <span class="role-card__tagline">
-          I-register ang inyong feeding program at tumanggap ng verified deliveries.
-        </span>
-      </a>
-
-    </div>
-
-    <div class="gateway-footer">
-      May account na? <a href="/index.html#signin">Mag-sign in dito</a>
-    </div>
-  </div>
-
+  </header>
+  <main class="page-content">
+    <ul class="role-grid" aria-label="Mga paraan para sumali">
+      <li><a class="role-card featured" href="donor.html" id="card-donor" aria-label="Mag-register bilang Food Donor">
+        <span class="role-card__icon"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/icons/ui.svg#restaurant"></use></svg></span>
+        <h2 class="role-card__title">May sobrang pagkain?</h2>
+        <p class="role-card__tagline">I-post ang sobrang ulam o paninda para maihatid sa nangangailangan.</p>
+      </a></li>
+      <li><a class="role-card" href="volunteer.html" id="card-volunteer" aria-label="Mag-register bilang Volunteer">
+        <span class="role-card__icon"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/icons/ui.svg#bicycle"></use></svg></span>
+        <h2 class="role-card__title">Gusto mong tumulong?</h2>
+        <p class="role-card__tagline">Sumali bilang volunteer at maghatid ng pagkain sa mga nangangailangan.</p>
+      </a></li>
+      <li><a class="role-card" href="org-admin.html" id="card-org-admin" aria-label="Mag-register bilang Organization Admin">
+        <span class="role-card__icon"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/icons/ui.svg#organization"></use></svg></span>
+        <h2 class="role-card__title">Kumakatawan sa organization?</h2>
+        <p class="role-card__tagline">I-register ang inyong feeding program at tumanggap ng verified deliveries.</p>
+      </a></li>
+    </ul>
+    <footer class="gateway-footer">May account na? <a href="/donor/login.html">Donor sign in</a> · <a href="/volunteer/login.html">Volunteer sign in</a> · <a href="/org-admin/login.html">Organization sign in</a></footer>
+  </main>
   <div id="toast-container" aria-live="polite"></div>
-
   <script>
-    // Offline banner
     function updateOnline() { document.body.classList.toggle('offline', !navigator.onLine); }
-    window.addEventListener('online',  updateOnline);
+    window.addEventListener('online', updateOnline);
     window.addEventListener('offline', updateOnline);
     updateOnline();
   </script>

@@ -3,3 +3,8 @@
 .DS_Store
 Thumbs.db
 node_modules/
+.local-config/
+functions/.env.local
+.browser-test/
+.browser-smoke/
+.browser-metrics/

@@ -1,0 +1,26 @@
+﻿MODULE adminUsers exists=False
+MODULE adminDonations exists=False
+MODULE adminAudit exists=False
+MODULE orgHistory exists=False
+MODULE activeMission exists=False
+PAGE admin/users.html wiredModule=True inlineScriptBlocks=0 mock=False
+PAGE admin/audit.html wiredModule=True inlineScriptBlocks=0 mock=False
+PAGE volunteer/active-mission.html wiredModule=True inlineScriptBlocks=0 mock=False
+PAGE org-admin/history.html wiredModule=True inlineScriptBlocks=0 mock=False
+PAGE admin/donations.html wiredModule=True inlineScriptBlocks=0 mock=False
+CALLABLE export setUserStatus = True
+CALLABLE export exportCsv = True
+CALLABLE export transitionDonationStatus = True
+CALLABLE export claimDonation = True
+CALLABLE export issuePin = True
+CALLABLE export verifyPin = True
+CALLABLE export verifyQr = True
+UTIL export esc = True
+UTIL export formatDateTime = True
+UTIL export formatKg = True
+DATA export watchQuery = True
+DATA export fetchDoc = True
+DATA export usersQuery = True
+DATA export donationsQuery = True
+DATA export auditLogsQuery = True
+DATA export watchConnection = True

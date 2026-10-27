@@ -15,6 +15,8 @@ async function run() {
 
   await admin.auth().deleteUser(uid).catch(() => null);
   await admin.auth().deleteUser(adminUid).catch(() => null);
+  // Reset this test's profile; a previous run intentionally changes its role.
+  await db.collection('users').doc(uid).delete();
 
   await admin.auth().createUser({ uid: uid, email: `${uid}@example.com`, emailVerified: true, displayName: 'Signup User' });
   await admin.auth().createUser({ uid: adminUid, email: `${adminUid}@example.com`, emailVerified: true, displayName: 'System Admin' });

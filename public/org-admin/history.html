@@ -6,8 +6,7 @@
   <title>ResQFood — Delivery History</title>
   <link rel="stylesheet" href="../css/base.css" />
   <link rel="stylesheet" href="../css/org-admin.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/vendor/fonts/fonts.css" />
   <style>
     .history-header {
       background: linear-gradient(135deg, var(--color-primary), var(--color-primary-cont));
@@ -124,20 +123,20 @@
     <!-- Monthly summary -->
     <div class="summary-grid" id="summary-grid">
       <div class="summary-card">
-        <span class="s-val" id="sum-kg">42.5</span>
+        <span class="s-val" id="sum-kg">0</span>
         <div class="s-lbl">kg ngayong buwan</div>
       </div>
       <div class="summary-card">
-        <span class="s-val" id="sum-deliveries">15</span>
+        <span class="s-val" id="sum-deliveries">0</span>
         <div class="s-lbl">total deliveries</div>
       </div>
       <div class="summary-card">
-        <span class="s-val" id="sum-volunteers">4</span>
-        <div class="s-lbl">mga volunteer</div>
+        <span class="s-val" id="sum-volunteers">0</span>
+        <div class="s-lbl">volunteers ngayong buwan</div>
       </div>
       <div class="summary-card">
-        <span class="s-val" id="sum-avg">2.8</span>
-        <div class="s-lbl">avg kg per delivery</div>
+        <span class="s-val" id="sum-avg">0</span>
+        <div class="s-lbl">avg kg ngayong buwan</div>
       </div>
     </div>
 
@@ -164,46 +163,6 @@
 
   <div id="toast-container" aria-live="polite"></div>
 
-  <script>
-    const MOCK_HISTORY = [
-      { date: 'May 28', time: '3:15 PM', food: 'Kanin at Ulam',     qty: 4.5, volunteer: 'Juan Dela Cruz' },
-      { date: 'May 28', time: '10:15 AM', food: 'Tinapay',          qty: 1.5, volunteer: 'Maria Santos' },
-      { date: 'May 27', time: '2:30 PM',  food: 'Gulay (assorted)', qty: 3.0, volunteer: 'Pedro Lim' },
-      { date: 'May 27', time: '1:00 PM',  food: 'Kanin',            qty: 2.0, volunteer: 'Juan Dela Cruz' },
-      { date: 'May 26', time: '4:00 PM',  food: 'Tinapa',           qty: 5.0, volunteer: 'Maria Santos' },
-      { date: 'May 26', time: '9:30 AM',  food: 'Tinapay',          qty: 3.5, volunteer: 'Pedro Lim' },
-      { date: 'May 25', time: '2:45 PM',  food: 'Gulay (assorted)', qty: 1.8, volunteer: 'Pedro Lim' },
-      { date: 'May 25', time: '11:00 AM', food: 'Kanin at Ulam',    qty: 4.0, volunteer: 'Juan Dela Cruz' },
-      { date: 'May 24', time: '3:30 PM',  food: 'Tinapay',          qty: 2.0, volunteer: 'Maria Santos' },
-      { date: 'May 24', time: '10:00 AM', food: 'Gulay',            qty: 1.5, volunteer: 'Pedro Lim' },
-    ];
-
-    function esc(str) {
-      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const list = document.getElementById('history-list');
-      list.innerHTML = MOCK_HISTORY.map(h => `
-        <div class="history-item">
-          <span class="hi-check">✅</span>
-          <div class="hi-info">
-            <div class="hi-food">${esc(h.food)}</div>
-            <div class="hi-meta">👤 ${esc(h.volunteer)}</div>
-          </div>
-          <div class="hi-right">
-            <div class="hi-qty">${h.qty} kg</div>
-            <div class="hi-date">${esc(h.date)} · ${esc(h.time)}</div>
-          </div>
-        </div>`).join('');
-
-      document.getElementById('btn-back').addEventListener('click', () => history.back());
-
-      const update = () => document.body.classList.toggle('offline', !navigator.onLine);
-      window.addEventListener('online',  update);
-      window.addEventListener('offline', update);
-      update();
-    });
-  </script>
+  <script src="../js/modules/orgHistory.js" type="module"></script>
 </body>
 </html>

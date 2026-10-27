@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ResQFood — History</title>
   <link rel="stylesheet" href="../css/base.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/vendor/fonts/fonts.css" />
   <style>
     body {
       background: var(--color-surface-low);
@@ -191,7 +190,7 @@
     .nav-item .nav-icon { font-size: 1.3rem; }
     body { padding-bottom: 5rem; }
   </style>
-</head>
+<script type="module" src="../js/modules/volunteerHistory.js"></script></head>
 <body>
   <header class="hist-header">
     <a class="back-link" href="index.html">← Missions</a>
@@ -201,101 +200,12 @@
   <div id="offline-banner">📶 Offline ka ngayon. Ilang features ay hindi available.</div>
 
   <main class="hist-body">
-
-    <!-- Stats -->
     <div class="stats-grid">
-      <div class="stat-tile">
-        <span class="tile-icon">⚖️</span>
-        <span class="tile-val">8.5 kg</span>
-        <span class="tile-lbl">Kabuuang nailigtas</span>
-      </div>
-      <div class="stat-tile">
-        <span class="tile-icon">✅</span>
-        <span class="tile-val">3</span>
-        <span class="tile-lbl">Nakumpletong misyon</span>
-      </div>
-      <div class="stat-tile">
-        <span class="tile-icon">⭐</span>
-        <span class="tile-val">120</span>
-        <span class="tile-lbl">Kasalukuyang puntos</span>
-      </div>
-      <div class="stat-tile">
-        <span class="tile-icon">🏅</span>
-        <span class="tile-val">HIGH</span>
-        <span class="tile-lbl" style="color:var(--color-primary);">Reliability</span>
-      </div>
+      <div class="stat-tile"><span class="tile-val" id="history-kg">0</span><span class="tile-lbl">kg naligtas</span></div>
+      <div class="stat-tile"><span class="tile-val" id="history-missions">0</span><span class="tile-lbl">Verified missions</span></div>
     </div>
-
-    <!-- Certificate progress -->
-    <div class="cert-card">
-      <div class="cert-card-title">
-        🎓 Barangay Certificate
-      </div>
-      <div class="progress-bar-wrap">
-        <div class="progress-bar-fill" style="width:30%;"></div>
-      </div>
-      <div class="progress-label">
-        <span>3 / 10 missions</span>
-        <span>7 missions pa</span>
-      </div>
-      <div style="font-size:.82rem; color:var(--color-muted); margin-top:var(--sp-3);">
-        Kumpletuhin ang 10 missions para makuha ang iyong barangay certificate na puwedeng gamitin sa school o barangay records.
-      </div>
-    </div>
-
-    <!-- Badges -->
-    <div class="badges-section">
-      <div class="section-title">🏆 Aking Badges</div>
-      <div class="badge-chips">
-        <span class="badge-chip">🌟 First Rescuer</span>
-        <span class="badge-chip">🚀 Quick Starter</span>
-        <span class="badge-chip">⏰ Punctual Pal</span>
-      </div>
-    </div>
-
-    <!-- Past missions -->
-    <div class="section-title">📋 Nakaraang Missions</div>
-
-    <div class="hist-mission">
-      <span class="hist-icon">🍱</span>
-      <div class="hist-info">
-        <div class="hist-food">Kanin at Ulam · 3.5 kg</div>
-        <div class="hist-meta">📍 Lahug · Kahapon, 2:00 PM</div>
-        <div class="hist-meta">🏠 Paabot Community Kitchen</div>
-        <span class="hist-status-badge s-delivered">✅ Delivered</span>
-      </div>
-    </div>
-
-    <div class="hist-mission">
-      <span class="hist-icon">🍞</span>
-      <div class="hist-info">
-        <div class="hist-food">Tinapay · 1.2 kg</div>
-        <div class="hist-meta">📍 Mabolo · 3 araw na ang nakalipas</div>
-        <div class="hist-meta">🏠 Lahug Youth Shelter</div>
-        <span class="hist-status-badge s-delivered">✅ Delivered</span>
-      </div>
-    </div>
-
-    <div class="hist-mission">
-      <span class="hist-icon">🥬</span>
-      <div class="hist-info">
-        <div class="hist-food">Gulay (assorted) · 2.0 kg</div>
-        <div class="hist-meta">📍 Banilad · Isang linggo na</div>
-        <div class="hist-meta">🏠 Caritas Cebu Shelter</div>
-        <span class="hist-status-badge s-delivered">✅ Delivered</span>
-      </div>
-    </div>
-
-    <div class="hist-mission">
-      <span class="hist-icon">🐟</span>
-      <div class="hist-info">
-        <div class="hist-food">Tinapa · 1.0 kg</div>
-        <div class="hist-meta">📍 Apas · 2 linggo na</div>
-        <div class="hist-meta">Cancelled bago ma-pickup</div>
-        <span class="hist-status-badge s-cancelled">✕ Cancelled</span>
-      </div>
-    </div>
-
+    <div class="section-title">Nakaraang Missions</div>
+    <div id="volunteer-history" aria-live="polite"></div>
   </main>
 
   <!-- Bottom nav -->

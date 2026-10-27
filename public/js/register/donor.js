@@ -13,6 +13,8 @@ import { signupWithProfile } from '../core/callables.js';
 let otpTimer   = null;
 let isBusiness = false;
 let pendingConfirmation = null;
+let sendingOtp = false;
+let verifyingOtp = false;
 
 // ── Step navigation ──────────────────────────────────────────────────────────
 function goToStep(n) {
@@ -20,11 +22,13 @@ function goToStep(n) {
   const panel = document.getElementById(`step-${n}`);
   if (panel) panel.classList.add('active');
   setStepperState(n);
+  if (n === 4) requestAnimationFrame(updateWaiverGate);
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // ── STEP 1 — Phone via real Firebase OTP ────────────────────────────────────
 document.getElementById('btn-send-otp').addEventListener('click', async () => {
+  if (sendingOtp) return;
   const raw = document.getElementById('inp-phone').value.trim();
   clearFieldError('phone-wrap', 'err-phone');
   document.getElementById('collision-msg').classList.remove('visible');
@@ -37,6 +41,8 @@ document.getElementById('btn-send-otp').addEventListener('click', async () => {
 
   const phone = '+63' + raw.replace(/\D/g, '').slice(-10);
 
+  sendingOtp = true;
+  document.getElementById('btn-send-otp').disabled = true;
   try {
     pendingConfirmation = await sendOTP(phone, 'recaptcha-container');
     showOtpSection(phone);
@@ -44,6 +50,9 @@ document.getElementById('btn-send-otp').addEventListener('click', async () => {
   } catch (err) {
     console.error('sendOTP failed', err);
     showFieldError('phone-wrap', 'err-phone', 'Hindi maipadala ang code sa iyong numero. Subukan muli.');
+  } finally {
+    sendingOtp = false;
+    document.getElementById('btn-send-otp').disabled = false;
   }
 });
 
@@ -101,16 +110,19 @@ function getOtpValue() { return [...otpInputs].map(i => i.value).join(''); }
 
 function checkOtpComplete() {
   const complete = getOtpValue().length === 6;
-  document.getElementById('btn-verify-otp').disabled = !complete;
-  if (complete && pendingConfirmation) {
+  document.getElementById('btn-verify-otp').disabled = !complete || verifyingOtp;
+  if (complete && pendingConfirmation && !verifyingOtp) {
     document.getElementById('btn-verify-otp').click();
   }
 }
 
 document.getElementById('btn-verify-otp').addEventListener('click', async () => {
+  if (verifyingOtp) return;
   const code = getOtpValue();
   if (code.length < 6) return;
 
+  verifyingOtp = true;
+  document.getElementById('btn-verify-otp').disabled = true;
   try {
     await confirmOTP(pendingConfirmation, code);
     clearOtpTimer();
@@ -120,6 +132,9 @@ document.getElementById('btn-verify-otp').addEventListener('click', async () => 
     console.error('OTP verification failed', err);
     clearFieldError('otp-group', 'err-otp');
     showFieldError('otp-group', 'err-otp', 'Hindi valid ang code. Subukan muli.');
+  } finally {
+    verifyingOtp = false;
+    document.getElementById('btn-verify-otp').disabled = getOtpValue().length !== 6;
   }
 });
 
@@ -253,7 +268,7 @@ function checkWaiverState() {
   btnSubmit.disabled = !(chkSafety.checked && chkPrivacy.checked);
 }
 
-waiverBox.addEventListener('scroll', () => {
+function updateWaiverGate() {
   const scrolled = waiverBox.scrollTop + waiverBox.clientHeight >= waiverBox.scrollHeight - 10;
   if (scrolled) {
     waiverChecks.style.opacity      = '1';
@@ -263,7 +278,8 @@ waiverBox.addEventListener('scroll', () => {
     chkPrivacy.disabled = false;
     scrollHint.style.display = 'none';
   }
-});
+}
+waiverBox.addEventListener('scroll', updateWaiverGate);
 
 chkSafety.addEventListener('change',  checkWaiverState);
 chkPrivacy.addEventListener('change', checkWaiverState);
@@ -272,7 +288,7 @@ document.getElementById('btn-4-back').addEventListener('click', () => goToStep(3
 btnSubmit.addEventListener('click', async () => {
   if (!chkSafety.checked || !chkPrivacy.checked) return;
 
-  const payload = buildDonorRegistrationPayload();
+  const payload = { ...buildDonorRegistrationPayload(), safetyConsent: chkSafety.checked, privacyConsent: chkPrivacy.checked };
   const validation = validateDonorRegistrationPayload(payload);
 
   if (!validation.valid) {

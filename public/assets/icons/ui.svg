@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <symbol id="restaurant" viewBox="0 0 24 24"><path d="M4 3v5a3 3 0 0 0 6 0V3M7 3v18M20 21V3c-4 2-5 7-5 10h5"/></symbol>
+  <symbol id="volunteer_activism" viewBox="0 0 24 24"><path d="M3 14h4l3 2h5a2 2 0 0 1 0 4h-5l-4-2H3m0-5v8m12-11-4-4a3 3 0 0 1 4-4 3 3 0 0 1 4 4Z"/></symbol>
+  <symbol id="bicycle" viewBox="0 0 24 24"><circle cx="5" cy="17" r="4"/><circle cx="19" cy="17" r="4"/><path d="m5 17 5-9 5 9H5m5-9h6l3 9M8 5h4m3-2h3l1 5"/></symbol>
+  <symbol id="organization" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7M5 9v12h14V9M9 21v-7h6v7"/><path d="M10 9h4"/></symbol>
+  <symbol id="search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></symbol>
+  <symbol id="schedule" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></symbol>
+  <symbol id="psychology" viewBox="0 0 24 24"><path d="M9 21v-4H6v-5H3l3-5a7 7 0 1 1 12 8v6"/><path d="m10 9 2 2 4-4"/></symbol>
+  <symbol id="star" viewBox="0 0 24 24"><path d="m12 3 2.8 5.8 6.4.9-4.6 4.5 1.1 6.3-5.7-3-5.7 3 1.1-6.3-4.6-4.5 6.4-.9Z"/></symbol>
+  <symbol id="public" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/></symbol>
+  <symbol id="alternate_email" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M16 8v6a2 2 0 0 0 4 0v-2a8 8 0 1 0-4 7"/></symbol>
+</svg>

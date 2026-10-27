@@ -11,6 +11,22 @@ service cloud.firestore {
       return isSignedIn() && request.auth.token.role == role;
     }
 
+    function isActive() {
+      return isSignedIn()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.status == 'active'
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == request.auth.token.role;
+    }
+
+    function orgMember(orgId) {
+      let org = get(/databases/$(database)/documents/organizations/$(orgId)).data;
+      return hasRole('orgAdmin') && org.status == 'active'
+        && (org.primaryContactUid == request.auth.uid || request.auth.uid in org.verifierUids);
+    }
+
+    function isAdmin() {
+      return isActive() && request.auth.token.role in ['lguAdmin', 'systemAdmin'];
+    }
+
     function isOwner(uid) {
       return isSignedIn() && request.auth.uid == uid;
     }
@@ -23,22 +39,22 @@ service cloud.firestore {
       return resource.data;
     }
 
-    // users collection
+    // users collection — role is server-set only (assignRole callable +
+    // signup* callables set custom claims + profile role; clients can never
+    // write `role`). Reads scoped: self + admins. Coordination reads for
+    // other roles go through donation/org docs, not wholesale profile reads.
     match /users/{userId} {
-      // Users may create their own profile; role must NOT be supplied by client.
-      // Role assignment is an admin-only operation (use admin callable `assignRole`).
-      allow create: if isOwner(userId)
-        && incoming().keys().hasAny(['fullName','phoneNumber','barangay'])
-        && !incoming().keys().hasAny(['role']);
+      allow create: if false;
 
-      // Signed-in users can read user profiles (team coordination needs read access).
-      allow read: if isSignedIn();
+      allow read: if isOwner(userId) || isAdmin();
 
-      // Owner can update limited fields; role change disallowed from client.
+      // Owner can update limited non-privileged fields; role/status change
+      // disallowed from client (status via setUserStatus callable).
       allow update: if isOwner(userId)
         && incoming().role == existing().role
+        && incoming().status == existing().status
         && incoming().diff(existing()).affectedKeys().hasOnly([
-          'fullName','phoneNumber','barangay','status','updatedAt'
+          'fullName','barangay','updatedAt'
         ]);
 
       allow delete: if false;
@@ -46,68 +62,96 @@ service cloud.firestore {
 
     // donations collection
     match /donations/{donationId} {
-      // Creation by signed-in donors only; status must start 'pending'
-      allow create: if isSignedIn()
-        && incoming().donorId == request.auth.uid
-        && incoming().status == 'pending'
-        && incoming().safetyDeclared == true;
+      // All donation creation is validated and audited by createDonorDonation.
+      allow create: if false;
 
-      // Read: signed-in users can read (may be tuned later by role/org)
-      allow read: if isSignedIn();
-
-      // Updates: donors can cancel own pending donations (limited fields)
-      allow update: if isSignedIn() && (
-
-        // Donor cancelling their pending donation
-        (existing().donorId == request.auth.uid
-         && existing().status == 'pending'
-         && incoming().status == 'cancelled'
-         && incoming().diff(existing()).affectedKeys().hasOnly(['status','statusHistory','updatedAt']))
-
-        // Volunteer claiming -> only allow transition pending -> scheduled and volunteerId == request.auth.uid
-        || (request.auth.token.role == 'volunteer'
-            && existing().status == 'pending'
-            && incoming().status == 'scheduled'
-            && incoming().volunteerId == request.auth.uid
-            && incoming().diff(existing()).affectedKeys().hasOnly(['status','volunteerId','claimedAt','statusHistory','updatedAt']))
-
-        // Admins or orgAdmins advancing status for assigned organizations
-        || (request.auth.token.role in ['orgAdmin','lguAdmin','systemAdmin']
-            && incoming().diff(existing()).affectedKeys().hasOnly([
-              'status','pickedUpAt','enRouteAt','deliveredAt','verifiedBy','verifiedAt','statusHistory','updatedAt'
-            ]))
+      // Scoped reads: pending board (volunteers), own (donor), assigned
+      // (volunteer/org), admins. No wholesale reads.
+      allow read: if isActive() && (
+        (hasRole('volunteer') && existing().status == 'pending')
+        || existing().donorId == request.auth.uid
+        || existing().get('volunteerId', '') == request.auth.uid
+        || (existing().get('orgId', '') != '' && orgMember(existing().orgId))
+        || isAdmin()
       );
+
+      // Only optional photo metadata may be patched directly. Commands own status.
+      allow update: if isActive() && hasRole('donor')
+        && existing().donorId == request.auth.uid && existing().status == 'pending'
+        && incoming().diff(existing()).affectedKeys().hasOnly(['imageUrl','updatedAt'])
+        && incoming().imageUrl is string;
 
       allow delete: if false;
     }
 
-    // qrCodes - tokens representing QR claims; clients may create/read, but
-    // must NOT mark codes as used. Only trusted server-side code may update
-    // `used`/`usedBy`/`usedAt` fields (server SDK bypasses rules).
-    match /qrCodes/{qrId} {
-      allow create: if isSignedIn();
-      allow read: if isSignedIn();
-      // Prevent clients from updating QR documents (server should mark used)
+    // organizations — org-first accounts; primary contact + admins manage.
+    match /organizations/{orgId} {
+      allow create: if false;
+      allow read: if isSignedIn() && (
+        existing().primaryContactUid == request.auth.uid
+        || (hasRole('orgAdmin') && request.auth.uid in existing().verifierUids)
+        || isAdmin()
+      );
+      // Validated address/mode changes use the audited server command.
       allow update: if false;
       allow delete: if false;
     }
 
-    // notifications - write only by trusted server (admin claim)
+    // Server-issued PINs: hash-at-rest, 15-min TTL, single-use.
+    // Clients never read/write — only issuePin/verifyPin callables.
+    match /pins/{pinId} {
+      allow read, write: if false;
+    }
+
+    // Durable idempotency receipts; no credential or client-writable completion.
+    match /handoverReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    // HMAC QR nonces: server-only. Clients verify via verifyQr callable.
+    match /qrNonces/{nonce} {
+      allow read, write: if false;
+    }
+
+    // Legacy qrCodes docs (unsigned v1): server-only now.
+    match /qrCodes/{qrId} {
+      allow read, write: if false;
+    }
+
+    // notifications — server-written only (notify lib / lifecycle).
+    // Recipients read their own.
     match /notifications/{notificationId} {
-      allow read: if isSignedIn() && request.auth.uid == resource.data.recipientUid;
-      // Only system admins or back-end services with admin claim may create notifications
-      allow create: if isSignedIn() && (request.auth.token.role == 'systemAdmin' || request.auth.token.admin == true);
-      allow update, delete: if false;
+      allow read: if isSignedIn() && resource.data.recipientUid == request.auth.uid;
+      allow create, update, delete: if false;
     }
 
-    // auditLogs - write only by trusted server
+    // auditLogs — server-written only, immutable, admin-readable.
+    // (Survives account erasure: anonymized, never deleted.)
     match /auditLogs/{logId} {
-      allow read: if isSignedIn() && (request.auth.token.role == 'systemAdmin' || request.auth.token.admin == true);
-      allow create: if isSignedIn() && (request.auth.token.role == 'systemAdmin' || request.auth.token.admin == true);
+      allow read: if isAdmin();
+      allow create, update, delete: if false;
+    }
+
+    // consentRecords (RA 10173): create via recordConsent callable only;
+    // read self + admins. Immutable.
+    match /consentRecords/{consentId} {
+      allow read: if isOwner(existing().uid) || isAdmin();
+      allow create: if false;
       allow update, delete: if false;
     }
 
-    // verificationRequests - created by uploader, updated by admins
+    // invites: server-issued, single-use, 72h expiry. Validate via callable.
+    match /invites/{inviteId} {
+      allow read: if isAdmin();
+      allow create, update, delete: if false;
+    }
+
+    // OTP send ledger: server-only (otpGuard).
+    match /otpSends/{sendId} {
+      allow read, write: if false;
+    }
+
+    // verificationRequests - created by uploader, reviewed by admins
     match /verificationRequests/{reqId} {
       allow create: if isSignedIn()
         && incoming().uploaderUid == request.auth.uid
@@ -116,10 +160,13 @@ service cloud.firestore {
         && incoming().status == 'pending'
         && incoming().storagePath.matches('authorization-letters/' + request.auth.uid + '/(volunteer-id|organization|lgu)/.*')
         && incoming().keys().hasAll(['requestId','uploaderUid','targetUid','type','storagePath','status','createdAt']);
-      allow read: if isSignedIn();
-      // Only admins may update review fields
-      allow update: if isSignedIn() && (request.auth.token.role in ['orgAdmin','lguAdmin','systemAdmin'] || request.auth.token.admin == true);
-      allow delete: if false;
+      allow read: if isSignedIn() && (
+        existing().uploaderUid == request.auth.uid
+        || existing().targetUid == request.auth.uid
+          || (isAdmin() && hasRole('systemAdmin'))
+      );
+      // Review decisions go through reviewVerificationRequest callable.
+      allow update, delete: if false;
     }
 
   }

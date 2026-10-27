@@ -1,4 +1,4 @@
-import { auth } from '../core/firebaseConfig.js?v=app-admin-login-v1';
+import { auth } from '../core/firebaseConfig.js';
 import { signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
 const $ = (id) => document.getElementById(id);

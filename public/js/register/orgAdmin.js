@@ -1,6 +1,6 @@
 import { sendOTP, confirmOTP } from '../core/auth.js';
-import { signupOrgAdminWithProfile } from '../core/callables.js?v=org-admin-v1';
-import { auth, db, storage } from '../core/firebaseConfig.js?v=org-admin-v1';
+import { signupOrgAdminWithProfile } from '../core/callables.js';
+import { auth, db, storage } from '../core/firebaseConfig.js';
 import { collection, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { ref, uploadBytes } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
 import { normalizePhone, isValidPHPhone, showToast, setStepperState, showFieldError, clearFieldError } from './shared.js';
@@ -9,6 +9,7 @@ let pendingConfirmation = null;
 let authorizationRequestId = null;
 let deviceMode = null;
 let otpTimer = null;
+let otpBusy = false;
 const $ = (id) => document.getElementById(id);
 const phone = () => normalizePhone($('o-inp-phone').value);
 
@@ -19,13 +20,15 @@ function goToStep(number) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function error(field, message) { showFieldError(field, `o-err-${field}`, message); }
-function clear(field) { clearFieldError(field, `o-err-${field}`); }
+const fieldId = field => $(`o-inp-${field}`) ? `o-inp-${field}` : `o-chk-${field}`;
+function error(field, message) { showFieldError(fieldId(field), `o-err-${field}`, message); }
+function clear(field) { clearFieldError(fieldId(field), `o-err-${field}`); }
 
 $('o-btn-send-otp').addEventListener('click', async () => {
   clear('phone');
-  const raw = $('o-inp-phone').value.trim();
-  if (!/^\d{10}$/.test(raw.replace(/\D/g, '').slice(-10))) return error('phone', 'Maglagay ng valid na Philippine mobile number.');
+  if (otpBusy) return;
+  if (!isValidPHPhone(phone())) return error('phone', 'Maglagay ng valid na Philippine mobile number.');
+  otpBusy = true; $('o-btn-send-otp').disabled = true;
   try {
     pendingConfirmation = await sendOTP(phone(), 'recaptcha-container');
     $('o-inp-phone').disabled = true;
@@ -38,6 +41,8 @@ $('o-btn-send-otp').addEventListener('click', async () => {
   } catch (failure) {
     console.error('Org OTP failed', failure);
     error('phone', 'Hindi maipadala ang OTP. Subukan muli.');
+  } finally {
+    otpBusy = false; $('o-btn-send-otp').disabled = false;
   }
 });
 
@@ -47,7 +52,7 @@ function startOtpTimer(seconds) {
   $('o-btn-resend').disabled = true;
   otpTimer = setInterval(() => {
     remaining -= 1;
-    $('o-otp-countdown').textContent = `Mag-expire sa ${remaining}s. `;
+    $('o-otp-countdown').textContent = `Puwedeng mag-resend sa ${remaining}s. `;
     if (remaining <= 0) {
       clearOtpTimer();
       $('o-otp-countdown').textContent = '';
@@ -68,24 +73,32 @@ otpInputs.forEach((input, index) => {
     event.target.value = value;
     event.target.classList.toggle('filled', Boolean(value));
     if (value && index < otpInputs.length - 1) requestAnimationFrame(() => otpInputs[index + 1].focus());
-    $('o-btn-verify-otp').disabled = [...otpInputs].some((digit) => !digit.value);
-    if ([...otpInputs].every((digit) => digit.value) && pendingConfirmation) $('o-btn-verify-otp').click();
+    updateOtp();
   });
   input.addEventListener('keydown', (event) => {
     if (event.key === 'Backspace' && !input.value && index > 0) otpInputs[index - 1].focus();
   });
   input.addEventListener('paste', (event) => {
     event.preventDefault();
+    otpInputs.forEach(input => { input.value = ''; input.classList.remove('filled'); });
     [...event.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6)].forEach((value, position) => {
       otpInputs[position].value = value;
       otpInputs[position].classList.add('filled');
     });
-    $('o-btn-verify-otp').disabled = false;
+    updateOtp();
     otpInputs[Math.min(event.clipboardData.getData('text').replace(/\D/g, '').length, 5)]?.focus();
   });
 });
 
+function updateOtp() {
+  const complete = [...otpInputs].every(digit => /^\d$/.test(digit.value));
+  $('o-btn-verify-otp').disabled = otpBusy || !complete || !pendingConfirmation;
+  if (complete && !otpBusy && pendingConfirmation) $('o-btn-verify-otp').click();
+}
+
 $('o-btn-verify-otp').addEventListener('click', async () => {
+  if (otpBusy || !pendingConfirmation || [...otpInputs].some(digit => !/^\d$/.test(digit.value))) return;
+  otpBusy = true; $('o-btn-verify-otp').disabled = true;
   clear('otp');
   try {
     await confirmOTP(pendingConfirmation, [...otpInputs].map((input) => input.value).join(''));
@@ -95,10 +108,14 @@ $('o-btn-verify-otp').addEventListener('click', async () => {
   } catch (failure) {
     console.error('Org OTP verification failed', failure);
     error('otp', 'Hindi valid ang OTP. Subukan muli.');
+  } finally {
+    otpBusy = false; $('o-btn-verify-otp').disabled = [...otpInputs].some(digit => !/^\d$/.test(digit.value));
   }
 });
 
 $('o-btn-resend').addEventListener('click', async () => {
+  if (otpBusy) return;
+  otpBusy = true; pendingConfirmation = null; $('o-btn-resend').disabled = true;
   otpInputs.forEach((input) => { input.value = ''; input.classList.remove('filled'); });
   $('o-btn-verify-otp').disabled = true;
   try {
@@ -108,12 +125,19 @@ $('o-btn-resend').addEventListener('click', async () => {
   } catch (failure) {
     console.error('Org OTP resend failed', failure);
     showToast('Hindi maipadala ang bagong code. Subukan muli.', 'error');
+    $('o-btn-resend').disabled = false;
+  } finally {
+    otpBusy = false;
   }
 });
 
 $('o-btn-2-back').addEventListener('click', () => goToStep(1));
 $('o-btn-2-next').addEventListener('click', () => {
   let valid = true;
+  clear('address');
+  if ($('o-inp-address').value.trim().length < 10 || $('o-inp-address').value.trim().length > 300) {
+    error('address', 'Maglagay ng eksaktong delivery address (10-300 karakter).'); valid = false;
+  }
   [['name', $('o-inp-name').value.trim().length >= 3, 'Maglagay ng pangalan ng organization.'], ['type', Boolean($('o-inp-type').value), 'Pumili ng uri ng organization.'], ['barangay', Boolean($('o-inp-barangay').value), 'Pumili ng barangay.']].forEach(([field, passes, message]) => {
     clear(field);
     if (!passes) { error(field, message); valid = false; }
@@ -217,6 +241,7 @@ $('o-btn-submit').addEventListener('click', async () => {
       organizationName: $('o-inp-name').value.trim(),
       organizationType: $('o-inp-type').value,
       barangay: $('o-inp-barangay').value,
+      address: $('o-inp-address').value.trim(),
       coordinatorName: $('o-inp-contact').value.trim(),
       coordinatorDesignation: $('o-inp-designation').value.trim(),
       phone: phone(),

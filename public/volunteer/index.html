@@ -1,12 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fil">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ResQFood — Mission Board</title>
   <link rel="stylesheet" href="../css/base.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/vendor/fonts/fonts.css" />
   <style>
     body {
       background: var(--color-surface-low);
@@ -283,8 +282,8 @@
       <span class="stat-lbl">missions</span>
     </div>
     <div class="stat-card">
-      <span class="stat-val" id="stat-points">0</span>
-      <span class="stat-lbl">puntos</span>
+      <span class="stat-val" id="stat-awaiting">0</span>
+      <span class="stat-lbl">hinihintay na receipt</span>
     </div>
   </div>
 
@@ -343,6 +342,6 @@
   </nav>
 
   <div id="toast-container" aria-live="polite"></div>
-  <script src="../js/modules/volunteer.js"></script>
+  <script type="module" src="../js/modules/volunteer.js"></script>
 </body>
 </html>

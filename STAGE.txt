@@ -1,0 +1,35 @@
+=== MODULES ===
+  activeMission.js
+  adminAudit.js
+  adminDonations.js
+  adminUsers.js
+  appAdmin.js
+  appAdminLogin.js
+  donor.js
+  orgAdmin.js
+  orgHistory.js
+  rewards.js
+  systemAdmin.js
+  verificationReview.js
+  volunteer.js
+
+=== PHASE-B PAGES ===
+  admin/users.html: moduleSrc=0 inline=0 mockHits=0
+  admin/donations.html: moduleSrc=0 inline=0 mockHits=0
+  admin/audit.html: moduleSrc=0 inline=0 mockHits=0
+  org-admin/history.html: moduleSrc=0 inline=0 mockHits=0
+  volunteer/active-mission.html: moduleSrc=0 inline=0 mockHits=0
+
+=== EXTERNAL CDN REFS (all html) ===
+  index.html: https://lh3.googleusercontent.com/aida-public/AB6AXuAgOh84pXq47q9gIJiVH_taaTvkQbe0vfYYX_EqmvSj6yAerLHWgmvaX8HKfA-c0lM2URbedzd_-FCrgahmmCs2DqK-78Ps0LUHIQPqF0mtNUsy0J8PhFgPJFwop0Zw1wkr4tTKw7qqdw7ZJi0wH0oOaSZeJtyzeqv6CZQbJCFUcBh65bqT5nehLuPo1uNbXTVSPNVRQTouP9Prsb8jaJcCGJVsntXrSMVgap7r7vK9mMfg9J2JhPJiIN35wBA1yJCYLC_dasujams
+
+=== ADMIN TREES ===
+  admin/: audit.html, donations.html, index.html, users.html
+  app-admin/: audit.html, index.html, login.html, users.html
+
+=== SYNTAX CHECK (node --check) ===
+  adminUsers: OK
+  adminDonations: OK
+  adminAudit: OK
+  orgHistory: OK
+  activeMission: OK

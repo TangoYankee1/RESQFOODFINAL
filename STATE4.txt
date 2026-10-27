@@ -1,0 +1,19 @@
+﻿=== callables.js export lines ===
+  95: async function exportCsv(payload){
+  96: const fn = httpsCallable(functions, 'exportCsv');
+  100: async function setUserStatus(payload){
+  101: const fn = httpsCallable(functions, 'setUserStatus');
+  105: export { signupWithProfile, signupVolunteerWithProfile, signupOrgAdminWithProfile, createInvite, validateInvite, consumeInvite, assignRole, verifyQr, reviewVerificationRequest, claimDonation, transitionDonationStatus, sendNotification, issuePin, verifyPinCode, issueCredential, recordOtpSend, recordConsent, exportCsv, setUserStatus };
+=== utils.js export lines ===
+  3: export function esc(s) {
+  7: export function formatKg(kg) { return `${Number(kg || 0)} kg`; }
+  9: export function formatDateTime(value) {
+  17: export function compressImage(file, maxDim = 800, quality = 0.8) {
+  35: export function debounce(fn, ms = 250) {
+=== active-mission btn-back ===
+      <button class="cancel-btn" id="btn-cancel-mission">
+=== activeMission.js all getElementById ===
+  #m-food
+  #btn-cancel-mission
+  #btn-back
+  #countdown

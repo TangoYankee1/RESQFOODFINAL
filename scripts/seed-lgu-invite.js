@@ -24,7 +24,7 @@ async function run() {
     'lgu',
     {
       barangay,
-      intendedEmailDomain: 'barangay.gov.ph',
+      allowedDomain: 'barangay.gov.ph',
       source: 'local-emulator-seed',
     },
     expiresHours,

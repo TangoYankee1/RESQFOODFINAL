@@ -1,0 +1,69 @@
+.role-gateway .reg-hero {
+  padding: 3rem 1.5rem;
+}
+.role-gateway .brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  text-decoration: none;
+  margin-bottom: 1rem;
+}
+.role-gateway .page-content {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+}
+.role-gateway .role-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.role-gateway .role-card {
+  height: 100%;
+  padding: 2rem 1.5rem;
+  gap: 1rem;
+}
+.role-gateway .role-card__icon {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  color: var(--color-primary);
+  font-size: 2rem;
+}
+.role-gateway .role-card__title {
+  display: grid;
+  place-items: center;
+  min-height: 2.8em;
+  font-size: 1.1rem;
+  line-height: 1.4;
+  margin: 0;
+}
+.role-gateway .role-card__tagline {
+  font-size: .95rem;
+  line-height: 1.6;
+  margin: 0;
+}
+.gateway-footer {
+  text-align: center;
+  padding-top: 2rem;
+  color: var(--color-muted);
+  font-size: .9rem;
+}
+.gateway-footer a { color: var(--color-primary); font-weight: 700; }
+.role-gateway a:focus-visible { outline: 3px solid var(--color-accent-dk); outline-offset: 5px; }
+@media (max-width: 700px) {
+  .role-gateway .role-grid { grid-template-columns: 1fr; }
+  .role-gateway .page-content { max-width: 480px; padding: 1.5rem; }
+  .role-gateway .reg-hero { padding: 2rem 1.25rem; }
+  .role-gateway .role-card { padding: 1.5rem; }
+  .role-gateway .role-card__title { min-height: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .role-gateway .role-card { transition: none; }
+  .role-gateway .role-card:hover { transform: none; }
+}

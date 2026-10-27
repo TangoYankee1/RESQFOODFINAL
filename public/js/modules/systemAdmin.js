@@ -1,236 +1,219 @@
-// LGU Admin dashboard — mock data, Chart.js charts, CSV export
+import { loadAdminSession } from '../core/adminSession.js';
+// public/js/modules/systemAdmin.js — PRODUCTION (a: boot + missions + stats)
+import { bootGuardedPage } from '../core/guard-boot.js';
+import { donationsQuery, usersQuery, watchQuery, fetchDoc } from '../core/data.js';
+import { exportCsv } from '../core/callables.js';
+import { handleError, runWithState } from '../core/errors.js';
+import { renderState, toast } from '../core/ui.js';
+import { signOutCurrentUser } from '../core/auth.js';
+import { esc, formatDateTime } from '../core/utils.js';
 
-const MOCK_ADMIN = { name: 'Maria Santos', barangay: 'Lahug' };
+let adminSession = null;
+let unsubMissions = null;
+let allDonations = [];
+let currentRange = '30';
 
-const MOCK_ACTIVE_MISSIONS = [
-  { id:'M001', volunteer:'Juan Dela Cruz', food:'Kanin at Ulam',     qty:5.0, org:'Lahug Soup Kitchen', status:'enRoute',   eta:'3:45 PM' },
-  { id:'M002', volunteer:'Maria Santos',   food:'Tinapay (assorted)', qty:2.5, org:'Apas Feeding Prog.', status:'pickedUp',  eta:'4:30 PM' },
-  { id:'M003', volunteer:'Carlos Uy',      food:'Gulay (assorted)',   qty:3.0, org:'Sto. Nino Shelter',  status:'scheduled', eta:'5:00 PM' },
-  { id:'M004', volunteer:'Ana Reyes',      food:'Tinapa',             qty:1.5, org:'Lahug Soup Kitchen', status:'delivered', eta:'Nakarating' },
-];
-
-// 8-week labels (most recent last)
-const WEEK_LABELS = ['Apr 7','Apr 14','Apr 21','Apr 28','May 5','May 12','May 19','May 26'];
-const WEEK_DATA   = [98, 145, 120, 187, 203, 178, 156, 160];
-
-const FOOD_TYPES  = ['Kanin', 'Gulay', 'Tinapa', 'Tinapay', 'Iba pa'];
-const FOOD_KG     = [450, 320, 180, 167, 130];
-
-const DONOR_TYPES = ['Negosyo', 'Indibidwal'];
-const DONOR_COUNTS = [38, 25];
-
-const MOCK_DONATIONS_CSV = [
-  { date:'May 28, 2026', donor:'Jose Cruz',  food:'Kanin at Ulam',     qty:5.0, volunteer:'Juan Dela Cruz', org:'Lahug Soup Kitchen', status:'enRoute' },
-  { date:'May 28, 2026', donor:'Rosa Tan',   food:'Tinapay',           qty:1.5, volunteer:'Maria Santos',   org:'Lahug Soup Kitchen', status:'verified' },
-  { date:'May 27, 2026', donor:'Jose Cruz',  food:'Gulay (assorted)',  qty:3.0, volunteer:'Pedro Diaz',     org:'Lahug Soup Kitchen', status:'verified' },
-  { date:'May 27, 2026', donor:'Rosa Tan',   food:'Kanin',             qty:2.0, volunteer:'Juan Dela Cruz', org:'Apas Feeding Prog.', status:'verified' },
-  { date:'May 26, 2026', donor:'Nena Lim',   food:'Tinapa',            qty:5.0, volunteer:'Carlos Uy',      org:'Lahug Soup Kitchen', status:'verified' },
-];
-
-// ── Boot ──────────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  renderActiveMissions();
-  initCharts();
+export async function initSystemAdmin(s) {
+  if (!await loadAdminSession(s)) return;
+  adminSession = s;
+  try {
+    const p = await fetchDoc(`users/${s.user.uid}`);
+    setText('admin-name', p?.fullName || s.user.displayName || 'Admin');
+  } catch (err) { handleError(err, { scope: 'systemAdmin.profile' }); }
+  loadActiveMissions();
+  loadDonationsFeed();
+  loadUsersCount();
   bindRangeBtns();
   bindExportCSV();
   bindSignOut();
   setupOnline();
-});
+}
 
-// ── Active missions table ─────────────────────────────────────────────────────
-function renderActiveMissions() {
+if (typeof document !== 'undefined' && document.getElementById('active-missions-body')) {
+  bootGuardedPage({ roles: ['lguAdmin', 'systemAdmin'] }, initSystemAdmin);
+}
+
+function loadActiveMissions() {
   const tbody = document.getElementById('active-missions-body');
   if (!tbody) return;
-
-  if (!MOCK_ACTIVE_MISSIONS.length) {
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--color-muted);">Walang active missions.</td></tr>`;
-    return;
-  }
-
-  const STATUS_MAP = {
-    scheduled: { cls: 'badge-scheduled', label: 'Scheduled' },
-    pickedUp:  { cls: 'badge-pickedup',  label: 'Picked Up' },
-    enRoute:   { cls: 'badge-enroute',   label: 'En Route' },
-    delivered: { cls: 'badge-delivered', label: 'Delivered' },
-  };
-
-  tbody.innerHTML = MOCK_ACTIVE_MISSIONS.map(m => {
-    const s = STATUS_MAP[m.status] || { cls: 'badge-pending', label: m.status };
-    return `<tr>
-      <td><strong>${esc(m.volunteer)}</strong></td>
-      <td>${esc(m.food)}</td>
-      <td style="font-weight:700; color:var(--color-primary);">${m.qty} kg</td>
-      <td>${esc(m.org)}</td>
-      <td><span class="badge ${s.cls}">${s.label}</span></td>
-      <td style="color:var(--color-muted); font-size:.82rem;">${esc(m.eta)}</td>
-    </tr>`;
-  }).join('');
+  tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--color-muted);">Loading...</td></tr>`;
+  if (unsubMissions) { unsubMissions(); unsubMissions = null; }
+  const q = donationsQuery({ statusIn: ['scheduled', 'pickedUp', 'enRoute', 'delivered'], max: 0 });
+  unsubMissions = watchQuery(q, {
+    next: (docs) => {
+      if (!docs.length) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--color-muted);">Walang active missions.</td></tr>`;
+        setText('stat-active', 0);
+        return;
+      }
+      setText('stat-active', docs.length);
+      const STATUS_MAP = {
+        scheduled: { cls: 'badge-scheduled', label: 'Scheduled' },
+        pickedUp: { cls: 'badge-pickedup', label: 'Picked Up' },
+        enRoute: { cls: 'badge-enroute', label: 'En Route' },
+        delivered: { cls: 'badge-delivered', label: 'Delivered' },
+      };
+      tbody.innerHTML = docs.map((m) => {
+        const st = STATUS_MAP[m.status] || { cls: 'badge-pending', label: m.status };
+        return `<tr>
+          <td><strong>${esc(m.volunteerName || m.volunteerId || '—')}</strong></td>
+          <td>${esc(m.foodType)}</td>
+          <td style="font-weight:700;color:var(--color-primary);">${esc(m.quantityKg)} kg</td>
+          <td>${esc(m.orgName || m.orgId || '—')}</td>
+          <td><span class="badge ${st.cls}">${st.label}</span></td>
+          <td style="color:var(--color-muted);font-size:.82rem;">${esc(formatDateTime(m.pickupWindowEnd))}</td>
+        </tr>`;
+      }).join('');
+    },
+    error: (err) => {
+      const h = handleError(err, { scope: 'systemAdmin.missions' });
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--color-danger);">${esc(h.message)} — I-refresh ang pahina.</td></tr>`;
+    },
+  });
 }
 
-// ── Charts ────────────────────────────────────────────────────────────────────
-function initCharts() {
-  const primary  = '#396632';
-  const accent   = '#fc9430';
-  const success  = '#2e7d32';
-  const muted    = '#94a3b8';
-
-  // Bar: food type
-  const ctxFood = document.getElementById('chart-food');
-  if (ctxFood) {
-    new Chart(ctxFood, {
-      type: 'bar',
-      data: {
-        labels: FOOD_TYPES,
-        datasets: [{
-          label: 'kg',
-          data: FOOD_KG,
-          backgroundColor: [primary, accent, success, '#1d4ed8', muted],
-          borderRadius: 6,
-        }],
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          y: { beginAtZero: true, grid: { color: '#e2e8f0' }, ticks: { font: { size: 11 } } },
-          x: { grid: { display: false }, ticks: { font: { size: 11 } } },
-        },
-      },
-    });
-  }
-
-  // Pie: donor type
-  const ctxDonor = document.getElementById('chart-donor');
-  if (ctxDonor) {
-    new Chart(ctxDonor, {
-      type: 'doughnut',
-      data: {
-        labels: DONOR_TYPES,
-        datasets: [{
-          data: DONOR_COUNTS,
-          backgroundColor: [primary, accent],
-          borderWidth: 0,
-          hoverOffset: 6,
-        }],
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 16 } },
-        },
-        cutout: '60%',
-      },
-    });
-  }
-
-  // Line: weekly trend
-  const ctxTrend = document.getElementById('chart-trend');
-  if (ctxTrend) {
-    new Chart(ctxTrend, {
-      type: 'line',
-      data: {
-        labels: WEEK_LABELS,
-        datasets: [{
-          label: 'kg na-rescue',
-          data: WEEK_DATA,
-          borderColor: primary,
-          backgroundColor: 'rgba(57,102,50,.1)',
-          fill: true,
-          tension: 0.4,
-          pointBackgroundColor: primary,
-          pointRadius: 4,
-        }],
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          y: { beginAtZero: false, grid: { color: '#e2e8f0' }, ticks: { font: { size: 11 } } },
-          x: { grid: { display: false }, ticks: { font: { size: 11 } } },
-        },
-      },
-    });
-  }
+function loadDonationsFeed() {
+  const q = donationsQuery();
+  watchQuery(q, {
+    next: (docs) => { allDonations = docs; recomputeStats(); },
+    error: (err) => handleError(err, { scope: 'systemAdmin.feed' }),
+  });
 }
 
-// ── Date range buttons (visual only for prototype) ────────────────────────────
+function loadUsersCount() {
+  const q = usersQuery({ max: 0 });
+  watchQuery(q, {
+    next: (docs) => {
+      const active = docs.filter((u) => u.status === 'active');
+      setText('users-total', active.length);
+    },
+    error: (err) => handleError(err, { scope: 'systemAdmin.users' }),
+  });
+}
+// public/js/modules/systemAdmin.js — PRODUCTION (b: stats + charts + export)
+function rangeStart(range) {
+  const now = new Date();
+  if (range === '7') { const d = new Date(now); d.setDate(d.getDate() - 7); return d; }
+  if (range === 'month') {
+    const manila = new Date(now.getTime() + 8 * 3600000);
+    return new Date(Date.UTC(manila.getUTCFullYear(), manila.getUTCMonth(), 1) - 8 * 3600000);
+  }
+  const d = new Date(now); d.setDate(d.getDate() - 30); return d;
+}
+
+function toDate(v) {
+  if (!v) return null;
+  if (typeof v.toDate === 'function') return v.toDate();
+  const d = new Date(v);
+  return isNaN(d) ? null : d;
+}
+
+function recomputeStats() {
+  const start = rangeStart(currentRange);
+  const inRange = allDonations.filter((d) => { const t = toDate(d.createdAt); return t && t >= start; });
+  const verified = inRange.filter((d) => d.status === 'verified');
+  const kg = verified.reduce((s, d) => s + (Number(d.quantityKg) || 0), 0);
+  setText('stat-kg', `${Math.round(kg * 10) / 10} kg`);
+  setText('stat-missions', verified.length);
+  setText('stat-orgs', new Set(verified.map(d => d.orgId).filter(Boolean)).size);
+  renderCharts(inRange, verified, kg);
+}
+
 function bindRangeBtns() {
-  const labels = {
-    '7':     { kg:'412', missions:'21', orgs:'10', active:'2' },
-    '30':    { kg:'1,247', missions:'63', orgs:'12', active:'4' },
-    'month': { kg:'1,051', missions:'55', orgs:'11', active:'4' },
-  };
-
-  document.querySelectorAll('.range-btn').forEach(btn => {
+  document.querySelectorAll('.range-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.range-btn').forEach((b) => b.classList.remove('active'));
       btn.classList.add('active');
-      const d = labels[btn.dataset.range] || labels['30'];
-      setText('stat-kg',       d.kg);
-      setText('stat-missions', d.missions);
-      setText('stat-orgs',     d.orgs);
-      setText('stat-active',   d.active);
+      currentRange = btn.dataset.range || '30';
+      recomputeStats();
     });
   });
 }
 
-// ── CSV export ────────────────────────────────────────────────────────────────
+function renderCharts(inRange, verified, totalKg) {
+  if (typeof Chart === 'undefined') return;
+  const FOOD_TYPES = ['Kanin', 'Gulay', 'Tinapa', 'Tinapay', 'Manok', 'Baboy', 'Processed', 'Iba pa'];
+  const foodKg = FOOD_TYPES.map(() => 0);
+  verified.forEach(d => {
+    const index = FOOD_TYPES.indexOf(d.foodType);
+    foodKg[index < 0 ? FOOD_TYPES.length - 1 : index] += Number(d.quantityKg) || 0;
+  });
+
+  const foodEl = document.getElementById('chart-food');
+  if (foodEl && foodEl._chart) { foodEl._chart.data.datasets[0].data = foodKg; foodEl._chart.update(); }
+  else if (foodEl) {
+    foodEl._chart = new Chart(foodEl, {
+      type: 'bar',
+      data: { labels: FOOD_TYPES, datasets: [{ data: foodKg, backgroundColor: '#396632', borderRadius: 6 }] },
+      options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#e2e8f0' } }, x: { grid: { display: false } } } },
+    });
+  }
+
+  const biz = verified.filter((d) => d.donorType === 'business' || d.donorType === 'negosyo').length;
+  const ind = verified.filter(d => ['individual','indibidwal'].includes(d.donorType)).length;
+  const unknown = verified.length - biz - ind;
+  const donorEl = document.getElementById('chart-donor');
+  if (donorEl && donorEl._chart) { donorEl._chart.data.datasets[0].data = [biz, ind, unknown]; donorEl._chart.update(); }
+  else if (donorEl) {
+    donorEl._chart = new Chart(donorEl, {
+      type: 'doughnut',
+      data: { labels: ['Negosyo', 'Indibidwal', 'Hindi naitala'], datasets: [{ data: [biz, ind, unknown], backgroundColor: ['#396632', '#fc9430', '#94a3b8'] }] },
+      options: { plugins: { legend: { position: 'bottom' } } },
+    });
+  }
+
+  const buckets = {};
+  for (let i = 7; i >= 0; i--) {
+    const day = new Date(); day.setDate(day.getDate() - i * 7);
+    buckets[day.toISOString().slice(0, 10)] = 0;
+  }
+  allDonations.filter(d => d.status === 'verified').forEach((d) => {
+    const t = toDate(d.createdAt); if (!t) return;
+    const ageWeeks = Math.floor((Date.now() - t.getTime()) / (7 * 86400000));
+    const key = Object.keys(buckets)[7 - ageWeeks];
+    if (key && ageWeeks >= 0) buckets[key] += Number(d.quantityKg) || 0;
+  });
+  const trendEl = document.getElementById('chart-trend');
+  const trendData = Object.values(buckets).map((v) => Math.round(v * 10) / 10);
+  if (trendEl && trendEl._chart) { trendEl._chart.data.datasets[0].data = trendData; trendEl._chart.update(); }
+  else if (trendEl) {
+    trendEl._chart = new Chart(trendEl, {
+      type: 'line',
+      data: { labels: Object.keys(buckets).map((k) => k.slice(5)), datasets: [{ data: trendData, borderColor: '#396632', backgroundColor: 'rgba(57,102,50,.12)', fill: true, tension: .35 }] },
+      options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#e2e8f0' } }, x: { grid: { display: false } } } },
+    });
+  }
+}
+
 function bindExportCSV() {
-  document.getElementById('btn-export-csv')?.addEventListener('click', () => {
-    const rows = [['Petsa','Donor','Pagkain','Dami (kg)','Volunteer','Organisasyon','Status']];
-    MOCK_DONATIONS_CSV.forEach(d => rows.push([d.date, d.donor, d.food, d.qty, d.volunteer, d.org, d.status]));
-    const csv  = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement('a');
-    a.href = url; a.download = 'ResQFood_Lahug_May2026.csv';
-    a.click(); URL.revokeObjectURL(url);
-    showToast('Na-export ang CSV!', 'success');
+  document.getElementById('btn-export-csv')?.addEventListener('click', (e) => {
+    runWithState({ btn: e.currentTarget }, async () => {
+      const res = await exportCsv({ kind: 'donations', range: currentRange });
+      if (!res || !res.csv) throw new Error('export_failed');
+      const blob = new Blob([res.csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = res.filename || 'ResQFood_export.csv';
+      a.click(); URL.revokeObjectURL(url);
+      toast('Na-export ang CSV. Naitala sa audit log.', 'success');
+    }, 'systemAdmin.export').then(result => { if (!result.ok) toast(result.error.message, 'error'); });
   });
 }
 
-// ── Sign out ──────────────────────────────────────────────────────────────────
 function bindSignOut() {
   const modal = document.getElementById('signout-modal');
-  document.getElementById('btn-signout')?.addEventListener('click', () => {
-    if (modal) modal.style.display = 'flex';
+  document.getElementById('btn-signout')?.addEventListener('click', () => { if (modal) modal.style.display = 'flex'; });
+  document.getElementById('btn-cancel-signout')?.addEventListener('click', () => { if (modal) modal.style.display = 'none'; });
+  document.getElementById('btn-confirm-signout')?.addEventListener('click', async () => {
+    await signOutCurrentUser(); window.location.href = '/admin/login.html';
   });
-  document.getElementById('btn-cancel-signout')?.addEventListener('click', () => {
-    if (modal) modal.style.display = 'none';
-  });
-  document.getElementById('btn-confirm-signout')?.addEventListener('click', () => {
-    window.location.href = '/register/index.html';
-  });
-  modal?.addEventListener('click', e => {
-    if (e.target === modal) modal.style.display = 'none';
-  });
-}
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-function setText(id, val) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = val;
-}
-
-function esc(str) {
-  return String(str)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function showToast(message, type = 'info', duration = 3500) {
-  const container = document.getElementById('toast-container');
-  if (!container) return;
-  const t = document.createElement('div');
-  t.className   = `toast toast-${type}`;
-  t.textContent = message;
-  container.appendChild(t);
-  setTimeout(() => t.remove(), duration);
 }
 
 function setupOnline() {
   const update = () => document.body.classList.toggle('offline', !navigator.onLine);
-  window.addEventListener('online',  update);
+  window.addEventListener('online', update);
   window.addEventListener('offline', update);
   update();
 }
+
+function setText(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }

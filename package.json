@@ -3,17 +3,32 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build:css": "tailwindcss -i public/css/input.css -o public/css/tailwind.css --minify",
-    "watch:css": "tailwindcss -i public/css/input.css -o public/css/tailwind.css --watch",
+    "emulators": "node scripts/start-emulators.js",
+    "test:otp": "node tests/otp-signup-emulator-test.js",
+    "test:donor": "node tests/donor-workflow-test.js && node tests/donor-storage-test.js",
+    "test:handover": "node tests/handover-test.js",
+    "test:stats": "node tests/receipt-stats-test.cjs",
+    "test:org": "node tests/org-admin-test.js && node tests/authorization-storage-test.js",
+    "test:browser:org": "node tests/onboarding-browser-test.cjs --org-only",
+    "test:admin": "node tests/admin-refinements-test.js",
+    "test:browser:handover": "node tests/handover-browser-test.cjs",
+    "test:browser:onboarding": "node tests/onboarding-browser-test.cjs",
+    "seed:local": "node scripts/seed-firestore.js",
+    "test:backend": "node tests/otp-signup-emulator-test.js && node tests/role-workflows-test.js && node tests/registration-review-test.js && node tests/rules/role-access-test.js && npm run test:donor && npm run test:handover && npm run test:stats && npm run test:admin && npm run test:org && npm run test:lgu",
+    "build:css": "tailwindcss -c tailwind.config.cjs -i build-src/tailwind.input.css -o public/css/tailwind.css --minify",
+    "watch:css": "tailwindcss -c tailwind.config.cjs -i build-src/tailwind.input.css -o public/css/tailwind.css --watch",
     "seed:lgu-invite": "FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 node scripts/seed-lgu-invite.js",
     "seed:app-admin": "FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 node scripts/seed-app-admin.js",
-    "smoke:local": "node tests/invite-test.js && node tests/assignRole-test.js && node tests/qr-test.js && node tests/rules/signup-rules-test.js && node tests/volunteer-signup-test.js"
+    "smoke:local": "node tests/invite-test.js && node tests/assignRole-test.js && node tests/qr-test.js && node tests/rules/signup-rules-test.js && node tests/volunteer-signup-test.js",
+    "test": "node tests/invite-test.js && node tests/assignRole-test.js && node tests/qr-test.js && node tests/rules/signup-rules-test.js && node tests/volunteer-signup-test.js",
+    "test:lgu": "node tests/lgu-admin-test.js",
+    "test:browser:lgu": "node tests/onboarding-browser-test.cjs --lgu-only"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^5.0.2",
     "@tailwindcss/container-queries": "^0.1.1",
     "@tailwindcss/forms": "^0.5.7",
-    "tailwindcss": "^3.4.4"
+    "tailwindcss": "^3.4.17"
   },
   "dependencies": {
     "firebase-admin": "^13.10.0"

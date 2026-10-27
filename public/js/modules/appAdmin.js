@@ -1,4 +1,4 @@
-import { auth } from '../core/firebaseConfig.js?v=app-admin-v1';
+import { auth } from '../core/firebaseConfig.js';
 import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
 const signOutButton = document.getElementById('btn-signout');

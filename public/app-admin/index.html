@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fil">
 <head>
   <meta charset="UTF-8" />
@@ -6,8 +6,7 @@
   <title>ResQFood - App Admin Dashboard</title>
   <link rel="stylesheet" href="../css/base.css" />
   <link rel="stylesheet" href="../css/admin.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/vendor/fonts/fonts.css" />
 </head>
 <body>
   <header class="admin-topbar">
@@ -40,6 +39,17 @@
           <div class="metric-card warning"><div class="m-icon">🔑</div><span class="m-val">—</span><div class="m-lbl">Active invites</div><div class="m-delta">Short-lived access</div></div>
         </div>
 
+        <section style="margin-bottom:2rem;">
+          <h2>Create LGU invitation</h2>
+          <form id="invite-form">
+            <label>Barangay <input class="form-input" name="barangay" required maxlength="100" /></label>
+            <label>Official contact email <input class="form-input" type="email" name="email" required /></label>
+            <label>Valid for hours <input class="form-input" type="number" name="hours" min="1" max="168" value="72" required /></label>
+            <button class="btn btn-primary" type="submit">Create invitation</button>
+          </form>
+          <p id="invite-result" aria-live="polite" style="overflow-wrap:anywhere;"></p>
+          <p>Email is a declared contact record. Review identity and authorization before activation.</p>
+        </section>
         <p class="section-head">System Controls</p>
         <div class="quick-actions">
           <a class="qa-card" href="users.html"><span class="qa-icon">👥</span><div><span class="qa-label">Manage Users</span><div class="qa-sub">Roles and account status</div></div></a>
@@ -58,5 +68,6 @@
 
   <div id="toast-container" aria-live="polite"></div>
   <script type="module" src="../js/modules/appAdmin.js"></script>
+  <script type="module" src="../js/modules/adminInvites.js"></script>
 </body>
 </html>

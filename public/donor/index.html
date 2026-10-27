@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fil">
 <head>
   <meta charset="UTF-8" />
@@ -6,8 +6,7 @@
   <title>ResQFood — Donor Dashboard</title>
   <link rel="stylesheet" href="../css/base.css" />
   <link rel="stylesheet" href="../css/donor.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/vendor/fonts/fonts.css" />
 </head>
 <body>
   <div id="offline-banner">📶 Offline mode — Huling update: <span id="offline-ts"></span></div>
@@ -101,17 +100,11 @@
     </main>
 
     <!-- ── HISTORY TAB ── -->
-    <div class="donor-body hidden" id="panel-history" role="tabpanel" aria-label="Kasaysayan ng donations">
-      <div class="empty-state">
-        <div class="empty-icon">📜</div>
-        <p>Makikita dito ang lahat ng iyong mga donation.</p>
-        <p class="text-xs mt-2">Mag-post muna ng isang donation para ma-unlock.</p>
-      </div>
-    </div>
+    <div class="donor-body hidden" id="panel-history" role="tabpanel" aria-label="Kasaysayan"><a href="history.html">Buksan ang Kasaysayan</a><div id="history-list" aria-live="polite"></div></div>
 
     <!-- ── STATS TAB ── -->
     <div class="donor-body hidden" id="panel-stats" role="tabpanel" aria-label="Iyong statistics">
-      <div id="stats-content">
+      <div id="stats-content"><p>10 puntos bawat natanggap na donation. Ang kg ay mula lamang sa verified receipts.</p><p>Expired: <span id="stat-expired">0</span></p>
         <div class="card card-elevated" style="margin-bottom:1rem;">
           <div class="text-muted text-sm" style="margin-bottom:.5rem;">Reliability Score</div>
           <div style="font-size:2rem; font-weight:800;" id="stat-reliability">—</div>

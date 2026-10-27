@@ -120,6 +120,7 @@ export function buildDonorRegistrationPayload() {
     address: address || null,
     donorType,
     businessName: businessName || null,
+    permitNumber: donorType === 'business' ? (document.getElementById('inp-permit')?.value?.trim() || null) : null,
     profileComplete: true,
   };
 }

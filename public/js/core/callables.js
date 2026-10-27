@@ -1,11 +1,18 @@
-import { getFunctions, httpsCallable, connectFunctionsEmulator } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
-import { app, auth } from "./firebaseConfig.js";
+import { httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
+import { functions } from "./firebaseConfig.js";
 
-const functions = getFunctions(app);
-// If running on localhost during dev, connect to functions emulator
-if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-  try { connectFunctionsEmulator(functions, 'localhost', 5001); } catch(e) { /* ignore */ }
+async function donorCall(name, payload = {}) {
+  const response = await httpsCallable(functions, name)(payload);
+  return response.data;
 }
+export const listDonationDestinations = () => donorCall('listDonationDestinations');
+export const createDonorDonation = payload => donorCall('createDonorDonation', payload);
+export const cancelDonorDonation = donationId => donorCall('cancelDonorDonation', { donationId });
+export const refreshDonorExpiry = () => donorCall('refreshDonorExpiry');
+export const donorMissionContact = donationId => donorCall('donorMissionContact', { donationId });
+export const signupLguWithProfile = profile => donorCall('signupLguWithProfile', profile);
+export const volunteerMissionContact = donationId => donorCall('volunteerMissionContact', { donationId });
+export const updateOrganizationDetails = payload => donorCall('updateOrganizationDetails', payload);
 
 async function signupWithProfile(profile) {
   const fn = httpsCallable(functions, 'signupWithProfile');
@@ -52,4 +59,54 @@ async function reviewVerificationRequest(payload){
   return fn(payload).then(r => r.data);
 }
 
-export { signupWithProfile, signupVolunteerWithProfile, signupOrgAdminWithProfile, createInvite, validateInvite, consumeInvite, assignRole, verifyQr, reviewVerificationRequest };
+async function claimDonation(payload){
+  const fn = httpsCallable(functions, 'claimDonationCallable');
+  return fn(payload).then(r => r.data);
+}
+
+async function transitionDonationStatus(payload){
+  const fn = httpsCallable(functions, 'transitionDonationStatusCallable');
+  return fn(payload).then(r => r.data);
+}
+
+async function sendNotification(payload){
+  const fn = httpsCallable(functions, 'sendNotificationCallable');
+  return fn(payload).then(r => r.data);
+}
+
+async function issuePin(payload){
+  const fn = httpsCallable(functions, 'issuePin');
+  return fn(payload).then(r => r.data);
+}
+
+async function verifyPinCode(payload){
+  const fn = httpsCallable(functions, 'verifyPin');
+  return fn(payload).then(r => r.data);
+}
+
+async function issueCredential(payload){
+  const fn = httpsCallable(functions, 'issueCredential');
+  return fn(payload).then(r => r.data);
+}
+
+async function recordOtpSend(payload){
+  const fn = httpsCallable(functions, 'recordOtpSend');
+  return fn(payload).then(r => r.data);
+}
+
+async function recordConsent(payload){
+  const fn = httpsCallable(functions, 'recordConsent');
+  return fn(payload).then(r => r.data);
+}
+
+async function exportCsv(payload){
+  const fn = httpsCallable(functions, 'exportCsv');
+  return fn(payload).then(r => r.data);
+}
+
+async function setUserStatus(payload){
+  const fn = httpsCallable(functions, 'setUserStatus');
+  return fn(payload).then(r => r.data);
+}
+
+export { signupWithProfile, signupVolunteerWithProfile, signupOrgAdminWithProfile, createInvite, validateInvite, consumeInvite, assignRole, verifyQr, reviewVerificationRequest, claimDonation, transitionDonationStatus, sendNotification, issuePin, verifyPinCode, issueCredential, recordOtpSend, recordConsent, exportCsv, setUserStatus };

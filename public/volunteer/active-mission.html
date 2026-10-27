@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ResQFood — Active Mission</title>
   <link rel="stylesheet" href="../css/base.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/vendor/fonts/fonts.css" />
   <style>
     body {
       background: var(--color-surface-low);
@@ -150,6 +149,7 @@
       cursor: pointer;
     }
   </style>
+  <script src="/vendor/qrcode.min.js"></script>
 </head>
 <body>
   <header class="mission-header">
@@ -167,107 +167,77 @@
 
     <!-- Mission detail card -->
     <div class="detail-card">
-      <div class="detail-title" id="m-food">Kanin at Ulam</div>
-      <div class="detail-qty" id="m-qty">3.5 kg</div>
+      <div class="detail-title" id="m-food">Kinukuha ang mission...</div>
+      <div class="detail-qty" id="m-qty">—</div>
       <div class="detail-rows">
         <div class="detail-row">
           <span class="dr-icon">📞</span>
           <div>
             <div class="dr-label">Donor Contact</div>
-            <div class="dr-value" id="m-contact">Maria Santos · +639171234567</div>
+            <div class="dr-value" id="m-contact">Kinukuha ang donor...</div><a id="donor-phone" hidden></a>
           </div>
         </div>
         <div class="detail-row">
           <span class="dr-icon">📍</span>
           <div>
             <div class="dr-label">Pickup Address</div>
-            <div class="dr-value" id="m-address">Corner Gorordo Ave, Lahug, Cebu City</div>
+            <div class="dr-value" id="m-address">—</div>
           </div>
         </div>
         <div class="detail-row">
           <span class="dr-icon">⏰</span>
           <div>
             <div class="dr-label">Pickup Window</div>
-            <div class="dr-value" id="m-window">Ngayon, 2:00 PM – 4:00 PM</div>
+            <div class="dr-value" id="m-window">—</div>
           </div>
         </div>
         <div class="detail-row">
           <span class="dr-icon">🏷️</span>
           <div>
             <div class="dr-label">Mission ID</div>
-            <div class="dr-value" id="m-id">M001</div>
+            <div class="dr-value" id="m-id">—</div>
           </div>
         </div>
       </div>
     </div>
 
+    <section class="detail-card" aria-label="Receiving organization">
+      <h2 class="detail-title" id="m-destination">Kinukuha ang receiving organization...</h2>
+      <p id="m-destination-address"></p>
+      <a id="destination-phone" hidden></a>
+      <p id="m-destination-note"></p>
+    </section>
     <!-- Countdown -->
-    <div class="countdown-bar">
+    <div class="countdown-bar" id="pickup-countdown">
       <div class="countdown-label">Natitira ang pickup window</div>
-      <div class="countdown-value safe" id="countdown">45 minuto</div>
+      <div class="countdown-value safe" id="countdown">—</div>
     </div>
 
     <!-- Scan CTA -->
-    <a class="scan-cta" href="scanner.html">
+    <a class="scan-cta" href="scanner.html" id="pickup-link" hidden>
       <span style="font-size:1.4rem;">📷</span>
       Scan at Pickup
     </a>
 
+    <section class="card" style="padding:1rem">
+      <button id="btn-enroute" class="btn btn-primary" hidden>Simulan ang Paghatid</button>
+      <button id="btn-delivered" class="btn btn-primary" hidden>Nakarating na sa Organization</button>
+      <p id="mission-action-status" role="status"></p>
+      <section id="receipt-credentials" hidden>
+        <p>Ipakita ang receipt code sa tatanggap. Ang organization lamang ang makakapag-confirm.</p>
+        <button id="btn-receipt-code" class="btn btn-primary">Gumawa ng Receipt QR/PIN</button>
+        <div id="receipt-qr"></div><p id="receipt-pin"></p><p id="receipt-expiry"></p>
+      </section>
+    </section>
     <!-- Cancel (only for scheduled) -->
-    <button class="cancel-btn" id="btn-cancel-mission">
-      Kanselahin ang Mission
+    <button class="cancel-btn" id="btn-cancel-mission" hidden>
+      Bitawan ang Mission
     </button>
 
   </main>
 
   <div id="toast-container" aria-live="polite"></div>
 
-  <script>
-    // ── Load mission from sessionStorage or use demo defaults ─────────────────
-    const raw = sessionStorage.getItem('active_mission');
-    const m   = raw ? JSON.parse(raw) : null;
-
-    if (m) {
-      setText('m-food',    m.food);
-      setText('m-qty',     `${m.qty} kg`);
-      setText('m-contact', m.contact ?? '—');
-      setText('m-address', m.address ?? m.barangay ?? '—');
-      setText('m-window',  m.window ?? '—');
-      setText('m-id',      m.id ?? '—');
-    }
-
-    function setText(id, val) {
-      const el = document.getElementById(id);
-      if (el) el.textContent = val;
-    }
-
-    // ── Fake countdown (demo) ─────────────────────────────────────────────────
-    let minsLeft = 45;
-    const cdEl   = document.getElementById('countdown');
-    const iv = setInterval(() => {
-      minsLeft--;
-      if (minsLeft <= 0) { clearInterval(iv); if (cdEl) { cdEl.textContent = 'Expired!'; cdEl.classList.remove('safe'); } return; }
-      if (cdEl) {
-        cdEl.textContent = minsLeft > 60
-          ? `${Math.floor(minsLeft / 60)}h ${minsLeft % 60}m`
-          : `${minsLeft} minuto`;
-        cdEl.classList.toggle('safe', minsLeft > 15);
-      }
-    }, 5000); // accelerated for demo (5s = 1 minute feel)
-
-    // ── Cancel ────────────────────────────────────────────────────────────────
-    document.getElementById('btn-cancel-mission')?.addEventListener('click', () => {
-      if (confirm('Tiyak bang kanselahin ang mission na ito?')) {
-        sessionStorage.removeItem('active_mission');
-        window.location.href = 'index.html';
-      }
-    });
-
-    // ── Offline ───────────────────────────────────────────────────────────────
-    const update = () => document.body.classList.toggle('offline', !navigator.onLine);
-    window.addEventListener('online',  update);
-    window.addEventListener('offline', update);
-    update();
-  </script>
+  <script src="../js/modules/activeMission.js" type="module"></script>
 </body>
 </html>

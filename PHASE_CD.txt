@@ -1,0 +1,16 @@
+﻿== ADMIN TREE ==
+audit.html => <script src="../js/modules/adminAudit.js" type="module"></script>
+donations.html => <script src="../js/modules/adminDonations.js" type="module"></script>
+index.html => <script src="/vendor/chart.umd.min.js"></script> | <script src="../js/modules/systemAdmin.js"></script> | <script type="module" src="../js/modules/verificationReview.js?v=review-v1"></script>
+users.html => <script src="../js/modules/adminUsers.js" type="module"></script>
+== APP-ADMIN TREE ==
+audit.html => <script type="module" src="../js/modules/appAdmin.js?v=app-admin-audit-v1"></script>
+index.html => <script type="module" src="../js/modules/appAdmin.js"></script>
+login.html => <script type="module" src="../js/modules/appAdminLogin.js?v=app-admin-login-v1"></script>
+users.html => <script type="module" src="../js/modules/appAdmin.js?v=app-admin-users-v1"></script>
+== LINKS TO app-admin in public ==
+audit.html: <script type="module" src="../js/modules/appAdmin.js?v=app-admin-audit-v1"></script>
+login.html: <script type="module" src="../js/modules/appAdminLogin.js?v=app-admin-login-v1"></script>
+users.html: <script type="module" src="../js/modules/appAdmin.js?v=app-admin-users-v1"></script>
+== firebase.json rewrites ==
+admin x4

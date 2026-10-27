@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fil">
 <head>
   <meta charset="UTF-8" />
@@ -6,8 +6,7 @@
   <title>ResQFood — Org Admin Dashboard</title>
   <link rel="stylesheet" href="../css/base.css" />
   <link rel="stylesheet" href="../css/org-admin.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/vendor/fonts/fonts.css" />
 </head>
 <body>
 
@@ -21,7 +20,7 @@
 
   <!-- Greeting -->
   <div class="org-greeting">
-    <h2 id="org-name">Lahug Soup Kitchen</h2>
+    <h2 id="org-name">Organization</h2>
     <p>Mayroon kang <strong id="incoming-count">0</strong> paparating na delivery ngayon.</p>
     <span class="mode-pill" id="mode-pill">Standard Mode · QR</span>
   </div>
@@ -47,17 +46,28 @@
     <!-- Pending training notice (hidden when active) -->
     <div class="pending-banner hidden" id="pending-banner">
       <strong>⏳ Pending Training</strong><br />
-      Kailangan mong dumalo sa 30-minutong orientation bago makatanggap ng deliveries.
-      Makikipag-ugnayan sa iyo ang iyong LGU coordinator.
+      Kailangan ang document at orientation review ng system administrator bago makatanggap ng deliveries.
     </div>
 
+    <section class="card" style="padding:1rem;margin-bottom:1.5rem;">
+      <h2 style="font-size:1.1rem;">Delivery address</h2>
+      <p id="org-address">Kinukuha ang delivery address...</p>
+      <form id="org-details-form" hidden>
+        <label for="org-details-address">Eksaktong delivery address</label>
+        <textarea id="org-details-address" class="form-input" name="address" minlength="10" maxlength="300" required></textarea>
+        <label for="org-details-mode">Verification mode</label>
+        <select id="org-details-mode" class="form-select" name="mode"><option value="standard">QR scanner</option><option value="basic">PIN</option></select>
+        <button class="btn btn-primary" type="submit">I-save ang Details</button>
+        <p id="org-details-status" role="status" aria-live="polite"></p>
+      </form>
+    </section>
     <!-- Tabs -->
     <div class="org-tabs" role="tablist">
       <button class="org-tab active" id="tab-incoming" role="tab">
         Paparating
         <span class="badge-dot" id="incoming-dot"></span>
       </button>
-      <button class="org-tab" id="tab-verified" role="tab">Na-verify</button>
+      <button class="org-tab" id="tab-verified" role="tab">Na-verify Ngayon</button>
       <button class="org-tab" id="tab-history" role="tab">History</button>
     </div>
 
@@ -116,6 +126,6 @@
     </div>
   </div>
 
-  <script src="../js/modules/orgAdmin.js"></script>
+  <script type="module" src="../js/modules/orgAdmin.js"></script>
 </body>
 </html>

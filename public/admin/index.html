@@ -6,17 +6,16 @@
   <title>ResQFood — LGU Admin Dashboard</title>
   <link rel="stylesheet" href="../css/base.css" />
   <link rel="stylesheet" href="../css/admin.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="/vendor/fonts/fonts.css" />
+  <script src="/vendor/chart.umd.min.js"></script>
 </head>
 <body>
 
   <header class="admin-topbar">
     <span class="brand">🍱 RESQFOOD</span>
-    <span class="topbar-barangay">Barangay Lahug</span>
+    <span class="topbar-barangay">Project-wide</span>
     <span class="admin-name" id="admin-name">Maria Santos</span>
-    <span class="mfa-badge">🔐 MFA Active</span>
+
     <button class="signout-btn" id="btn-signout">Sign out</button>
   </header>
 
@@ -44,9 +43,10 @@
     <main class="admin-main" id="admin-main">
       <div class="admin-main-inner">
 
-        <h1 class="page-title">LGU Dashboard — Barangay Lahug</h1>
+        <h1 class="page-title">LGU Dashboard — Project-wide</h1>
         <p class="page-subtitle">Real-time na pangkalahatang-tanaw ng food rescue operations.</p>
 
+        <p class="text-muted text-sm">Ang panahon ay batay sa petsa ng pag-post. Verified donations lamang ang rescue totals. Ang CSV ay hanggang 1,000 pinakabagong tugmang rekord.</p>
         <!-- Date range -->
         <div class="date-range-bar">
           <span class="dr-label">Panahon:</span>
@@ -59,25 +59,25 @@
         <div class="metrics-grid" id="metrics-grid">
           <div class="metric-card">
             <div class="m-icon">⚖️</div>
-            <span class="m-val" id="stat-kg">1,247</span>
+            <span class="m-val" id="stat-kg">0</span>
             <div class="m-lbl">kg na na-rescue</div>
-            <div class="m-delta">↑ 12% vs nakaraang buwan</div>
+            <div class="m-delta">Ayon sa napiling panahon</div>
           </div>
           <div class="metric-card accent">
             <div class="m-icon">🛵</div>
-            <span class="m-val" id="stat-missions">63</span>
+            <span class="m-val" id="stat-missions">0</span>
             <div class="m-lbl">natapos na missions</div>
-            <div class="m-delta">↑ 8 vs nakaraang buwan</div>
+            <div class="m-delta">Ayon sa napiling panahon</div>
           </div>
           <div class="metric-card success">
             <div class="m-icon">🏢</div>
-            <span class="m-val" id="stat-orgs">12</span>
+            <span class="m-val" id="stat-orgs">0</span>
             <div class="m-lbl">organisasyong nakinabang</div>
-            <div class="m-delta">Lahat ay active</div>
+            <div class="m-delta">May verified deliveries sa napiling panahon</div>
           </div>
           <div class="metric-card warning">
             <div class="m-icon">⚡</div>
-            <span class="m-val" id="stat-active">4</span>
+            <span class="m-val" id="stat-active">0</span>
             <div class="m-lbl">active missions ngayon</div>
             <div class="m-delta">Real-time</div>
           </div>
@@ -170,7 +170,7 @@
   <div id="signout-modal" class="modal-overlay">
     <div class="modal-box">
       <h3 class="modal-title">Mag-sign out?</h3>
-      <p class="text-muted text-sm" style="margin-bottom:var(--sp-5);">Kailangan mong mag-MFA ulit para makabalik.</p>
+      <p class="text-muted text-sm" style="margin-bottom:var(--sp-5);">Gamitin ang phone OTP para makabalik.</p>
       <div class="modal-actions">
         <button class="btn btn-ghost" id="btn-cancel-signout" style="flex:1;">Huwag na</button>
         <button class="btn btn-danger" id="btn-confirm-signout" style="flex:1;">Sign Out</button>
@@ -178,7 +178,7 @@
     </div>
   </div>
 
-  <script src="../js/modules/systemAdmin.js"></script>
+  <script type="module" src="../js/modules/systemAdmin.js"></script>
   <script type="module" src="../js/modules/verificationReview.js?v=review-v1"></script>
 </body>
 </html>

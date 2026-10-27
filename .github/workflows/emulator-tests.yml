@@ -17,11 +17,15 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
       - name: Install dependencies
         run: |
           npm ci
+          npm --prefix functions install
           npm install -g firebase-tools
       - name: Run emulator tests
+        env:
+          FUNCTIONS_DISCOVERY_TIMEOUT: '60'
         run: |
-          firebase emulators:exec --project resqfood-ec8f5 --only auth,firestore "node tests/qr-test.js && node tests/invite-test.js && node tests/assignRole-test.js"
+          node scripts/setup-emulator.js
+          firebase emulators:exec --project resqfood-ec8f5 --only auth,firestore,functions,storage "npm test && npm run test:backend"

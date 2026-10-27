@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="fil">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Donor Sign In | ResQFood</title>
+  <link rel="stylesheet" href="../css/base.css"><link rel="stylesheet" href="../css/layout.css">
+</head>
+<body>
+  <main class="card" style="max-width:28rem;margin:3rem auto;padding:1.5rem">
+    <h1>Donor Sign In</h1>
+    <p>Gamitin ang numerong nairehistro mo.</p>
+    <form id="donor-login-form">
+      <label for="login-phone">Mobile number</label>
+      <input id="login-phone" class="form-input" type="tel" autocomplete="tel" placeholder="09171234567" required>
+      <button id="login-send" class="btn btn-primary" type="button">Kunin ang OTP</button>
+      <label for="login-code">6-digit OTP</label>
+      <input id="login-code" class="form-input" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required>
+      <button id="login-confirm" class="btn btn-primary" type="submit" disabled>Mag-sign In</button>
+    </form>
+    <p id="login-message" role="status" aria-live="polite"></p>
+    <p><a href="../register/donor.html">Bagong donor? Magrehistro</a></p>
+    <a href="../register/index.html">Pumili ng ibang role</a>
+    <div id="recaptcha-container"></div>
+  </main>
+  <div id="toast-container" aria-live="polite"></div>
+  <script type="module" src="../js/modules/donorLogin.js"></script>
+</body>
+</html>

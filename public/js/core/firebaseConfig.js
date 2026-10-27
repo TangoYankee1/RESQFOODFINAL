@@ -14,6 +14,7 @@ import {
   connectStorageEmulator,
   getStorage,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+import { getFunctions, connectFunctionsEmulator } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCxZ6L3z8lv3lD5qkFs3Ssz2fxJpQliP5c",
@@ -35,6 +36,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
+const functions = getFunctions(app);
 const isLocalDev = location.hostname === "localhost" || location.hostname === "127.0.0.1";
 
 if (isLocalDev) {
@@ -42,13 +44,14 @@ if (isLocalDev) {
     connectAuthEmulator(auth, "http://localhost:9099");
     connectFirestoreEmulator(db, "localhost", 8080);
     connectStorageEmulator(storage, "localhost", 9199);
+    connectFunctionsEmulator(functions, "localhost", 5001);
     console.log("Using Firebase emulators for local development.");
   } catch (err) {
     console.warn("Emulator connection skipped:", err);
   }
 }
 
-// Enable offline persistence for Firestore (donations queue while offline)
+// Cache prior reads for offline viewing. Critical callable writes require a connection.
 enableIndexedDbPersistence(db).catch((err) => {
   if (err.code === "failed-precondition") {
     console.warn("Firestore persistence: multiple tabs open");
@@ -57,4 +60,4 @@ enableIndexedDbPersistence(db).catch((err) => {
   }
 });
 
-export { app, auth, db, storage };
+export { app, auth, db, storage, functions, isLocalDev };

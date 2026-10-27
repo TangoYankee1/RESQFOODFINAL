@@ -1,0 +1,18 @@
+﻿=== node --check ===
+  adminUsers : OK
+  adminDonations : OK
+  adminAudit : OK
+  orgHistory : OK
+  activeMission : OK
+
+=== per-page: module src + leftover inline mock ===
+  admin/users.html: refModule=True leftoverMockInline=False
+        <script src="../js/modules/adminUsers.js" type="module"></script>
+  admin/audit.html: refModule=True leftoverMockInline=False
+        <script src="../js/modules/adminAudit.js" type="module"></script>
+  volunteer/active-mission.html: refModule=True leftoverMockInline=False
+        <script src="../js/modules/activeMission.js" type="module"></script>
+  org-admin/history.html: refModule=True leftoverMockInline=False
+        <script src="../js/modules/orgHistory.js" type="module"></script>
+  admin/donations.html: refModule=True leftoverMockInline=False
+        <script src="../js/modules/adminDonations.js" type="module"></script>

@@ -14,6 +14,17 @@ async function run() {
   const targetUid = 'target_user_1';
   const role = 'lguAdmin';
 
+  // The target must exist in Auth before a role can be assigned — assignRole
+  // sets custom claims via authAdmin.setCustomUserClaims, which throws
+  // auth/user-not-found for an unknown uid. Create it (idempotent) first.
+  try {
+    await admin.auth().createUser({ uid: targetUid });
+    console.log('created target auth user:', targetUid);
+  } catch (err) {
+    if (!err || err.code !== 'auth/uid-already-exists') throw err;
+    console.log('target auth user already exists:', targetUid);
+  }
+
   const res = await assignRole(db, admin.auth(), actorUid, actorRole, targetUid, role);
   console.log('assignRole result:', res);
   if(!res.success) process.exit(1);
