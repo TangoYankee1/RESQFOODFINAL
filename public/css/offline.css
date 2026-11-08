@@ -1,0 +1,65 @@
+/* public/css/offline.css — Offline fallback page */
+.offline-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.offline-shell__icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.offline-shell__title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
+.offline-shell__subtitle {
+  font-size: 1rem;
+  opacity: 0.8;
+  margin-bottom: 2rem;
+  max-width: 32rem;
+  line-height: 1.6;
+}
+
+.offline-shell__actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.offline-shell__btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
+  border-radius: 999px;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+.offline-shell__btn-primary {
+  background: #059669;
+  color: #fff;
+}
+.offline-shell__btn-primary:hover { background: #047857; }
+.offline-shell__btn-ghost {
+  border: 1px solid currentColor;
+  color: currentColor;
+}
+.offline-shell__btn-ghost:hover { background: rgba(0,0,0,0.05); }
+
+.offline-status {
+  margin-top: 2rem;
+  font-size: 0.875rem;
+  opacity: 0.7;
+}

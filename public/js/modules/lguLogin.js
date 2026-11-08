@@ -31,10 +31,13 @@ document.getElementById('lgu-login-form').addEventListener('submit', async event
     }
     await signed.user.getIdToken(true);
     const queryNext = new URLSearchParams(location.search).get('next');
-    const savedNext = consumeIntent('/admin/index.html');
+    const isLguAdmin = location.pathname.startsWith('/lgu-admin/');
+    const savedNext = consumeIntent(isLguAdmin ? '/lgu-admin/index.html' : '/admin/index.html');
     const target = new URL(queryNext || savedNext, location.origin);
-    location.replace(target.origin === location.origin && target.pathname.startsWith('/admin/') && !target.pathname.startsWith('/admin/login')
-      ? target.pathname + target.search + target.hash : '/admin/index.html');
+    const allowedPrefixes = isLguAdmin ? ['/lgu-admin/'] : ['/admin/'];
+    const isLogin = isLguAdmin ? target.pathname.startsWith('/lgu-admin/login') : target.pathname.startsWith('/admin/login');
+    location.replace(target.origin === location.origin && allowedPrefixes.some(p => target.pathname.startsWith(p)) && !isLogin
+      ? target.pathname + target.search + target.hash : (isLguAdmin ? '/lgu-admin/index.html' : '/admin/index.html'));
   } catch (error) {
     message.textContent = error.code === 'auth/code-expired' ? 'Expired ang OTP. Kumuha ng bagong code.'
       : error.code === 'auth/too-many-requests' ? 'Naabot ang attempt limit. Kumuha ng bagong code pagkaraan ng cooldown.' : 'Hindi ma-sign in. Suriin ang code o subukan muli.';

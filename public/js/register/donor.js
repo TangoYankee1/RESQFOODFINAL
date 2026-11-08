@@ -5,6 +5,8 @@ import {
   clearFieldError,
   buildDonorRegistrationPayload,
   validateDonorRegistrationPayload,
+  isValidPHPhone,
+  normalizePhone,
 } from './shared.js';
 import { sendOTP, confirmOTP } from '../core/auth.js';
 import { signupWithProfile } from '../core/callables.js';
@@ -33,13 +35,13 @@ document.getElementById('btn-send-otp').addEventListener('click', async () => {
   clearFieldError('phone-wrap', 'err-phone');
   document.getElementById('collision-msg').classList.remove('visible');
 
-  if (!/^\d{10}$/.test(raw.replace(/\D/g, '').slice(-10))) {
+  if (!isValidPHPhone(raw)) {
     showFieldError('phone-wrap', 'err-phone',
       'Mangyaring maglagay ng tamang Philippine mobile number (9XXXXXXXXX).');
     return;
   }
 
-  const phone = '+63' + raw.replace(/\D/g, '').slice(-10);
+  const phone = normalizePhone(raw);
 
   sendingOtp = true;
   document.getElementById('btn-send-otp').disabled = true;

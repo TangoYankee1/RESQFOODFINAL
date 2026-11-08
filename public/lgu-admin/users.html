@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResQFood — Mga User</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/admin.css" />
+  <link rel="stylesheet" href="/vendor/fonts/fonts.css" />
+</head>
+<body>
+
+  <header class="admin-topbar">
+    <span class="brand">🍱 RESQFOOD</span>
+    <span class="topbar-barangay">Project-wide</span>
+    <span class="admin-name">LGU Admin</span>
+
+    <button class="signout-btn" id="btn-signout">Sign out</button>
+  </header>
+
+  <div id="offline-banner">📶 Offline ka ngayon. Ilang features ay hindi available.</div>
+
+  <div class="admin-layout">
+
+    <nav class="admin-sidenav" aria-label="LGU Admin navigation">
+      <a class="nav-link" href="index.html"><span class="nav-icon">📊</span> Dashboard</a>
+      <a class="nav-link active" href="users.html"><span class="nav-icon">👥</span> Mga User</a>
+      <a class="nav-link" href="reports.html"><span class="nav-icon">📈</span> Reports</a>
+      <a class="nav-link" href="../admin/audit.html"><span class="nav-icon">📋</span> Audit Trail</a>
+    </nav>
+
+    <main class="admin-main">
+      <div class="admin-main-inner">
+
+        <h1 class="page-title">Mga User</h1>
+        <p class="page-subtitle">Pamahalaan ang mga donor, volunteer, at org admin sa buong proyekto.</p>
+
+        <!-- Filter bar -->
+        <div class="filter-bar" id="filter-bar">
+          <button class="filter-btn active" data-filter="all">Lahat</button>
+          <button class="filter-btn" data-filter="donor">Mga Donor</button>
+          <button class="filter-btn" data-filter="volunteer">Mga Volunteer</button>
+          <button class="filter-btn" data-filter="orgAdmin">Org Admins</button>
+          <button class="filter-btn" data-filter="lguAdmin">LGU Admins</button>
+          <button class="filter-btn" data-filter="pending">Pending Training</button>
+        </div>
+
+        <!-- User count -->
+        <p class="section-head">
+          <span id="user-count">0</span> user ang nahanap
+        </p>
+
+        <!-- Table -->
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Pangalan</th>
+                <th>Role</th>
+                <th>Barangay</th>
+                <th>Status</th>
+                <th>Detalye</th>
+                <th>Aksyon</th>
+              </tr>
+            </thead>
+            <tbody id="users-body">
+              <!-- injected by JS -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- Profile modal -->
+  <div id="user-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 class="modal-title" id="modal-user-name">—</h3>
+      <div id="modal-fields"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="btn-close-modal" style="flex:1;">Isara</button>
+        <button class="btn btn-danger hidden" id="btn-modal-suspend" style="flex:1;">Suspend</button>
+        <button class="btn btn-primary hidden" id="btn-modal-activate" style="flex:1;">Activate</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/modules/lguUsers.js" type="module"></script>
+</body>
+</html>

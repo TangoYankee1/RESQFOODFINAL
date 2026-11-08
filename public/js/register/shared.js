@@ -1,20 +1,7 @@
 import { db } from '../core/firebaseConfig.js';
 import { doc, setDoc, serverTimestamp }
   from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-
-// ── Phone normalization ──────────────────────────────────────────────────────
-export function normalizePhone(raw) {
-  const digits = raw.replace(/\D/g, '');
-  if (digits.startsWith('63') && digits.length === 12) return '+' + digits;
-  if (digits.startsWith('0')  && digits.length === 11) return '+63' + digits.slice(1);
-  if (digits.length === 10)                             return '+63' + digits;
-  return '+' + digits;
-}
-
-export function isValidPHPhone(raw) {
-  const normalized = normalizePhone(raw);
-  return /^\+639\d{9}$/.test(normalized);
-}
+import { normalizePhone, isValidPHPhone } from '../core/auth.js';
 
 // ── Toast utility ────────────────────────────────────────────────────────────
 export function showToast(message, type = 'info', duration = 3500) {
