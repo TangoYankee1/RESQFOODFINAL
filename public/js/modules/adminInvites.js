@@ -1,8 +1,7 @@
-import { bootGuardedPage } from '../core/guard-boot.js';
 import { createInvite } from '../core/callables.js';
 import { handleError } from '../core/errors.js';
 
-bootGuardedPage({ roles: ['systemAdmin'] }, () => {
+export function initInvites() {
   const form = document.getElementById('invite-form');
   form.addEventListener('submit', async event => {
     event.preventDefault();
@@ -20,4 +19,4 @@ bootGuardedPage({ roles: ['systemAdmin'] }, () => {
     } catch (error) { result.textContent = handleError(error, { scope: 'admin.invite' }).message; }
     finally { button.disabled = false; }
   });
-});
+}

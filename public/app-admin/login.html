@@ -7,18 +7,25 @@
   <link rel="stylesheet" href="../css/base.css" />
   <link rel="stylesheet" href="../css/auth.css" />
   <link rel="stylesheet" href="/vendor/fonts/fonts.css" />
+  <link rel="stylesheet" href="/css/brand.css" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/resqfood-mark.svg" />
+  <link rel="stylesheet" href="/css/auth-shell.css?v=1" />
+  <script src="/js/core/auth-header.js?v=1" defer></script>
+  <link rel="stylesheet" href="/css/select-enhancer.css" />
+  <script src="/js/core/select-enhancer.js" defer></script>
 </head>
-<body>
+<body class="auth-page">
   <div id="offline-banner">📶 Offline mode. Subukan muli kapag may koneksyon.</div>
-  <div class="reg-hero"><span class="brand-mark">🍱 RESQFOOD</span><h1>App Admin Login</h1><p>Restricted system administration area.</p></div>
-  <main class="reg-container" id="reg-main" style="max-width:480px; margin:0 auto;">
+  <header class="auth-site-header"><resqfood-auth-header action-href="/" action-label="Bumalik sa Home"><div class="auth-header-inner"><a class="resqfood-brand" href="/" aria-label="ResQFood home"><img class="resqfood-logo" src="/assets/resqfood-logo.png" alt="RESQFOOD" width="266" height="84" decoding="async" /></a><nav aria-label="Account"><a href="/">Bumalik sa Home</a></nav></div></resqfood-auth-header></header>
+  <section class="auth-intro" aria-labelledby="auth-title"><h1 id="auth-title">App Admin Login</h1><p>Restricted system administration area.</p></section>
+  <nav class="auth-back" aria-label="Pagpili ng role"><a href="/register/index.html">← Pumili ng ibang role</a></nav>
+  <main class="reg-container" id="reg-main" style="max-width:520px; margin:0 auto;">
     <div class="step-title">Mag-sign in bilang App Admin</div>
-    <div class="step-desc">Gamitin ang emulator account na ginawa ng local seed command.</div>
-    <div class="form-group"><label class="form-label" for="admin-email">Username</label><input class="form-input" id="admin-email" type="text" autocomplete="username" placeholder="god1" /><div class="form-error" id="admin-email-error"></div></div>
-    <div class="form-group"><label class="form-label" for="admin-password">Password</label><input class="form-input" id="admin-password" type="password" autocomplete="current-password" placeholder="admin 1" /><div class="form-error" id="admin-password-error"></div></div>
+    <div class="step-desc">Gamitin ang awtorisadong administrator account.</div>
+    <div class="form-group"><label class="form-label" for="admin-email">Username</label><input class="form-input" id="admin-email" type="text" autocomplete="username" placeholder="Administrator email" /><div class="form-error" id="admin-email-error"></div></div>
+    <div class="form-group"><label class="form-label" for="admin-password">Password</label><input class="form-input" id="admin-password" type="password" autocomplete="current-password" placeholder="Password" /><div class="form-error" id="admin-password-error"></div></div>
     <div class="form-error" id="admin-login-error"></div>
     <button class="btn btn-primary btn-full btn-lg" id="admin-login-button" type="button">Mag-sign in</button>
-    <a class="btn btn-ghost btn-full" href="/index.html" style="margin-top:var(--sp-3);">← Bumalik</a>
   </main>
   <div id="toast-container" aria-live="polite"></div>
   <script type="module" src="../js/modules/appAdminLogin.js?v=app-admin-login-v1"></script>

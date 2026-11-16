@@ -1,3 +1,4 @@
+import { bindSignOutDialog } from '../core/role-ui.js';
 import { loadAdminSession } from '../core/adminSession.js';
 // public/js/modules/systemAdmin.js — PRODUCTION (a: boot + missions + stats)
 import { bootGuardedPage } from '../core/guard-boot.js';
@@ -48,10 +49,10 @@ function loadActiveMissions() {
       }
       setText('stat-active', docs.length);
       const STATUS_MAP = {
-        scheduled: { cls: 'badge-scheduled', label: 'Scheduled' },
-        pickedUp: { cls: 'badge-pickedup', label: 'Picked Up' },
-        enRoute: { cls: 'badge-enroute', label: 'En Route' },
-        delivered: { cls: 'badge-delivered', label: 'Delivered' },
+        scheduled: { cls: 'badge-scheduled', label: 'May Kumuha' },
+        pickedUp: { cls: 'badge-pickedup', label: 'Nakuha na' },
+        enRoute: { cls: 'badge-enroute', label: 'Papunta' },
+        delivered: { cls: 'badge-delivered', label: 'Naihatid' },
       };
       tbody.innerHTML = docs.map((m) => {
         const st = STATUS_MAP[m.status] || { cls: 'badge-pending', label: m.status };
@@ -201,12 +202,7 @@ function bindExportCSV() {
 }
 
 function bindSignOut() {
-  const modal = document.getElementById('signout-modal');
-  document.getElementById('btn-signout')?.addEventListener('click', () => { if (modal) modal.style.display = 'flex'; });
-  document.getElementById('btn-cancel-signout')?.addEventListener('click', () => { if (modal) modal.style.display = 'none'; });
-  document.getElementById('btn-confirm-signout')?.addEventListener('click', async () => {
-    await signOutCurrentUser(); window.location.href = '/admin/login.html';
-  });
+  bindSignOutDialog(signOutCurrentUser);
 }
 
 function setupOnline() {

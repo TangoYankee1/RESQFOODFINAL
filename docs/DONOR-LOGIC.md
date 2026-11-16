@@ -1,3 +1,11 @@
+## Shared role workspace — November 2026
+
+The protected donor, volunteer, organization, LGU, app-admin, and legacy admin pages now share Option 1 workspace navigation (`workspace-shell.js`) and responsive styling (`workspace.css`). Existing bound controls are retained; account sign-out is moved into the sidebar, donor posting into the heading, and duplicate action banners are removed. Role-specific lists, permissions, verification, exports, and request actions remain owned by their existing modules.
+
+Donor summary cards mirror existing active-count, verified-count, and verified-receipt kg fields. No sample metrics, pickup scheduler, new impact page, or new role capability is introduced. Mobile navigation uses a toggle with Escape dismissal. Application pages retain their existing loading/error gates. Search still filters loaded records only.
+
+Syntax and structural checks are performed; no automated workflow tests were run at the owner's request. Manual checks remain necessary for each role and viewport before describing all workflows as verified.
+
 # Donor logic — 2026-10-14
 
 The donor flow is implemented for the local capstone emulator setup. One small

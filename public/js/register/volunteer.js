@@ -1,16 +1,9 @@
-import { sendOTP, confirmOTP } from '../core/auth.js';
+import { sendOTP, confirmOTP, normalizePhone, isValidPHPhone } from '../core/auth.js';
 import { signupVolunteerWithProfile } from '../core/callables.js';
 import { auth, db, storage } from '../core/firebaseConfig.js';
 import { collection, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { ref, uploadBytes } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
-import {
-  normalizePhone,
-  isValidPHPhone,
-  showToast,
-  setStepperState,
-  showFieldError,
-  clearFieldError,
-} from './shared.js';
+import { showToast, setStepperState, showFieldError, clearFieldError } from './shared.js';
 
 let otpTimer = null;
 let pendingConfirmation = null;
@@ -24,7 +17,8 @@ function goToStep(n) {
   const panel = document.getElementById(`step-${n}`);
   if (panel) panel.classList.add('active');
   setStepperState(n, 6);
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.querySelector('.step-panel.active .step-title, .step-panel.active h2')?.focus({ preventScroll: true });
+  window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
 }
 
 function clearField(fieldId, errorId) {
@@ -74,7 +68,7 @@ $('v-btn-send-otp').addEventListener('click', async () => {
 
   if (otpBusy) return;
   otpBusy = true;
-  $('v-btn-send-otp').disabled = true;
+  $('v-btn-send-otp').disabled = true; $('v-btn-send-otp').textContent = 'Ipinapadala ang Code…';
   try {
     pendingConfirmation = await sendOTP(phone(), 'recaptcha-container');
     $('v-btn-send-otp').classList.add('hidden');
@@ -88,7 +82,7 @@ $('v-btn-send-otp').addEventListener('click', async () => {
     console.error('Volunteer OTP failed', failure);
     showError('v-inp-phone', 'v-err-phone', 'Hindi maipadala ang OTP. Subukan muli.');
   } finally {
-    otpBusy = false; $('v-btn-send-otp').disabled = false;
+    otpBusy = false; $('v-btn-send-otp').disabled = false; $('v-btn-send-otp').textContent = 'Magpadala ng Code';
   }
 });
 
@@ -119,6 +113,7 @@ otpInputs.forEach((input, idx) => {
   input.addEventListener('paste', (event) => {
     event.preventDefault();
     const pasted = event.clipboardData.getData('text').replace(/\D/g, '');
+    otpInputs.forEach(input => { input.value = ''; input.classList.remove('filled'); });
     [...pasted.slice(0, 6)].forEach((char, i) => {
       if (otpInputs[i]) {
         otpInputs[i].value = char;
@@ -286,7 +281,7 @@ $('v-btn-3-next').addEventListener('click', async () => {
 
   const nextButton = $('v-btn-3-next');
   nextButton.disabled = true;
-  nextButton.textContent = 'Ina-upload...';
+  nextButton.textContent = 'Ina-upload…';
   try {
     const uid = auth.currentUser?.uid;
     if (!uid) throw new Error('missing_auth');
@@ -383,8 +378,7 @@ $('v-btn-submit').addEventListener('click', async () => {
   try {
     await signupVolunteerWithProfile(buildVolunteerPayload());
     showToast('Nagawa na ang volunteer account.', 'success');
-    document.querySelectorAll('.step-panel').forEach(panel => panel.classList.remove('active'));
-    $('step-success').classList.add('active');
+    goToStep(6);
   } catch (failure) {
     console.error('Volunteer signup failed', failure);
     showToast('Hindi ma-save ang account. Subukan muli.', 'error');

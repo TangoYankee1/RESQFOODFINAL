@@ -1,3 +1,4 @@
+import { bindSignOutDialog } from '../core/role-ui.js';
 import { loadAdminSession } from '../core/adminSession.js';
 // public/js/modules/adminAudit.js — PRODUCTION (immutable audit trail viewer)
 // Wires admin/audit.html to the live `auditLogs` collection + exportCsv.
@@ -117,10 +118,7 @@ function bindExport() {
 }
 
 function bindSignOut() {
-  document.getElementById('btn-signout')?.addEventListener('click', async () => {
-    await signOutCurrentUser();
-    window.location.href = '/admin/login.html';
-  });
+  bindSignOutDialog(signOutCurrentUser);
 }
 
 function setupOnline() {

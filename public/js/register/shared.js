@@ -3,6 +3,8 @@ import { doc, setDoc, serverTimestamp }
   from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { normalizePhone, isValidPHPhone } from '../core/auth.js';
 
+export { normalizePhone, isValidPHPhone };
+
 // ── Toast utility ────────────────────────────────────────────────────────────
 export function showToast(message, type = 'info', duration = 3500) {
   const container = document.getElementById('toast-container');
@@ -69,6 +71,7 @@ export function setStepperState(currentStep, totalSteps = 5) {
     const el = document.getElementById(`si-${i}`);
     if (!el) continue;
     el.classList.remove('active', 'done');
+    if (i === currentStep) el.setAttribute('aria-current', 'step'); else el.removeAttribute('aria-current');
     if (i < currentStep)        el.classList.add('done');
     else if (i === currentStep) el.classList.add('active');
   }
@@ -78,7 +81,12 @@ export function setStepperState(currentStep, totalSteps = 5) {
 export function showFieldError(fieldId, errorId, message) {
   const field = document.getElementById(fieldId);
   const error = document.getElementById(errorId);
-  if (field) field.classList.add('error');
+  if (field) {
+    field.classList.add('error');
+    const control = field.matches('input,select,textarea') ? field : field.querySelector('input,select,textarea');
+    if (control) { control.setAttribute('aria-invalid','true'); control.setAttribute('aria-describedby', [...new Set((control.getAttribute('aria-describedby') || '').split(' ').concat(errorId))].filter(Boolean).join(' ')); }
+    requestAnimationFrame(() => document.querySelector('.step-panel.active [aria-invalid="true"]')?.focus());
+  }
   if (error) { error.textContent = message; error.classList.add('visible'); }
   return false;
 }
@@ -86,7 +94,7 @@ export function showFieldError(fieldId, errorId, message) {
 export function clearFieldError(fieldId, errorId) {
   const field = document.getElementById(fieldId);
   const error = document.getElementById(errorId);
-  if (field) field.classList.remove('error');
+  if (field) { field.classList.remove('error'); const control=field.matches('input,select,textarea')?field:field.querySelector('input,select,textarea'); control?.removeAttribute('aria-invalid'); }
   if (error) { error.textContent = ''; error.classList.remove('visible'); }
 }
 
@@ -94,7 +102,8 @@ export function buildDonorRegistrationPayload() {
   const phone = document.getElementById('inp-phone')?.value?.trim() || '';
   const name = document.getElementById('inp-name')?.value?.trim() || '';
   const email = document.getElementById('inp-email')?.value?.trim() || '';
-  const barangay = document.getElementById('inp-barangay')?.value?.trim() || '';
+  const sitio = document.getElementById('inp-barangay')?.value?.trim() || '';
+  const barangay = 'Lahug';
   const address = document.getElementById('inp-street')?.value?.trim() || '';
   const donorType = document.getElementById('toggle-business')?.classList.contains('active') ? 'business' : 'individual';
   const businessName = donorType === 'business' ? (document.getElementById('inp-business-name')?.value?.trim() || '') : '';
@@ -104,6 +113,7 @@ export function buildDonorRegistrationPayload() {
     phone: normalizePhone(phone),
     email: email || null,
     barangay,
+    sitio,
     address: address || null,
     donorType,
     businessName: businessName || null,
@@ -123,8 +133,8 @@ export function validateDonorRegistrationPayload(payload) {
     errors.email = 'Hindi valid ang email address.';
   }
 
-  if (!payload.barangay) {
-    errors.barangay = 'Piliin ang iyong barangay.';
+  if (!payload.sitio) {
+    errors.barangay = 'Piliin ang iyong sitio sa Barangay Lahug.';
   }
 
   if (payload.donorType === 'business' && (!payload.businessName || payload.businessName.length < 2)) {

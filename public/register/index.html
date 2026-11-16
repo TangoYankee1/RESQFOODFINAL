@@ -9,14 +9,17 @@
   <link rel="stylesheet" href="../css/auth.css" />
   <link rel="stylesheet" href="../css/icons.css" />
   <link rel="stylesheet" href="../css/gateway.css" />
+  <link rel="stylesheet" href="/css/brand.css" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/resqfood-mark.svg" />
+  <link rel="stylesheet" href="/css/auth-shell.css?v=1" />
+  <script src="/js/core/auth-header.js?v=1" defer></script>
+  <link rel="stylesheet" href="/css/select-enhancer.css" />
+  <script src="/js/core/select-enhancer.js" defer></script>
 </head>
-<body class="role-gateway">
+<body class="role-gateway auth-page">
   <div id="offline-banner">Offline ka ngayon. Ilang features ay hindi available.</div>
-  <header class="reg-hero">
-    <a class="brand-mark" href="/" aria-label="ResQFood home"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/icons/ui.svg#restaurant"></use></svg> RESQFOOD</a>
-    <h1>Sino ka sa ating komunidad?</h1>
-    <p>Piliin ang iyong papel para makapagsimula.</p>
-  </header>
+  <header class="auth-site-header"><resqfood-auth-header action-href="#sign-in-options" action-label="Mag-sign in"><div class="auth-header-inner"><a class="resqfood-brand" href="/" aria-label="ResQFood home"><img class="resqfood-logo" src="/assets/resqfood-logo.png" alt="RESQFOOD" width="266" height="84" decoding="async" /></a><nav aria-label="Account"><a href="#sign-in-options">Mag-sign in</a></nav></div></resqfood-auth-header></header>
+  <section class="auth-intro" aria-labelledby="auth-title"><h1 id="auth-title">Sino ka sa ating komunidad?</h1><p>Piliin ang iyong papel para makapagsimula.</p></section>
   <main class="page-content">
     <ul class="role-grid" aria-label="Mga paraan para sumali">
       <li><a class="role-card featured" href="donor.html" id="card-donor" aria-label="Mag-register bilang Food Donor">
@@ -40,7 +43,7 @@
         <p class="role-card__tagline">Sign in bilang LGU administrator para sa project-wide oversight at reports.</p>
       </a></li>
     </ul>
-    <footer class="gateway-footer">May account na? <a href="/donor/login.html">Donor sign in</a> · <a href="/volunteer/login.html">Volunteer sign in</a> · <a href="/org-admin/login.html">Organization sign in</a> · <a href="/lgu-admin/login.html">LGU sign in</a></footer>
+    <footer class="gateway-footer" id="sign-in-options" tabindex="-1">May account na? <a href="/donor/login.html">Donor sign in</a> · <a href="/volunteer/login.html">Volunteer sign in</a> · <a href="/org-admin/login.html">Organization sign in</a> · <a href="/lgu-admin/login.html">LGU sign in</a></footer>
   </main>
   <div id="toast-container" aria-live="polite"></div>
   <script>

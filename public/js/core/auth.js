@@ -154,7 +154,7 @@ export async function requireRole(roles, opts = {}) {
     const err = new Error('unauthenticated');
     err.code = 'guard-redirect';
     const loginRoles = Array.isArray(roles) ? roles : [roles];
-    err.redirectTo = opts.loginPath || (loginRoles.includes('donor') ? '/donor/login.html'
+    err.redirectTo = opts.loginPath || (location.pathname.startsWith('/app-admin/') ? '/app-admin/login.html' : location.pathname.startsWith('/lgu-admin/') ? '/lgu-admin/login.html' : loginRoles.includes('donor') ? '/donor/login.html'
       : loginRoles.includes('volunteer') ? '/volunteer/login.html'
       : loginRoles.includes('orgAdmin') ? '/org-admin/login.html' : loginRoles.includes('lguAdmin') ? '/admin/login.html' : '/register/index.html');
     location.replace(`${err.redirectTo}?next=${encodeURIComponent(opts.next || (location.pathname + location.search))}`);

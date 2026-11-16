@@ -1,0 +1,29 @@
+/* Shared authentication shell; role-specific styles belong inside the form. */
+.auth-page { background:#f5f7f6; color:#183c32; padding-bottom:3rem; }
+.auth-site-header { background:#fff; border-bottom:1px solid #dfe8e3; }
+resqfood-auth-header { display:block; }
+.auth-header-inner { max-width:1100px; margin:0 auto; padding:.5rem 1.5rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+.auth-page .auth-header-inner .resqfood-logo { width:190px; border-radius:0; }
+.auth-header-inner nav { text-align:right; font-size:.875rem; }
+.auth-header-inner nav a, .auth-back a { display:inline-flex; align-items:center; min-height:44px; color:#005641; font-weight:600; text-underline-offset:.22em; }
+.auth-header-inner nav a:hover, .auth-back a:hover { color:#153f30; text-decoration-thickness:2px; }
+.auth-page a:focus-visible { outline:3px solid #b85a00; outline-offset:4px; border-radius:4px; }
+.auth-intro { max-width:620px; margin:0 auto; padding:2.5rem 1.5rem 1rem; text-align:center; }
+.auth-intro h1 { color:#005641; font-size:clamp(1.5rem,3vw,2rem); line-height:1.25; margin:0 0 .75rem; overflow-wrap:break-word; }
+.auth-intro p { color:#53645e; font-size:1rem; line-height:1.6; margin:0; }
+.auth-back { width:calc(100% - 2rem); max-width:520px; margin:0 auto; padding:0 0 .5rem; font-size:.875rem; }
+.auth-page .reg-container { width:calc(100% - 2rem); max-width:520px; margin:0 auto; padding:1.5rem; min-height:0; border:1px solid #dfe8e3; border-radius:20px; box-shadow:0 8px 24px rgba(20,60,44,.04); }
+.auth-progress { padding:0 0 1.25rem; margin-bottom:1.5rem; border-bottom:1px solid #e5ece8; }
+.auth-progress .stepper { margin:0; }
+.auth-invite-note { margin:0 0 1.5rem; padding:1rem; border-radius:12px; background:#eef5f0; color:#365446; font-size:.875rem; line-height:1.6; }
+.auth-page.role-gateway .page-content { padding-top:1rem; }
+.auth-page.role-gateway .role-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.auth-page .registration-load-status { width:calc(100% - 2rem); border-radius:12px; margin-bottom:1rem; }
+@media(max-width:540px) {
+  .auth-header-inner { padding:.5rem 1rem; gap:.5rem; }
+  .auth-page .auth-header-inner .resqfood-logo { width:150px; }
+  .auth-header-inner nav { max-width:145px; font-size:.8rem; line-height:1.4; }
+  .auth-intro { padding:1.75rem 1rem 1rem; }
+  .auth-page .reg-container { padding:1.25rem 1rem; border-radius:16px; }
+  .auth-page.role-gateway .role-grid { grid-template-columns:1fr; }
+}

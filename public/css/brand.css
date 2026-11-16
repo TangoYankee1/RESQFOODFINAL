@@ -1,0 +1,7 @@
+/* The supplied logo is the single wordmark used throughout ResQFood. */
+.resqfood-brand { display:inline-flex; flex:0 0 auto; align-items:center; justify-content:center; max-width:100%; border-radius:8px; background:#fff; text-decoration:none; line-height:0; vertical-align:middle; }
+.resqfood-brand .resqfood-logo, img.resqfood-logo { display:block; width:200px; max-width:100%; height:auto; aspect-ratio:266 / 84; object-fit:contain; border-radius:8px; }
+.resqfood-brand:focus-visible { outline:3px solid #fc9430; outline-offset:4px; }
+.reg-hero .resqfood-brand { margin-bottom:1rem; }
+#dashboard-loading .resqfood-logo { margin:0 auto 1rem; }
+@media(max-width:420px) { .resqfood-brand .resqfood-logo { width:175px; } }

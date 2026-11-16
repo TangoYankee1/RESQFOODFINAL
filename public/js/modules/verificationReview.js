@@ -57,7 +57,11 @@ function render(snapshot) {
     button.addEventListener('click', async () => {
       const note = window.prompt('Review note (required):');
       if (!note?.trim()) return;
-      const decision = window.confirm('Approve this verification request?') ? 'approved' : 'rejected';
+      const choice = window.prompt('Ilagay ang APPROVE para aprubahan o REJECT para tanggihan. Cancel para bumalik.');
+      if (choice === null) return;
+      const action=choice.trim().toUpperCase();
+      if (!['APPROVE','REJECT'].includes(action)) { window.alert('Ilagay ang APPROVE o REJECT. Walang binagong record.'); return; }
+      const decision=action==='APPROVE'?'approved':'rejected';
       button.disabled = true;
       try {
         await reviewVerificationRequest({ requestId: button.dataset.id, decision, note: note.trim() });

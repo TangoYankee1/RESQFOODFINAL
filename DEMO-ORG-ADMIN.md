@@ -1,3 +1,11 @@
+## Updated assistance request rules
+
+Find Food now enforces one active request per resident, organization availability, collection details on acceptance, resident cancellation, and actor/timestamp history. The independent **Mga request ko** phone-verification flow includes status filters and Philippine-time collection instructions. Search the shared 48-sitio list and choose within organization coverage. See [current behavior](docs/COMMUNITY-REQUESTS.md).
+
+## Community request demonstration
+
+Run `npm run seed:demo-orgs` after starting emulators. Use the [three fictional organization accounts](scripts/DEMO-ORGANIZATIONS.md). In a separate browser session, open `/find-food.html`, choose a covered sitio and organization, verify a resident phone, and submit a request. Refresh Community Requests in the matching organization dashboard, reply and accept, then refresh the resident view. Mark fulfilled after simulated distribution. See [workflow details](docs/COMMUNITY-REQUESTS.md).
+
 # Org Admin (Beneficiary) Demo Guide — ResQFood Prototype Presentation
 
 ## Role Overview

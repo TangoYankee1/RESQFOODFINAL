@@ -1,169 +1,80 @@
 # ResQFood
 
-Vanilla HTML/CSS/JS food rescue PWA — no bundler, no framework. Deploy with `firebase deploy` only.
+Food rescue and assistance coordination for Barangay Lahug. The frontend uses HTML, CSS, and JavaScript modules. Existing role workflows cover donors, volunteers, organizations, LGU personnel, and application administrators.
 
-## Project layout
+## Final environment decision — November 13, 2026
 
-```text
-resqfood/
-├── firebase.json
-├── firestore.rules
-├── firestore.indexes.json
-├── storage.rules
-├── .firebaserc
-├── .gitignore
-│
-├── public/                         # Firebase Hosting root
-│   ├── index.html                  # Landing page + role gateway
-│   ├── manifest.json               # PWA manifest
-│   ├── sw.js                       # Service Worker: cache + offline fallback
-│   ├── offline.html                # Static offline fallback page
-│   │
-│   ├── register/                   # Role-specific registration pipelines
-│   │   ├── index.html              # Role selection gateway (4 cards)
-│   │   ├── donor.html
-│   │   ├── volunteer.html
-│   │   ├── org-admin.html
-│   │   └── lgu-invite.html
-│   │
-│   ├── donor/
-│   │   ├── index.html              # Kitchen Status Board (dashboard)
-│   │   ├── post.html               # 3-step donation wizard
-│   │   ├── history.html
-│   │   └── qr-display.html
-│   │
-│   ├── volunteer/
-│   │   ├── index.html              # Mission Board
-│   │   ├── active-mission.html
-│   │   ├── scanner.html            # jsQR camera viewfinder
-│   │   └── history.html
-│   │
-│   ├── org-admin/
-│   │   ├── index.html              # Incoming deliveries + verification queue
-│   │   ├── verify.html
-│   │   └── history.html
-│   │
-│   ├── admin/
-│   │   ├── index.html              # LGU dashboard (metrics + charts)
-│   │   ├── donations.html
-│   │   ├── users.html
-│   │   └── audit.html
-│   │
-│   ├── css/
-│   │   ├── base.css                # Variables, reset, typography, mobile-first grid
-│   │   ├── layout.css              # Shared shell: header, nav, bottom bar, toasts
-│   │   ├── auth.css
-│   │   ├── register-flow.css       # Step wizard (progress bar, cards)
-│   │   ├── donor.css
-│   │   ├── volunteer.css
-│   │   ├── org-admin.css
-│   │   ├── admin.css
-│   │   └── offline.css
-│   │
-│   ├── js/
-│   │   ├── core/
-│   │   │   ├── firebaseConfig.js   # Firebase init (Auth, Firestore, Storage, Analytics)
-│   │   │   ├── auth.js             # Auth state router, session guard
-│   │   │   ├── router.js           # Role-based navigation + activation gate
-│   │   │   ├── utils.js            # Formatters, validators, toasts
-│   │   │   ├── offline.js          # IndexedDB queue + sync banner
-│   │   │   └── notifications.js    # In-app toasts + Push API
-│   │   │
-│   │   ├── qr/
-│   │   │   ├── generator.js        # qrcode.js wrapper + payload builder
-│   │   │   └── scanner.js          # jsQR wrapper: camera stream + frame capture
-│   │   │
-│   │   ├── register/
-│   │   │   ├── shared.js           # OTP flow, Firestore atomic write, recovery
-│   │   │   ├── donor.js
-│   │   │   ├── volunteer.js
-│   │   │   ├── orgAdmin.js
-│   │   │   └── lgu.js              # Token validation, gov email check, MFA
-│   │   │
-│   │   └── modules/
-│   │       ├── donor.js            # Kitchen board, post wizard, cancellation rules
-│   │       ├── volunteer.js        # Mission board, atomic claim transaction
-│   │       ├── orgAdmin.js         # Delivery queue, verify flow (QR/PIN)
-│   │       ├── systemAdmin.js      # Dashboard RPC, chart data, user table
-│   │       └── rewards.js          # Points, badges, toast triggers
-│   │
-│   └── assets/
-│       ├── icons/
-│       │   ├── icon-72x72.png
-│       │   ├── icon-96x96.png
-│       │   ├── icon-128x128.png
-│       │   ├── icon-192x192.png
-│       │   ├── icon-384x384.png
-│       │   ├── icon-512x512.png
-│       │   └── maskable-icon.png
-│       ├── images/
-│       │   ├── logo.svg
-│       │   ├── empty-state-donor.svg
-│       │   ├── empty-state-volunteer.svg
-│       │   └── certificate-preview.jpg
-│       └── offline/
-│           └── offline-illustration.svg
-│
-├── functions/                      # Firebase Cloud Functions (Node.js)
-│   └── index.js                    # Triggers: onCreate donation, onUpdate status
-│
-├── scripts/
-│   ├── seed.js                     # Seed test data: users, donations, orgs
-│   └── backup-rules.js
-│
-└── docs/
-    ├── README.md                   # Quick start, env setup, deploy commands
-    ├── SETUP.md                    # Firebase project creation, indexes, rules
-    ├── ARCHITECTURE.md             # System design, data flow, role matrix
-    ├── HANDOVER.md                 # Barangay staff handover guide
-    ├── PRIVACY.md                  # DPA compliance, data retention policy
-    └── premortem.md                # Risk document (reference for defense Q&A)
-```
+**Keep ResQFood in the local Firebase Emulator Suite for development, demonstration, and UAT.** This supersedes the public backend migration and Blaze deployment proposals. No public deployment is planned. No Cloudflare account, paid SMS service, cloud storage subscription, or Secret Manager setup is needed for this local environment.
 
-## Styling
+- Keep the existing Firebase callable backend, Firestore, Auth, Storage, and Hosting emulators.
+- Preserve phone OTP registration, login, and resident request tracking. Application administrators retain their existing email/password login. The proposed switch of other roles to email/password was not implemented and is no longer planned.
+- Local OTP codes are generated by the Auth emulator and shown in its terminal output; they are not delivered as text messages. UAT must identify SMS delivery as simulated, not tested against a mobile carrier.
+- QR signing stays server-side with the private local key created by scripts/setup-emulator.js in functions/.env.local. No cloud Secret Manager is required.
+- The initial migration transport/gateway files remain isolated and unused by the app. The migration is cancelled; their tests do not certify application workflows.
 
-Each page links only the CSS files it needs:
+See [local setup and UAT guide](docs/LOCAL-UAT.md). The existing localhost configuration supports testing on the host computer. Other devices require a separate LAN/HTTPS setup; that has not been implemented.
 
-| File | Covers |
+## Existing application behavior
+
+- Shared responsive workspace/sidebar on donor, volunteer, organization, LGU, application-admin, and legacy admin pages. Metrics use existing data; search filters loaded records.
+- Shared branded headers on registration/login pages and searchable single-choice dropdowns with keyboard support.
+- Exactly 48 Lahug sitios. functions/lib/lahug-sitios.json is canonical; npm run sync:sitios generates public/data/lahug-sitios.json. Donor registration and Find Food fetch the validated shared dataset independently of organization availability. Sitio and barangay remain distinct.
+- Find Food routes assistance through approved organizations. Existing logic includes one active request per resident, coverage and availability checks, acceptance collection details, cancellation, status history, and coordinator responses. Status updates require refresh; no automatic status SMS is sent.
+- Local identity uses phone OTP for residents and most roles; application administrators use email/password. These flows are retained.
+- Demo organizations are fictional and local-only. They must not silently become production verified organizations.
+
+## Source layout
+
+| Location | Purpose |
 | --- | --- |
-| `css/base.css` | Variables, reset, typography, grid |
-| `css/layout.css` | Header, nav, bottom bar, toasts |
-| `css/auth.css` | Login / sign-up forms |
-| `css/register-flow.css` | Step wizard, progress bar |
-| `css/donor.css` | Kitchen board, donation cards |
-| `css/volunteer.css` | Mission board, scanner overlay |
-| `css/org-admin.css` | Verification queue, PIN entry |
-| `css/admin.css` | Dashboard grid, charts, data tables |
-| `css/offline.css` | Offline fallback page |
+| public/ | Static pages, styles, browser modules, and assets |
+| public/js/core/ | Auth, Firebase configuration, data access, callables, shared UI |
+| public/js/register/ | Role registration flows |
+| public/js/modules/ | Role workflows and community request UI |
+| functions/index.js and functions/lib/ | Existing callable handlers and domain logic |
+| firestore.rules and firestore.indexes.json | Client access controls and query indexes |
+| storage.rules | Current Firebase upload authorization reference |
+| scripts/ | Emulator setup, canonical sitio synchronization, local demo seeding |
+| tests/ | Backend, security-rule, and browser regression scripts |
+| docs/ | Workflow and deployment documentation |
 
-Design tokens and rules live in [DESIGN.md](DESIGN.md) ("The Kinetic Path").
+## Local development
 
-## Stack
+Use Node.js 22, npm, Firebase CLI, and a Java runtime supported by the installed Firebase emulators. From the project root:
 
-- Frontend: HTML, CSS, ES6 modules
-- Backend: Firebase Firestore + Storage
-- Auth: Firebase Email/Password
-- Functions: Firebase Cloud Functions (Node.js)
-- QR: qrcode.js + jsQR (CDN)
-- Hosting: Firebase Hosting (static)
-- PWA: `manifest.json` + `sw.js`
+~~~sh
+npm ci
+npm --prefix functions ci
+npm run emulators
+~~~
 
-## Role pages
+Open http://localhost:5000. Emulator UI uses http://localhost:4000; Functions 5001, Firestore 8080, Auth 9099, and Storage 9199. Local phone OTPs appear in the Auth emulator output. Emulator data and production data are separate.
 
-| Module | Path | Who sees it |
-| --- | --- | --- |
-| Landing | `/` | Signed out |
-| Register gateway | `/register/` | New users |
-| Donor dashboard | `/donor/` | Donor role |
-| Volunteer board | `/volunteer/` | Volunteer role |
-| Org verification | `/org-admin/` | Beneficiary org |
-| LGU admin | `/admin/` | LGU Personnel / System Admin |
+Optional fictional organization fixtures: npm run seed:demo-orgs. See scripts/DEMO-ORGANIZATIONS.md. Local setup creates private signing configuration; do not upload local secrets.
 
-## Setup
+## Validation
 
-1. Create a Firebase project; enable **Email/Password** auth, **Firestore**, and **Storage**.
-2. Copy web config into `public/js/core/firebaseConfig.js`.
-3. Set your project ID in `.firebaserc`.
-4. Install CLI: `npm install -g firebase-tools` then `firebase login`.
-5. Local preview: `firebase serve` (must be HTTP, not `file://`).
-6. Deploy: `firebase deploy`.
+Run with the required emulators started:
+
+~~~sh
+npm run test:community
+npm run test:workspace
+npm run test:stats
+npm run test:backend
+~~~
+
+Previously observed passing checks include community-request regression, receipt-statistics regression, and desktop/mobile workspace browser regression across the six role routes, including the 48-sitio dropdown. A complete final result for the full backend suite was not captured. These results describe the Firebase/local implementation. Record new UAT and regression results separately; do not claim the full suite passed without its final result.
+
+## Documentation and references
+
+- docs/COMMUNITY-REQUESTS.md: assistance workflow and permissions.
+- DESIGN.md: UI conventions.
+- docs/LOCAL-UAT.md: current local setup, OTP handling, data retention, and UAT scope.
+- docs/DEPLOYMENT.md and docs/PUBLIC-MIGRATION.md: superseded historical proposals, not setup instructions for this environment.
+- Firebase Auth emulator behavior: https://firebase.google.com/docs/emulator-suite/connect_auth
+
+Historical role/reference documents may describe earlier designs. Validate claims against current code and this migration status before using them in the thesis defense.
+# System administrator setup
+
+See [the administrator guide](docs/SYSTEM-ADMIN.md) for creation, login, password recovery and snapshot restoration. With emulators running, use `npm.cmd run seed:app-admin`. Generated credentials are saved in an ignored local file; rerunning setup preserves the password. LGU administrators remain a separate role.
+

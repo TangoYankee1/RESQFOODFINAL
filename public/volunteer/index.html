@@ -255,10 +255,17 @@
     .nav-item .nav-icon { font-size: 1.3rem; }
     body { padding-bottom: 5rem; }
   </style>
+  <link rel="stylesheet" href="../css/dashboard.css" />
+  <script src="../js/core/dashboard-boot.js"></script>
+  <link rel="stylesheet" href="/css/brand.css" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/resqfood-mark.svg" />
+  <link rel="stylesheet" href="/css/select-enhancer.css" />
+  <script src="/js/core/select-enhancer.js" defer></script>
+  <link rel="stylesheet" href="/css/workspace.css?v=1" />
 </head>
-<body>
+<body class="dashboard-page">
   <header class="vol-topbar">
-    <span class="brand">🍱 RESQFOOD</span>
+    <a class="resqfood-brand" href="/" aria-label="ResQFood home"><img class="resqfood-logo" src="/assets/resqfood-logo.png" alt="RESQFOOD" width="266" height="84" decoding="async" /></a>
     <span class="role-chip">Volunteer</span>
     <button class="signout-btn" id="btn-signout">Sign out</button>
   </header>
@@ -267,22 +274,22 @@
 
   <!-- Greeting -->
   <div class="vol-greeting">
-    <h2>Magandang araw, <span id="vol-greeting-name">Juan</span>!</h2>
-    <p>Mayroon kang <strong id="active-count">0</strong> active mission ngayon.</p>
+    <h2>Magandang araw, <span id="vol-greeting-name">Ka-ResQ</span>!</h2>
+    <p>Mayroon kang <strong id="active-count">—</strong> active mission ngayon.</p>
   </div>
 
   <!-- Stats strip -->
   <div class="stats-strip">
     <div class="stat-card">
-      <span class="stat-val" id="stat-kg">0</span>
-      <span class="stat-lbl">kg naligtas</span>
+      <span class="stat-val" id="stat-kg">—</span>
+      <span class="stat-lbl">kg natanggap · lahat ng panahon</span>
     </div>
     <div class="stat-card">
-      <span class="stat-val" id="stat-missions">0</span>
-      <span class="stat-lbl">missions</span>
+      <span class="stat-val" id="stat-missions">—</span>
+      <span class="stat-lbl">natapos · lahat ng panahon</span>
     </div>
     <div class="stat-card">
-      <span class="stat-val" id="stat-awaiting">0</span>
+      <span class="stat-val" id="stat-awaiting">—</span>
       <span class="stat-lbl">hinihintay na receipt</span>
     </div>
   </div>
@@ -297,10 +304,9 @@
     </div>
 
     <!-- Tabs -->
-    <div class="vol-tabs" role="tablist">
+    <div class="vol-tabs" role="tablist" aria-label="Missions">
       <button class="vol-tab active" id="tab-available" role="tab">Available</button>
       <button class="vol-tab"        id="tab-my"        role="tab">Aking Missions</button>
-      <button class="vol-tab"        id="tab-history"   role="tab">History</button>
     </div>
 
     <!-- Available missions panel -->
@@ -311,19 +317,6 @@
     <!-- My missions panel -->
     <div id="panel-my" class="hidden">
       <!-- injected by JS -->
-    </div>
-
-    <!-- History panel (link out) -->
-    <div id="panel-history" class="hidden">
-      <div style="text-align:center; padding: var(--sp-8) var(--sp-4);">
-        <div style="font-size:2.5rem; margin-bottom:var(--sp-3);">📋</div>
-        <p style="color:var(--color-muted); margin-bottom:var(--sp-5);">
-          Tingnan ang iyong mga natapos na missions at certificate progress.
-        </p>
-        <a class="btn btn-primary btn-full" href="history.html">
-          Buksan ang History →
-        </a>
-      </div>
     </div>
 
   </main>

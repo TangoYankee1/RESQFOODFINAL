@@ -103,12 +103,19 @@
     .hi-qty   { font-family: var(--font-head); font-weight: 800; color: var(--color-primary); font-size: 1rem; }
     .hi-date  { font-size: .72rem; color: var(--color-muted); margin-top: 2px; }
   </style>
+  <link rel="stylesheet" href="../css/dashboard.css" />
+  <script src="../js/core/dashboard-boot.js"></script>
+  <link rel="stylesheet" href="/css/brand.css" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/resqfood-mark.svg" />
+  <link rel="stylesheet" href="/css/select-enhancer.css" />
+  <script src="/js/core/select-enhancer.js" defer></script>
+  <link rel="stylesheet" href="/css/workspace.css?v=1" />
 </head>
-<body>
+<body class="dashboard-page">
 
   <header class="history-header">
     <button class="back-btn" id="btn-back" aria-label="Bumalik">←</button>
-    <span class="brand">🍱 RESQFOOD</span>
+    <a class="resqfood-brand" href="/" aria-label="ResQFood home"><img class="resqfood-logo" src="/assets/resqfood-logo.png" alt="RESQFOOD" width="266" height="84" decoding="async" /></a>
     <span class="role-chip">Org Admin</span>
   </header>
 

@@ -1,3 +1,4 @@
+import { bindSignOutDialog } from '../core/role-ui.js';
 // public/js/modules/lguUsers.js — LGU Admin "Mga User" page — live Firestore-backed table + suspend/activate.
 // Roles allowed: lguAdmin. Guards on the users table id so this module only boots on users.html.
 import { signOutCurrentUser } from '../core/auth.js';
@@ -35,10 +36,7 @@ async function initLguUsers(s) {
     if (e.target === e.currentTarget) closeModal();
   });
 
-  document.getElementById('btn-signout')?.addEventListener('click', async () => {
-    await signOutCurrentUser();
-    window.location.href = '/lgu-admin/login.html';
-  });
+  bindSignOutDialog(signOutCurrentUser);
 }
 function loadUsers() {
   const container = document.getElementById('users-body');

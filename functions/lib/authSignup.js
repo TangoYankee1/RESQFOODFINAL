@@ -1,3 +1,4 @@
+const lahugSitios = require('./lahug-sitios.json');
 /**
  * Create or update a canonical user profile server-side.
  * New users receive the donor role. Another role cannot use donor signup.
@@ -15,6 +16,8 @@ async function signupWithProfile(firestore, uid, profile) {
   const fullName = String(profile && profile.fullName || '').trim();
   const phone = String(profile && profile.phone || '').trim();
   const barangay = profile && profile.barangay || null;
+  const sitio = String(profile && profile.sitio || '').trim();
+  if (sitio && (barangay !== 'Lahug' || !lahugSitios.includes(sitio))) return { success: false, reason: 'invalid_sitio' };
 
   if (fullName.length < 3 || fullName.length > 100) return { success: false, reason: 'invalid_name' };
   if (phone && !/^\+?63\d{9,10}$/.test(phone) && !/^\d{10}$/.test(phone)) return { success: false, reason: 'invalid_phone' };
@@ -39,6 +42,7 @@ async function signupWithProfile(firestore, uid, profile) {
         fullName,
         phoneNumber: phone || null,
         barangay: barangay || null,
+        ...(sitio ? { sitio } : {}),
         email: profile.email || null, address: String(profile.address || '').trim() || null,
         donorType, businessName: donorType === 'business' ? businessName : null,
         permitNumber: donorType === 'business' ? String(profile.permitNumber || '').trim() || null : null,

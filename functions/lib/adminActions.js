@@ -17,6 +17,8 @@ async function setUserStatus(firestore, { targetUid, status, actorUid, actorRole
     const snap = await tx.get(userRef);
     if (!snap.exists) { failure = 'not_found'; return; }
     const target = snap.data();
+    const singleton = await tx.get(firestore.doc('systemConfig/systemAdministrator'));
+    if (target.role === 'systemAdmin' || singleton.data()?.uid === targetUid) { failure = 'permission-denied'; return; }
     if (targetUid === actorUid || (actorRole === 'lguAdmin' && !['donor', 'volunteer', 'orgAdmin'].includes(target.role))) {
       failure = 'permission-denied'; return;
     }

@@ -8,11 +8,18 @@
   <link rel="stylesheet" href="../css/admin.css" />
   <link rel="stylesheet" href="/vendor/fonts/fonts.css" />
   <script src="/vendor/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="../css/dashboard.css" />
+  <script src="../js/core/dashboard-boot.js"></script>
+  <link rel="stylesheet" href="/css/brand.css" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/resqfood-mark.svg" />
+  <link rel="stylesheet" href="/css/select-enhancer.css" />
+  <script src="/js/core/select-enhancer.js" defer></script>
+  <link rel="stylesheet" href="/css/workspace.css?v=1" />
 </head>
-<body>
+<body class="dashboard-page">
 
   <header class="admin-topbar">
-    <span class="brand">🍱 RESQFOOD</span>
+    <a class="resqfood-brand" href="/" aria-label="ResQFood home"><img class="resqfood-logo" src="/assets/resqfood-logo.png" alt="RESQFOOD" width="266" height="84" decoding="async" /></a>
     <span class="topbar-barangay">Project-wide</span>
     <span class="admin-name">LGU Admin</span>
 
@@ -27,7 +34,7 @@
       <a class="nav-link" href="index.html"><span class="nav-icon">📊</span> Dashboard</a>
       <a class="nav-link" href="users.html"><span class="nav-icon">👥</span> Mga User</a>
       <a class="nav-link active" href="reports.html"><span class="nav-icon">📈</span> Reports</a>
-      <a class="nav-link" href="../admin/audit.html"><span class="nav-icon">📋</span> Audit Trail</a>
+      <a class="nav-link" href="audit.html"><span class="nav-icon">📋</span> Audit Trail</a>
     </nav>
 
     <main class="admin-main">
@@ -42,25 +49,25 @@
         <div class="metrics-grid" id="metrics-grid">
           <div class="metric-card">
             <div class="m-icon">⚖️</div>
-            <span class="m-val" id="stat-total-kg">0</span>
+            <span class="m-val" id="stat-total-kg">—</span>
             <div class="m-lbl">Total kg na na-rescue</div>
             <div class="m-delta">Lahat ng verified donations</div>
           </div>
           <div class="metric-card accent">
             <div class="m-icon">🍱</div>
-            <span class="m-val" id="stat-total-donations">0</span>
+            <span class="m-val" id="stat-total-donations">—</span>
             <div class="m-lbl">Total donations</div>
             <div class="m-delta">Lahat ng status</div>
           </div>
           <div class="metric-card success">
             <div class="m-icon">✅</div>
-            <span class="m-val" id="stat-verified">0</span>
+            <span class="m-val" id="stat-verified">—</span>
             <div class="m-lbl">Verified donations</div>
             <div class="m-delta">Na-verify ng org admin</div>
           </div>
           <div class="metric-card warning">
             <div class="m-icon">⚠️</div>
-            <span class="m-val" id="stat-pending">0</span>
+            <span class="m-val" id="stat-pending">—</span>
             <div class="m-lbl">Pending donations</div>
             <div class="m-delta">Hindi pa na-claim</div>
           </div>
@@ -81,13 +88,13 @@
         <!-- Export -->
         <p class="section-head">Export</p>
         <div class="quick-actions">
-          <div class="qa-card" id="btn-export-csv" style="cursor:pointer;">
-            <span class="qa-icon">📥</span>
-            <div>
+          <button type="button" class="qa-card" id="btn-export-csv">
+            <span class="qa-icon" aria-hidden="true">📥</span>
+            <span>
               <span class="qa-label">I-export ang Donations CSV</span>
-              <div class="qa-sub">Hanggang 1,000 rekord, para sa Excel / DILG</div>
-            </div>
-          </div>
+              <span class="qa-sub">Hanggang 1,000 rekord, para sa Excel / DILG</span>
+            </span>
+          </button>
         </div>
 
       </div>
@@ -96,17 +103,7 @@
 
   <div id="toast-container" aria-live="polite"></div>
 
-  <!-- Sign-out modal -->
-  <div id="signout-modal" class="modal-overlay">
-    <div class="modal-box">
-      <h3 class="modal-title">Mag-sign out?</h3>
-      <p class="text-muted text-sm" style="margin-bottom:var(--sp-5);">Gamitin ang phone OTP para makabalik.</p>
-      <div class="modal-actions">
-        <button class="btn btn-ghost" id="btn-cancel-signout" style="flex:1;">Huwag na</button>
-        <button class="btn btn-danger" id="btn-confirm-signout" style="flex:1;">Sign Out</button>
-      </div>
-    </div>
-  </div>
+
 
   <script type="module" src="../js/modules/lguReports.js"></script>
 </body>

@@ -1,9 +1,9 @@
-import { sendOTP, confirmOTP } from '../core/auth.js';
+import { sendOTP, confirmOTP, normalizePhone, isValidPHPhone } from '../core/auth.js';
 import { validateInvite, signupLguWithProfile } from '../core/callables.js';
 import { auth, db, storage } from '../core/firebaseConfig.js';
 import { collection, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { ref, uploadBytes } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
-import { normalizePhone, showToast, setStepperState, showFieldError, clearFieldError } from './shared.js';
+import { showToast, setStepperState, showFieldError, clearFieldError } from './shared.js';
 
 let inviteToken = new URLSearchParams(location.search).get('token') || '';
 let inviteId = null;
@@ -18,7 +18,8 @@ function goToStep(number) {
   document.querySelectorAll('.step-panel').forEach((panel) => panel.classList.remove('active'));
   $(`step-${number}`)?.classList.add('active');
   setStepperState(number, 6);
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.querySelector('.step-panel.active .step-title, .step-panel.active h2')?.focus({ preventScroll: true });
+  window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
 }
 function error(field, message) { showFieldError(`lgu-inp-${field}`, `lgu-err-${field}`, message); }
 function clear(field) { clearFieldError(`lgu-inp-${field}`, `lgu-err-${field}`); }
@@ -59,9 +60,12 @@ $('lgu-btn-invite-next').addEventListener('click', () => {
 });
 
 $('lgu-btn-send-otp').addEventListener('click', async () => {
+  if ($('lgu-btn-send-otp').disabled) return;
   clear('phone');
   const raw = $('lgu-inp-phone').value.trim();
-  if (!/^\d{10}$/.test(raw.replace(/\D/g, '').slice(-10))) return error('phone', 'Maglagay ng valid na Philippine mobile number.');
+  if (!isValidPHPhone(raw)) return error('phone', 'Maglagay ng valid na Philippine mobile number.');
+  $('lgu-btn-send-otp').disabled = true;
+  $('lgu-btn-send-otp').textContent = 'Ipinapadala ang Code…';
   try {
     pendingConfirmation = await sendOTP(phone(), 'recaptcha-container');
     $('lgu-inp-phone').disabled = true;
@@ -73,10 +77,21 @@ $('lgu-btn-send-otp').addEventListener('click', async () => {
   } catch (failure) {
     console.error('LGU OTP failed', failure);
     error('phone', 'Hindi maipadala ang OTP. Subukan muli.');
+  } finally {
+    $('lgu-btn-send-otp').disabled = false;
+    $('lgu-btn-send-otp').textContent = 'Magpadala ng Code';
   }
 });
 
 const otpInputs = document.querySelectorAll('#lgu-otp-section .otp-input');
+otpInputs.forEach(input => input.addEventListener('paste', event => {
+  const code=event.clipboardData.getData('text').replace(/\D/g,'').slice(0,6);
+  if (!code) return;
+  event.preventDefault();
+  otpInputs.forEach((digit,i)=>{digit.value=code[i]||'';digit.classList.toggle('filled',Boolean(digit.value));});
+  otpInputs[Math.min(code.length,5)].focus();
+  $('lgu-btn-verify-otp').disabled=code.length!==6 || !pendingConfirmation;
+}));
 otpInputs.forEach((input, index) => {
   input.addEventListener('input', (event) => {
     const value = event.target.value.replace(/\D/g, '').slice(-1);
@@ -98,7 +113,7 @@ function startOtpTimer(seconds) {
   $('lgu-btn-resend').disabled = true;
   otpTimer = setInterval(() => {
     remaining -= 1;
-    $('lgu-otp-countdown').textContent = `Mag-expire sa ${remaining}s. `;
+    $('lgu-otp-countdown').textContent = `Puwedeng mag-resend sa ${remaining}s. `;
     if (remaining <= 0) {
       clearOtpTimer();
       $('lgu-otp-countdown').textContent = '';
@@ -152,7 +167,7 @@ $('lgu-btn-4-next').addEventListener('click', async () => {
   if (file.size > 10 * 1024 * 1024) return requestError('Ang file ay dapat 10 MB o mas maliit.');
   if (!['image/jpeg', 'image/png', 'application/pdf'].includes(file.type)) return requestError('PDF, JPG, o PNG lamang ang tinatanggap.');
   const button = $('lgu-btn-4-next');
-  button.disabled = true; button.textContent = 'Ina-upload...';
+  button.disabled = true; button.textContent = 'Ina-upload…';
   try {
     const uid = auth.currentUser?.uid;
     if (!uid) throw new Error('missing_auth');
@@ -175,7 +190,7 @@ $('lgu-btn-submit').addEventListener('click', async () => {
   const checkbox = $('lgu-chk-audit');
   $('lgu-err-audit').classList.remove('visible');
   if (!checkbox.checked) { $('lgu-err-audit').textContent = 'Kailangan ang audit responsibility acknowledgment.'; $('lgu-err-audit').classList.add('visible'); return; }
-  const button = $('lgu-btn-submit'); button.disabled = true; button.textContent = 'Sine-save...';
+  const button = $('lgu-btn-submit'); button.disabled = true; button.textContent = 'Sine-save…';
   try {
     const uid = auth.currentUser?.uid;
     if (!uid || !inviteId || !documentRequestId) throw new Error('incomplete_registration');

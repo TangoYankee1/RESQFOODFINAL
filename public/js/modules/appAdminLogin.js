@@ -33,7 +33,7 @@ $('admin-login-button')?.addEventListener('click', async () => {
     console.error('App Admin login failed', error);
     $('admin-login-error').textContent = error.message === 'not_system_admin'
       ? 'Ang account na ito ay hindi App Admin.'
-      : 'Hindi valid ang local App Admin credentials.';
+      : 'Hindi valid ang administrator credentials.';
     $('admin-login-error').classList.add('visible');
     $('admin-login-button').disabled = false;
   }

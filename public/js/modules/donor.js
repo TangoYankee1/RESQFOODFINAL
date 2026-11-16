@@ -1,3 +1,4 @@
+import { bindSignOutDialog, bindRoleTabs } from '../core/role-ui.js';
 import { bootGuardedPage } from '../core/guard-boot.js';
 import { donationsQuery, watchQuery, cancelDonation, fetchDoc } from '../core/data.js';
 import { refreshDonorExpiry, donorMissionContact } from '../core/callables.js';
@@ -20,15 +21,8 @@ export async function initDonor(current) {
     const profile = await fetchDoc(`users/${session.user.uid}`);
     set('greeting-name', `Kumusta, ${profile?.fullName?.split(' ')[0] || 'Ka-ResQ'}!`);
   } catch (error) { handleError(error, { scope: 'donor.profile' }); }
-  document.querySelectorAll('.donor-tab').forEach(tab => tab.addEventListener('click', () => {
-    document.querySelectorAll('.donor-tab').forEach(t => { t.classList.toggle('active', t === tab); t.setAttribute('aria-selected', String(t === tab)); });
-    ['board','history','stats'].forEach(name => document.getElementById(`panel-${name}`)?.classList.toggle('hidden', name !== tab.dataset.tab));
-  }));
-  const modal = document.getElementById('signout-modal');
-  const signOut = async () => { await signOutCurrentUser(); location.href = '/register/index.html'; };
-  document.getElementById('btn-signout')?.addEventListener('click', () => modal ? modal.style.display = 'flex' : signOut());
-  document.getElementById('btn-cancel-signout')?.addEventListener('click', () => { modal.style.display = 'none'; });
-  document.getElementById('btn-confirm-signout')?.addEventListener('click', signOut);
+  bindRoleTabs([{ tab: 'tab-board', panel: 'panel-board' }, { tab: 'tab-history', panel: 'panel-history' }, { tab: 'tab-stats', panel: 'panel-stats' }]);
+  bindSignOutDialog(signOutCurrentUser);
   const toggle = document.getElementById('history-toggle-btn');
   toggle?.addEventListener('click', () => {
     const open = toggle.getAttribute('aria-expanded') !== 'true';
@@ -36,7 +30,7 @@ export async function initDonor(current) {
     document.getElementById('completed-list')?.classList.toggle('open', open);
   });
   subscribe();
-  await refreshExpiry();
+  void refreshExpiry();
   timer = setInterval(refreshExpiry, 60000);
   window.addEventListener('online', refreshExpiry);
   window.addEventListener('pagehide', () => { unsubscribe?.(); clearInterval(timer); window.removeEventListener('online', refreshExpiry); }, { once: true });
@@ -81,7 +75,7 @@ function subscribe() {
         const el = document.getElementById(id);
         if (el) renderState(el, { kind: 'error', message: handled.message }, { onRetry: subscribe });
       });
-      ['stat-kg','stat-points','stat-verified','stat-cancelled','stat-expired','stat-reliability'].forEach(id => set(id, '—'));
+      ['active-count','stat-kg','stat-points','stat-verified','stat-cancelled','stat-expired','stat-reliability'].forEach(id => set(id, '—'));
     },
   });
 }
@@ -92,15 +86,15 @@ function renderList(id, docs, message) {
   if (!docs.length) { renderState(list, { kind: 'empty', message }); return; }
   list.innerHTML = docs.map(d => {
     const idx = steps.indexOf(d.status);
-    const progress = idx >= 0 ? `<div class="stepper">${steps.map((status,i) =>
-      `<div class="step ${i < idx ? 'done' : i === idx ? 'current' : ''}"><span class="dot">${i < idx ? '✓' : i+1}</span><span class="lbl">${labels[status]}</span></div>`).join('')}</div>` : '';
+    const progress = idx >= 0 ? `<div class="card-stepper" aria-label="Donation progress">${steps.map((status,i) =>
+      `<div class="cs-step ${i < idx ? 'done' : i === idx ? 'active' : ''}"><span class="cs-dot">${i < idx ? '✓' : i+1}</span><span class="cs-label">${labels[status]}</span></div>`).join('')}</div>` : '';
     const actions = d.status === 'pending' || d.status === 'scheduled'
       ? `<a class="btn btn-ghost" href="qr-display.html?donationId=${encodeURIComponent(d.id)}">Tingnan ang Pickup QR/PIN</a>` : '';
     return `<article class="donation-card status-${esc(d.status)}" data-donation="${esc(d.id)}"><div class="donation-card__head"><div>
       <div class="donation-card__food">${esc(d.foodType)} · ${esc(d.quantityKg)} kg</div>
       <div class="donation-card__meta">${esc(formatDateTime(d.createdAt))} · Tatanggap: ${esc(d.orgName || 'Hindi nakatakda')}</div>
       <div class="donation-card__meta">Pickup hanggang ${esc(formatDateTime(d.pickupWindowEnd))}</div></div>
-      <span class="badge">${esc(labels[d.status] || d.status)}</span></div>${progress}${actions}
+      <span class="badge badge-${esc(d.status)}">${esc(labels[d.status] || d.status)}</span></div>${progress}${actions}
       ${d.status === 'pending' ? `<button class="btn btn-ghost" data-cancel="${esc(d.id)}">Kanselahin</button>` : ''}</article>`;
   }).join('');
   list.querySelectorAll('.status-scheduled,.status-pickedUp,.status-enRoute,.status-delivered').forEach(card => {

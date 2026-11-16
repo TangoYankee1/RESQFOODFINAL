@@ -44,7 +44,10 @@ const { requireActiveAccount, isReceivingOrgMember } = require('./lib/access');
 function callable(handler) {
   const onboarding = ['signupWithProfileHandler', 'signupVolunteerWithProfileHandler',
     'signupOrgAdminWithProfileHandler', 'signupLguWithProfileHandler', 'consumeInviteHandler', 'recordConsentHandler'];
-  return functions.https.onCall(async (data, context) => {
+  const needsQrSecret=['issueCredentialHandler','verifyQrHandler','previewHandoverHandler','confirmHandoverHandler','verifyPinHandler'].includes(handler.name);
+  const runtime=needsQrSecret && !process.env.FUNCTIONS_EMULATOR && functions.runWith
+    ? functions.runWith({secrets:['QR_HMAC_SECRET']}) : functions;
+  return runtime.https.onCall(async (data, context) => {
     if (!['validateInviteHandler', 'recordOtpSendHandler'].includes(handler.name)) {
       if (onboarding.includes(handler.name)) {
         if (!context?.auth) throw new functions.https.HttpsError('unauthenticated', 'Sign in first');
@@ -438,3 +441,6 @@ async function setUserStatusHandler(data, context) {
 }
 exports.setUserStatusHandler = setUserStatusHandler;
 exports.setUserStatus = callable(setUserStatusHandler);
+
+// Public directory and phone-verified resident assistance requests.
+require('./lib/communityRequests')({ exports, functions, admin, db, requireActiveAccount });

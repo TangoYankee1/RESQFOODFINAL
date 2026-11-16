@@ -1,0 +1,16 @@
+.select-combo-native { display:none!important; }
+.select-combo { position:relative; width:100%; font:inherit; }
+.select-combo .select-combo-input { display:block; box-sizing:border-box; width:100%; min-height:52px; padding:12px 48px 12px 16px; border:1px solid #ccd9d1; border-radius:14px; background:#f5f7f5; color:#183c32; font:inherit; cursor:text; }
+.select-combo-input:focus { outline:3px solid #b6d8c9; border-color:#005641; }
+.select-combo-input[aria-invalid="true"] { border-color:#ba1a1a; }
+.select-combo .select-combo-toggle { position:absolute; top:4px; right:4px; width:44px; height:44px; min-height:0; padding:0; margin:0; border:0; background:transparent; color:#005641; font-size:24px; cursor:pointer; }
+.select-combo-panel { position:absolute; top:calc(100% + 6px); left:0; right:0; z-index:100; background:white; border:1px solid #ccd9d1; border-radius:14px; box-shadow:0 12px 30px #183c3220; overflow:hidden; }
+.select-combo-panel[hidden] { display:none!important; }
+.select-combo-count { padding:10px 14px; font-size:.78rem; color:#53645e; background:#f5f7f5; }
+.select-combo-list { max-height:min(320px,45vh); overflow-y:auto; overscroll-behavior:contain; }
+.select-combo-option { padding:12px 16px; min-height:44px; box-sizing:border-box; cursor:pointer; color:#183c32; font-size:1rem; }
+.select-combo-option:hover,.select-combo-option.is-active { background:#edf5ee; }
+.select-combo-option[aria-selected="true"] { color:#005641; font-weight:700; background:#e3f0e8; }
+.select-combo-option[aria-disabled="true"] { opacity:.5; cursor:not-allowed; }
+.select-combo-empty { padding:16px; color:#53645e; }
+.select-combo-input:disabled { opacity:.6; cursor:wait; }

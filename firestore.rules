@@ -39,6 +39,10 @@ service cloud.firestore {
       return resource.data;
     }
 
+    // Resident assistance is accessible only through scoped callable functions.
+    match /communityRequests/{requestId} { allow read, write: if false; }
+    match /communityRequestLimits/{uid} { allow read, write: if false; }
+
     // users collection — role is server-set only (assignRole callable +
     // signup* callables set custom claims + profile role; clients can never
     // write `role`). Reads scoped: self + admins. Coordination reads for

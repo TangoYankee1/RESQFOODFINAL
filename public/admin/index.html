@@ -8,13 +8,20 @@
   <link rel="stylesheet" href="../css/admin.css" />
   <link rel="stylesheet" href="/vendor/fonts/fonts.css" />
   <script src="/vendor/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="../css/dashboard.css" />
+  <script src="../js/core/dashboard-boot.js"></script>
+  <link rel="stylesheet" href="/css/brand.css" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/resqfood-mark.svg" />
+  <link rel="stylesheet" href="/css/select-enhancer.css" />
+  <script src="/js/core/select-enhancer.js" defer></script>
+  <link rel="stylesheet" href="/css/workspace.css?v=1" />
 </head>
-<body>
+<body class="dashboard-page">
 
   <header class="admin-topbar">
-    <span class="brand">🍱 RESQFOOD</span>
+    <a class="resqfood-brand" href="/" aria-label="ResQFood home"><img class="resqfood-logo" src="/assets/resqfood-logo.png" alt="RESQFOOD" width="266" height="84" decoding="async" /></a>
     <span class="topbar-barangay">Project-wide</span>
-    <span class="admin-name" id="admin-name">Maria Santos</span>
+    <span class="admin-name" id="admin-name">Administrator</span>
 
     <button class="signout-btn" id="btn-signout">Sign out</button>
   </header>
@@ -59,25 +66,25 @@
         <div class="metrics-grid" id="metrics-grid">
           <div class="metric-card">
             <div class="m-icon">⚖️</div>
-            <span class="m-val" id="stat-kg">0</span>
+            <span class="m-val" id="stat-kg">—</span>
             <div class="m-lbl">kg na na-rescue</div>
             <div class="m-delta">Ayon sa napiling panahon</div>
           </div>
           <div class="metric-card accent">
             <div class="m-icon">🛵</div>
-            <span class="m-val" id="stat-missions">0</span>
+            <span class="m-val" id="stat-missions">—</span>
             <div class="m-lbl">natapos na missions</div>
             <div class="m-delta">Ayon sa napiling panahon</div>
           </div>
           <div class="metric-card success">
             <div class="m-icon">🏢</div>
-            <span class="m-val" id="stat-orgs">0</span>
+            <span class="m-val" id="stat-orgs">—</span>
             <div class="m-lbl">organisasyong nakinabang</div>
             <div class="m-delta">May verified deliveries sa napiling panahon</div>
           </div>
           <div class="metric-card warning">
             <div class="m-icon">⚡</div>
-            <span class="m-val" id="stat-active">0</span>
+            <span class="m-val" id="stat-active">—</span>
             <div class="m-lbl">active missions ngayon</div>
             <div class="m-delta">Real-time</div>
           </div>
@@ -116,13 +123,13 @@
               <div class="qa-sub">Read-only na listahan</div>
             </div>
           </a>
-          <div class="qa-card" id="btn-export-csv" style="cursor:pointer;">
+          <button type="button" class="qa-card" id="btn-export-csv" style="cursor:pointer;">
             <span class="qa-icon">📥</span>
-            <div>
+            <span>
               <span class="qa-label">I-export ang CSV</span>
-              <div class="qa-sub">Para sa Excel / DILG</div>
-            </div>
-          </div>
+              <span class="qa-sub">Para sa Excel / DILG</span>
+            </span>
+          </button>
           <a class="qa-card" href="audit.html">
             <span class="qa-icon">📋</span>
             <div>
@@ -166,17 +173,7 @@
 
   <div id="toast-container" aria-live="polite"></div>
 
-  <!-- Sign-out modal -->
-  <div id="signout-modal" class="modal-overlay">
-    <div class="modal-box">
-      <h3 class="modal-title">Mag-sign out?</h3>
-      <p class="text-muted text-sm" style="margin-bottom:var(--sp-5);">Gamitin ang phone OTP para makabalik.</p>
-      <div class="modal-actions">
-        <button class="btn btn-ghost" id="btn-cancel-signout" style="flex:1;">Huwag na</button>
-        <button class="btn btn-danger" id="btn-confirm-signout" style="flex:1;">Sign Out</button>
-      </div>
-    </div>
-  </div>
+
 
   <script type="module" src="../js/modules/systemAdmin.js"></script>
   <script type="module" src="../js/modules/verificationReview.js?v=review-v1"></script>

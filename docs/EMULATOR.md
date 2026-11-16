@@ -1,3 +1,7 @@
+## Thesis organizations and resident requests
+
+With the emulators running, execute `npm run seed:demo-orgs`. This creates three DEMO organizations and their phone-authenticated coordinators locally. Repeat after an emulator reset. OTP codes are in the Auth emulator terminal; use separate browser sessions for resident and coordinator. See [accounts](../scripts/DEMO-ORGANIZATIONS.md) and [request walkthrough](COMMUNITY-REQUESTS.md).
+
 # Local capstone setup
 
 Run commands from RESQFOODFINAL in PowerShell. Node, Java 21, and Firebase CLI

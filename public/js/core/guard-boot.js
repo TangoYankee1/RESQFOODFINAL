@@ -1,36 +1,26 @@
-// public/js/core/guard-boot.js
-// Load in <head> of EVERY protected page (donor/volunteer/org-admin/admin):
-//   <script type="module">
-//     import { bootGuardedPage } from '../js/core/guard-boot.js';
-//     bootGuardedPage({ roles: ['donor'] }, init);
-//   </script>
-// Blocks render until auth+role resolve (no flash of unauthorized content).
-// Unauthenticated direct URLs redirect to login with ?next= preserved.
+import { installWorkspace } from './workspace-shell.js';
 import { requirePage } from './router.js';
-import { t } from './i18n.js';
-
-document.documentElement.hidden = true;
-
-function showGuardError(message) {
-  document.documentElement.hidden = false;
-  document.body.innerHTML =
-    '<main style="max-width:480px;margin:4rem auto;padding:2rem;text-align:center;font-family:system-ui">' +
-    '<h1 style="font-size:1.25rem;margin-bottom:.5rem">ResQFood</h1>' +
-    '<p>' + message + '</p>' +
-    '<p><a href="/register/index.html">Mag-sign in →</a></p></main>';
-}
-
+import { installDashboardTools } from './dashboard-tools.js';
 export async function bootGuardedPage(opts, init) {
+  let timer;
   try {
-    const session = await requirePage(opts);
-    if (typeof init === 'function') await init(session);
-    document.documentElement.dataset.pageReady = '1';
-    document.documentElement.hidden = false;
+    if(location.pathname.startsWith('/app-admin/')) opts={...opts,roles:['systemAdmin']};
+    const session=await Promise.race([requirePage(opts),new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('session-timeout')),18000);})]);
+    clearTimeout(timer);
+    await Promise.race([Promise.resolve().then(()=>typeof init==='function'?init(session):null),new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('initialization-timeout')),18000);})]);
+    clearTimeout(timer);
+    installWorkspace(session);
+    document.documentElement.hidden=false;
+    document.documentElement.dataset.pageReady='1';
+    window.dashboardBoot?.ready();
+    installDashboardTools(session);
     return session;
-  } catch (err) {
-    if (err && err.code === 'guard-redirect') return null; // redirect issued
-    // Fail safely: honest error state, never a blank screen or mock data.
-    showGuardError(t('common.error') + ' (' + ((err && err.code) || 'guard') + ')');
+  } catch(error) {
+    clearTimeout(timer);
+    if(error?.code==='guard-redirect')return null;
+    console.error('Dashboard initialization failed',error);
+    document.documentElement.hidden=false;
+    window.dashboardBoot?.fail('Hindi ma-load ang dashboard. Suriin ang koneksyon, subukan muli, o mag-sign in.');
     return null;
   }
 }

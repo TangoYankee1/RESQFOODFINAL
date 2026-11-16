@@ -14,6 +14,8 @@ export const ROUTES = {
   '/donor/': { roles: ['donor'] },
   '/volunteer/': { roles: ['volunteer'] },
   '/org-admin/': { roles: ['orgAdmin'] },
+  '/lgu-admin/': { roles: ['lguAdmin'] },
+  '/app-admin/': { roles: ['systemAdmin'] },
   '/admin/': { roles: ['lguAdmin', 'systemAdmin'] },
 };
 
@@ -59,8 +61,8 @@ export function roleHomeFor(role) {
     case 'donor': return '/donor/index.html';
     case 'volunteer': return '/volunteer/index.html';
     case 'orgAdmin': return '/org-admin/index.html';
-    case 'lguAdmin':
-    case 'systemAdmin': return '/admin/index.html';
+    case 'lguAdmin': return '/lgu-admin/index.html';
+    case 'systemAdmin': return '/app-admin/index.html';
     default: return '/register/index.html';
   }
 }

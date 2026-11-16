@@ -1,9 +1,9 @@
-import { sendOTP, confirmOTP } from '../core/auth.js';
+import { sendOTP, confirmOTP, normalizePhone, isValidPHPhone } from '../core/auth.js';
 import { signupOrgAdminWithProfile } from '../core/callables.js';
 import { auth, db, storage } from '../core/firebaseConfig.js';
 import { collection, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { ref, uploadBytes } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
-import { normalizePhone, isValidPHPhone, showToast, setStepperState, showFieldError, clearFieldError } from './shared.js';
+import { showToast, setStepperState, showFieldError, clearFieldError } from './shared.js';
 
 let pendingConfirmation = null;
 let authorizationRequestId = null;
@@ -17,7 +17,8 @@ function goToStep(number) {
   document.querySelectorAll('.step-panel').forEach((panel) => panel.classList.remove('active'));
   $(`step-${number}`)?.classList.add('active');
   setStepperState(number, 7);
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.querySelector('.step-panel.active .step-title, .step-panel.active h2')?.focus({ preventScroll: true });
+  window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
 }
 
 const fieldId = field => $(`o-inp-${field}`) ? `o-inp-${field}` : `o-chk-${field}`;
@@ -28,7 +29,7 @@ $('o-btn-send-otp').addEventListener('click', async () => {
   clear('phone');
   if (otpBusy) return;
   if (!isValidPHPhone(phone())) return error('phone', 'Maglagay ng valid na Philippine mobile number.');
-  otpBusy = true; $('o-btn-send-otp').disabled = true;
+  otpBusy = true; $('o-btn-send-otp').disabled = true; $('o-btn-send-otp').textContent = 'Ipinapadala ang Code…';
   try {
     pendingConfirmation = await sendOTP(phone(), 'recaptcha-container');
     $('o-inp-phone').disabled = true;
@@ -42,7 +43,7 @@ $('o-btn-send-otp').addEventListener('click', async () => {
     console.error('Org OTP failed', failure);
     error('phone', 'Hindi maipadala ang OTP. Subukan muli.');
   } finally {
-    otpBusy = false; $('o-btn-send-otp').disabled = false;
+    otpBusy = false; $('o-btn-send-otp').disabled = false; $('o-btn-send-otp').textContent = 'Magpadala ng Code';
   }
 });
 
@@ -169,7 +170,7 @@ $('o-btn-4-next').addEventListener('click', async () => {
 
   const button = $('o-btn-4-next');
   button.disabled = true;
-  button.textContent = 'Ina-upload...';
+  button.textContent = 'Ina-upload…';
   try {
     const uid = auth.currentUser?.uid;
     if (!uid) throw new Error('missing_auth');
@@ -235,7 +236,7 @@ $('o-btn-submit').addEventListener('click', async () => {
 
   const button = $('o-btn-submit');
   button.disabled = true;
-  button.textContent = 'Sine-save...';
+  button.textContent = 'Sine-save…';
   try {
     await signupOrgAdminWithProfile({
       organizationName: $('o-inp-name').value.trim(),

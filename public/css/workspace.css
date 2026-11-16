@@ -1,0 +1,68 @@
+/* Shared role workspace. Existing role modules retain ownership of all actions. */
+.workspace-page { --workspace-width:1240px; background:#f4f6f5; color:#183c32; padding:0 32px 48px 272px; }
+.workspace-sidebar { position:fixed; inset:0 auto 0 0; width:240px; z-index:120; display:flex; flex-direction:column; padding:20px 16px; background:#fff; border-right:1px solid #e2e9e5; overflow-y:auto; }
+.workspace-sidebar .resqfood-logo { width:200px; }
+.workspace-role { margin:16px 12px 22px; color:#6a7971; font-size:.75rem; letter-spacing:.06em; text-transform:uppercase; }
+.workspace-sidebar nav { display:grid; gap:6px; }
+.workspace-sidebar nav a { display:flex; gap:12px; align-items:center; min-height:48px; padding:10px 12px; text-decoration:none; color:#4b5d53; border-radius:10px; font-size:.9rem; font-weight:600; }
+.workspace-sidebar nav a:hover { background:#f3f7f4; }
+.workspace-sidebar nav a[aria-current] { background:#e9f3ed; color:#005641; }
+.workspace-sidebar svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
+.workspace-account { display:flex; align-items:center; gap:10px; margin-top:auto; padding:32px 8px 16px; }
+.workspace-account strong { display:block; font-size:.85rem; overflow-wrap:anywhere; }
+.workspace-account small { display:block; font-size:.75rem; color:#6a7971; }
+.workspace-avatar { flex-shrink:0; width:36px; height:36px; display:grid; place-items:center; border-radius:50%; background:#e9f3ed; color:#005641; font-size:.8rem; font-weight:700; }
+.workspace-signout { border:1px solid #dce5df; border-radius:10px; padding:10px 12px; background:white; color:#45594d; text-align:left; cursor:pointer; min-height:44px; }
+.workspace-header { display:flex; align-items:center; gap:24px; max-width:var(--workspace-width); margin:0 auto; padding:34px 0 28px; }
+.workspace-heading { flex:1; min-width:0; }
+.workspace-heading > p { font-size:.75rem; letter-spacing:.08em; text-transform:uppercase; color:#6a7971; margin:0 0 6px; }
+.workspace-heading h1 { font-size:clamp(1.5rem,3vw,2.15rem); line-height:1.2; color:#005641; margin:0 0 8px; font-weight:750; }
+.workspace-location { font-size:.85rem; color:#6a7971; }
+.workspace-menu { display:none; }
+.workspace-page :is(.donor-topbar,.vol-topbar,.org-topbar,.admin-topbar,.admin-sidenav,.bottom-nav,.vol-greeting,.org-greeting) { display:none!important; }
+.workspace-page :is(.donor-shell,.admin-layout,.admin-main,.admin-main-inner,.donor-body,.vol-body,.org-body) { width:100%; max-width:var(--workspace-width); margin-left:auto; margin-right:auto; padding:0; min-height:0; display:block; }
+.workspace-page :is(.donor-body,.vol-body,.org-body) { margin-top:24px; }
+.workspace-page :is(.admin-main,.admin-layout) { margin-top:0; }
+.workspace-page .hidden,.workspace-page [hidden] { display:none!important; }
+.workspace-page .admin-main-inner > :is(.page-title,.page-subtitle) { display:none; }
+.workspace-page :is(.stats-strip,.metrics-grid,.workspace-metrics) { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:18px; max-width:var(--workspace-width); margin:0 auto 26px; padding:0; background:transparent; border:0; box-shadow:none; }
+.workspace-page :is(.stat-card,.metric-card,.workspace-metric) { padding:22px; background:#fff; border:1px solid #e2e9e5; border-radius:14px; box-shadow:none; text-align:left; }
+.workspace-metric span { display:block; font-size:.85rem; color:#617368; margin-bottom:12px; }
+.workspace-metric strong,.workspace-page :is(.stat-val,.m-val) { font-size:2rem; color:#005641; line-height:1.2; font-variant-numeric:tabular-nums; }
+.workspace-page :is(.stat-lbl,.m-lbl) { font-size:.8rem; color:#617368; }
+.workspace-page :is(.m-icon,.qa-icon,.tab-icon) { display:none; }
+.workspace-page :is(.donor-tabs,.vol-tabs,.org-tabs) { position:static; max-width:var(--workspace-width); margin:0 auto 20px; background:transparent; display:flex; justify-content:flex-start; gap:8px; padding:0; box-shadow:none; border-bottom:1px solid #dce5df; }
+.workspace-page :is(.donor-tab,.vol-tab,.org-tab) { flex:0 1 auto; width:auto; min-height:46px; padding:12px 18px; font-size:.9rem; background:transparent; color:#617368; border:0; border-bottom:3px solid transparent; }
+.workspace-page :is(.donor-tab,.vol-tab,.org-tab).active { color:#005641; border-bottom-color:#005641; }
+.workspace-page :is(.donation-card,.mission-card,.delivery-card,.verified-card,.community-card,.card,.chart-card,.data-table-wrap) { border:1px solid #e2e9e5; border-radius:14px; box-shadow:none; background:white; }
+.workspace-page :is(.donation-card,.mission-card,.delivery-card,.verified-card) { padding:22px; margin-bottom:14px; }
+.workspace-page .section-header { margin:22px 0 14px; }
+.workspace-page .section-title { font-size:1.05rem; color:#183c32; }
+.workspace-page .dashboard-tools { margin:0 0 18px; padding:0; border:0; border-radius:0; background:transparent; box-shadow:none; max-width:none; }
+.workspace-page .dashboard-search-label { font-size:.78rem; color:#617368; margin:0; }
+.workspace-page .dashboard-search { max-width:520px; margin-top:6px; gap:6px; }
+.workspace-page .dashboard-search input { min-height:44px; border-radius:10px; background:#fff; font-size:.9rem; }
+.workspace-page .dashboard-filter-note { margin:4px 0; font-size:.75rem; }
+.workspace-page .btn { border-radius:10px; box-shadow:none; font-size:.9rem; }
+.workspace-page .btn-primary { background:#e77e17; color:#fff; border:1px solid #e77e17; }
+.workspace-page .btn-primary:hover { background:#b96110; }
+.workspace-page .data-table th { background:#f7f9f7; color:#617368; font-size:.75rem; }
+.workspace-page .data-table td { padding:16px 12px; font-size:.85rem; }
+.workspace-page .data-table-wrap { overflow-x:auto; }
+.workspace-page #community-inbox { margin-top:28px; scroll-margin-top:20px; }
+.workspace-page .history-section { margin-top:24px; }
+.workspace-page :is(.activation-banner,.orientation-banner,.pending-banner) { border-radius:12px; }
+.workspace-page a:focus-visible,.workspace-page button:focus-visible { outline:3px solid #a8cbbb; outline-offset:3px; }
+.workspace-page:has(.bottom-nav) #toast-container { bottom:24px; }
+@media(max-width:1000px) { .workspace-page { padding-left:232px; padding-right:24px; } .workspace-sidebar { width:208px; } .workspace-sidebar .resqfood-logo { width:176px; } }
+@media(max-width:760px) { .workspace-page { padding:0 16px 32px; } .workspace-sidebar { display:none; width:min(280px,82vw); top:76px; box-shadow:12px 0 24px #183c3220; } .workspace-menu-open .workspace-sidebar { display:flex; } .workspace-menu { display:flex; gap:6px; align-items:center; padding:8px; min-height:44px; background:white; border:1px solid #dce5df; border-radius:8px; color:#005641; } .workspace-header { flex-wrap:wrap; gap:14px; padding:20px 0; } .workspace-primary { width:100%; } .workspace-primary .btn { width:100%; } .workspace-page :is(.stats-strip,.metrics-grid,.workspace-metrics) { grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; } .workspace-page :is(.stat-card,.metric-card,.workspace-metric) { padding:16px; } .workspace-page :is(.donation-card,.mission-card,.delivery-card) { padding:16px; } }
+
+.workspace-header { width:100%; box-sizing:border-box; }
+.workspace-page .quick-actions a.qa-card { display:none; }
+.workspace-page .quick-actions { margin:20px 0; }
+.workspace-page .donor-body > .resqfood-brand,.workspace-page .donor-body > h1 { display:none; }
+.workspace-page :is(.mission-header,.verify-header,.scanner-header,.qr-header) { position:static; background:#fff; color:#183c32; border:1px solid #e2e9e5; border-radius:12px; padding:14px 20px; box-shadow:none; max-width:900px; margin:0 auto 20px; }
+.workspace-page :is(.mission-body,.verify-body,.scanner-body) { width:100%; max-width:900px; margin:0 auto; padding:0; }
+.workspace-page :is(.scanner-header,.verify-header,.mission-header,.qr-header) a { color:#005641; }
+
+.workspace-page :is(.stats-strip,.metrics-grid,.workspace-metrics) { width:100%; min-width:0; box-sizing:border-box; }

@@ -93,3 +93,7 @@ fallback, invite issuance, donation filters/CSV and historical audit display/CSV
 Downloads are disabled; the test inspects CSV returned to the browser.
 
 Physical camera scanning and offline recovery still require actual-device checks.
+# Single system-admin account
+
+Only trusted local setup can establish systemAdmin. Ordinary role assignment cannot create another or demote it; status controls cannot suspend it. See [SYSTEM-ADMIN.md](SYSTEM-ADMIN.md) for creation, login, recovery and snapshot restoration. LGU admins are a separate role.
+

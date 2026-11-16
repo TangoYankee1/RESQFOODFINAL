@@ -82,7 +82,7 @@ body {
 .nav-link .nav-icon { font-size: 1rem; width: 1.2rem; text-align: center; }
 
 /* ── Main content ────────────────────────────────────────────────────────── */
-.admin-main { flex: 1; padding: var(--sp-6); overflow-y: auto; }
+.admin-main { min-width: 0; flex: 1; padding: var(--sp-6); overflow-y: auto; }
 .admin-main-inner { max-width: 1060px; }
 
 /* ── Page title ──────────────────────────────────────────────────────────── */
@@ -206,11 +206,13 @@ body {
   border: 1.5px solid transparent;
   transition: border-color .15s, box-shadow .15s;
   cursor: pointer;
+  font: inherit;
+  text-align: left;
 }
 .qa-card:hover { border-color: var(--color-primary); box-shadow: var(--shadow-md); }
 .qa-card .qa-icon  { font-size: 1.5rem; }
 .qa-card .qa-label { font-weight: 700; font-size: .88rem; display: block; }
-.qa-card .qa-sub   { font-size: .75rem; color: var(--color-muted); }
+.qa-card .qa-sub   { display: block; font-size: .75rem; color: var(--color-muted); }
 
 /* ── Data table ──────────────────────────────────────────────────────────── */
 .data-table-wrap {
@@ -336,7 +338,7 @@ body {
 .modal-box {
   background: var(--color-surface-lowest);
   border-radius: var(--radius-lg);
-  padding: var(--sp-7);
+  padding: var(--sp-6);
   max-width: 440px;
   width: 100%;
   box-shadow: 0 20px 60px rgba(0,0,0,.2);
@@ -353,7 +355,15 @@ body {
 
 /* ── Responsive ──────────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
-  .admin-sidenav { display: none; }
+  .admin-layout { flex-direction: column; }
+  .admin-sidenav {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: var(--sp-2);
+    border-right: none;
+  }
+  .admin-sidenav .nav-link { flex: 1 1 auto; justify-content: center; }
   .admin-main    { padding: var(--sp-4); }
   .metrics-grid  { grid-template-columns: repeat(2, 1fr); }
   .charts-grid   { grid-template-columns: 1fr; }

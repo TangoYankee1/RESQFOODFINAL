@@ -4,11 +4,19 @@
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Organization Sign In | ResQFood</title>
   <link rel="stylesheet" href="../css/base.css"><link rel="stylesheet" href="../css/auth.css"><link rel="stylesheet" href="/vendor/fonts/fonts.css">
+  <link rel="stylesheet" href="/css/brand.css" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/resqfood-mark.svg" />
+  <link rel="stylesheet" href="/css/auth-shell.css?v=1" />
+  <script src="/js/core/auth-header.js?v=1" defer></script>
+  <link rel="stylesheet" href="/css/select-enhancer.css" />
+  <script src="/js/core/select-enhancer.js" defer></script>
 </head>
-<body>
+<body class="auth-page">
   <div id="offline-banner">📶 Offline mode. Subukan muli kapag may koneksyon.</div>
-  <div class="reg-hero"><span class="brand-mark">🍱 RESQFOOD</span><h1>Organization Sign In</h1><p>Mag-sign in gamitin ang iyong na-rehistrong mobile number.</p><p><a href="../register/org-admin.html" style="color:inherit;text-decoration:underline;">Bagong organization? Magrehistro</a></p></div>
-  <main class="reg-container" id="reg-main" style="max-width:480px; margin:0 auto;">
+  <header class="auth-site-header"><resqfood-auth-header action-href="../register/org-admin.html" action-label="Wala pang account? Magrehistro"><div class="auth-header-inner"><a class="resqfood-brand" href="/" aria-label="ResQFood home"><img class="resqfood-logo" src="/assets/resqfood-logo.png" alt="RESQFOOD" width="266" height="84" decoding="async" /></a><nav aria-label="Account"><a href="../register/org-admin.html">Wala pang account? Magrehistro</a></nav></div></resqfood-auth-header></header>
+  <section class="auth-intro" aria-labelledby="auth-title"><h1 id="auth-title">Organization Sign In</h1><p>Mag-sign in gamitin ang iyong na-rehistrong mobile number.</p></section>
+  <nav class="auth-back" aria-label="Pagpili ng role"><a href="/register/index.html">← Pumili ng ibang role</a></nav>
+  <main class="reg-container" id="reg-main" style="max-width:520px; margin:0 auto;">
     <form id="org-login-form">
       <div class="step-panel active" id="step-1">
         <div class="step-title">Ano ang iyong numero?</div>
@@ -39,23 +47,6 @@
     </form>
   </main>
   <div id="toast-container" aria-live="polite"></div>
-  <script type="module" src="../js/modules/orgLogin.js"></script>
-  <script>
-    const inputs = document.querySelectorAll('.otp-input');
-    const code = document.getElementById('login-code');
-    const confirm = document.getElementById('login-confirm');
-    inputs.forEach((el, idx) => {
-      el.addEventListener('input', (e) => {
-        if (e.target.value && idx < inputs.length - 1) inputs[idx + 1].focus();
-        let v = '';
-        inputs.forEach((i) => { v += i.value; });
-        code.value = v;
-        confirm.disabled = v.length !== 6;
-      });
-      el.addEventListener('keydown', (e) => {
-        if (e.key === 'Backspace' && !e.target.value && idx > 0) inputs[idx - 1].focus();
-      });
-    });
-  </script>
+  <script type="module" src="../js/modules/orgLogin.js?v=login-buttons-2"></script>
 </body>
 </html>

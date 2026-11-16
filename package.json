@@ -18,11 +18,19 @@
     "build:css": "tailwindcss -c tailwind.config.cjs -i build-src/tailwind.input.css -o public/css/tailwind.css --minify",
     "watch:css": "tailwindcss -c tailwind.config.cjs -i build-src/tailwind.input.css -o public/css/tailwind.css --watch",
     "seed:lgu-invite": "FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 node scripts/seed-lgu-invite.js",
-    "seed:app-admin": "FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 node scripts/seed-app-admin.js",
+    "seed:app-admin": "node scripts/seed-app-admin.js",
+    "reset:app-admin": "node scripts/seed-app-admin.js --reset-password",
+    "test:single-admin": "node tests/single-admin-test.cjs",
     "smoke:local": "node tests/invite-test.js && node tests/assignRole-test.js && node tests/qr-test.js && node tests/rules/signup-rules-test.js && node tests/volunteer-signup-test.js",
     "test": "node tests/invite-test.js && node tests/assignRole-test.js && node tests/qr-test.js && node tests/rules/signup-rules-test.js && node tests/volunteer-signup-test.js",
     "test:lgu": "node tests/lgu-admin-test.js",
-    "test:browser:lgu": "node tests/onboarding-browser-test.cjs --lgu-only"
+    "test:browser:lgu": "node tests/onboarding-browser-test.cjs --lgu-only",
+    "seed:demo-orgs": "node scripts/seed-demo-orgs.cjs",
+    "sync:sitios": "node scripts/sync-lahug-sitios.cjs",
+    "preemulators": "npm run sync:sitios",
+    "test:community": "node tests/community-regression.cjs",
+    "test:workspace": "node tests/workspace-browser-regression.cjs",
+    "test:migration": "node --test tests/migration-transport-test.mjs"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^5.0.2",

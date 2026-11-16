@@ -8,18 +8,25 @@
   <link rel="stylesheet" href="../css/auth.css" />
   <link rel="stylesheet" href="../css/volunteer-register.css" />
   <link rel="stylesheet" href="/vendor/fonts/fonts.css" />
+  <link rel="stylesheet" href="../css/registration-common.css" />
+  <link rel="stylesheet" href="/css/brand.css" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/resqfood-mark.svg" />
+  <link rel="stylesheet" href="/css/auth-shell.css?v=1" />
+  <script src="/js/core/auth-header.js?v=1" defer></script>
+  <link rel="stylesheet" href="/css/select-enhancer.css" />
+  <script src="/js/core/select-enhancer.js" defer></script>
 </head>
-<body>
+<body class="registration-page auth-page">
   <div id="offline-banner">📶 Offline mode. Subukan muli kapag may koneksyon.</div>
 
-  <div class="reg-hero">
-    <span class="brand-mark">🍱 RESQFOOD</span>
-    <h1>Mag-register bilang Volunteer</h1>
-    <p>Maging bahagi ng barangay rescue network.</p>
-    <p><a href="../volunteer/login.html" style="color:inherit;text-decoration:underline;">May volunteer account na? Mag-sign in</a></p>
-  </div>
+  <header class="auth-site-header"><resqfood-auth-header action-href="../volunteer/login.html" action-label="May account na? Mag-sign in"><div class="auth-header-inner"><a class="resqfood-brand" href="/" aria-label="ResQFood home"><img class="resqfood-logo" src="/assets/resqfood-logo.png" alt="RESQFOOD" width="266" height="84" decoding="async" /></a><nav aria-label="Account"><a href="../volunteer/login.html">May account na? Mag-sign in</a></nav></div></resqfood-auth-header></header>
+  <section class="auth-intro" aria-labelledby="auth-title"><h1 id="auth-title">Mag-register bilang Volunteer</h1><p>Maging bahagi ng barangay rescue network.</p></section>
 
-  <div style="background:#fff; padding: 1rem 1.25rem 0; max-width:480px; margin:0 auto;">
+  
+
+  <nav class="auth-back" aria-label="Pagpili ng role"><a href="/register/index.html">← Pumili ng ibang role</a></nav>
+  <main class="reg-container" id="reg-main" style="max-width:520px; margin:0 auto;">
+<div class="auth-progress">
     <div class="stepper" id="reg-stepper" aria-label="Mga hakbang sa registration">
       <div class="step-item active" id="si-1">
         <div class="step-dot">1</div>
@@ -31,7 +38,7 @@
       </div>
       <div class="step-item" id="si-3">
         <div class="step-dot">3</div>
-        <div class="step-label">Trust layer</div>
+        <div class="step-label">Pagpapatunay</div>
       </div>
       <div class="step-item" id="si-4">
         <div class="step-dot">4</div>
@@ -47,10 +54,8 @@
       </div>
     </div>
   </div>
-
-  <main class="reg-container" id="reg-main" style="max-width:480px; margin:0 auto;">
     <div class="step-panel active" id="step-1">
-      <div class="step-title">Ano ang iyong numero?</div>
+      <h2 class="step-title" tabindex="-1">Ano ang iyong numero?</h2>
       <div class="step-desc">
         Magpapadala kami ng 6-digit na code para i-verify ang iyong numero.
         Hindi na kakailanganin ng password.
@@ -62,12 +67,12 @@
           <span class="phone-prefix">🇵🇭 +63</span>
           <input type="tel" id="v-inp-phone" inputmode="numeric"
                  placeholder="9171234567" maxlength="10"
-                 aria-describedby="phone-hint" autocomplete="tel" />
+                 aria-describedby="phone-hint" autocomplete="tel" name="v-inp-phone" />
         </div>
         <div class="form-hint" id="phone-hint">
           Halimbawa: 9171234567 (huwag ilagay ang unang 0)
         </div>
-        <div class="form-error" id="v-err-phone"></div>
+        <div role="alert" class="form-error" id="v-err-phone"></div>
       </div>
 
       <div id="recaptcha-container"></div>
@@ -81,14 +86,14 @@
           Ilagay ang 6-digit code na natanggap mo sa <strong id="v-otp-phone-display"></strong>
         </div>
         <div class="otp-group" id="otp-group" aria-label="OTP input">
-          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" />
-          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" />
-          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" />
-          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" />
-          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" />
-          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" />
+          <input class="otp-input" type="text" inputmode="numeric" maxlength="1"  aria-label="Digit 1 ng 6-digit code" name="otp-1" autocomplete="one-time-code" />
+          <input class="otp-input" type="text" inputmode="numeric" maxlength="1"  aria-label="Digit 2 ng 6-digit code" name="otp-2" autocomplete="off" />
+          <input class="otp-input" type="text" inputmode="numeric" maxlength="1"  aria-label="Digit 3 ng 6-digit code" name="otp-3" autocomplete="off" />
+          <input class="otp-input" type="text" inputmode="numeric" maxlength="1"  aria-label="Digit 4 ng 6-digit code" name="otp-4" autocomplete="off" />
+          <input class="otp-input" type="text" inputmode="numeric" maxlength="1"  aria-label="Digit 5 ng 6-digit code" name="otp-5" autocomplete="off" />
+          <input class="otp-input" type="text" inputmode="numeric" maxlength="1"  aria-label="Digit 6 ng 6-digit code" name="otp-6" autocomplete="off" />
         </div>
-        <div class="form-error" id="v-err-otp"></div>
+        <div role="alert" class="form-error" id="v-err-otp"></div>
         <div class="otp-timer">
           <span id="otp-countdown"></span>
           <button class="resend-btn" id="v-btn-resend" disabled>Magpadala ulit</button>
@@ -100,21 +105,21 @@
     </div>
 
     <div class="step-panel" id="step-2">
-      <div class="step-title">Sino ka at saan ka?</div>
+      <h2 class="step-title" tabindex="-1">Sino ka at saan ka?</h2>
       <div class="step-desc">
         Gagamitin ang impormasyon na ito para ma-assign ka sa mga mission sa iyong barangay.
       </div>
 
       <div class="form-group">
         <label class="form-label" for="v-inp-name">Buong Pangalan</label>
-        <input id="v-inp-name" class="form-input" maxlength="100" autocomplete="name" />
-        <div class="form-error" id="v-err-name"></div>
+        <input id="v-inp-name" class="form-input" maxlength="100" autocomplete="name" name="v-inp-name" />
+        <div role="alert" class="form-error" id="v-err-name"></div>
       </div>
 
       <div class="form-group">
         <label class="form-label" for="v-inp-nickname">Palayaw</label>
-        <input id="v-inp-nickname" class="form-input" maxlength="40" />
-        <div class="form-error" id="v-err-nickname"></div>
+        <input id="v-inp-nickname" class="form-input" maxlength="40" name="v-inp-nickname" />
+        <div role="alert" class="form-error" id="v-err-nickname"></div>
       </div>
 
       <div class="form-group">
@@ -130,7 +135,7 @@
           <option>Pardo</option>
           <option>Tisa</option>
         </select>
-        <div class="form-error" id="v-err-barangay"></div>
+        <div role="alert" class="form-error" id="v-err-barangay"></div>
       </div>
 
       <div class="form-group">
@@ -139,8 +144,8 @@
           <button class="toggle-btn active" type="button" data-value="regular">Regular</button>
           <button class="toggle-btn" type="button" data-value="backup">Paminsan-minsan</button>
         </div>
-        <input type="hidden" id="v-inp-commitment" value="regular" />
-        <div class="form-error" id="v-err-commitment"></div>
+        <input type="hidden" id="v-inp-commitment" value="regular" name="v-inp-commitment" />
+        <div role="alert" class="form-error" id="v-err-commitment"></div>
       </div>
 
       <div class="step-nav">
@@ -150,7 +155,7 @@
     </div>
 
     <div class="step-panel" id="step-3">
-      <div class="step-title">Buuin ang tiwala</div>
+      <h2 class="step-title" tabindex="-1">Buuin ang tiwala</h2>
       <div class="step-desc">Mag-upload ng valid ID para ma-review ng LGU. Optional ang referral code; kung wala, manual review ang susunod na hakbang.</div>
 
       <div class="form-group">
@@ -159,15 +164,15 @@
           <span class="upload-icon">↑</span>
           <span><strong id="v-id-file-name">Pumili ng file</strong><small>JPG, PNG, o PDF · hanggang 10 MB</small></span>
         </label>
-        <input id="v-inp-id" class="file-input" type="file" accept="image/jpeg,image/png,application/pdf" />
-        <div class="form-error" id="v-err-id"></div>
+        <input id="v-inp-id" class="file-input" type="file" accept="image/jpeg,image/png,application/pdf" name="v-inp-id" />
+        <div role="alert" class="form-error" id="v-err-id"></div>
       </div>
 
       <div class="form-group">
         <label class="form-label" for="v-inp-referral">Referral code <span class="optional">Opsyonal</span></label>
-        <input id="v-inp-referral" class="form-input" maxlength="40" placeholder="Halimbawa: LGU-CEBU-2026" autocomplete="off" />
+        <input id="v-inp-referral" class="form-input" maxlength="40" placeholder="Halimbawa: LGU-CEBU-2026" autocomplete="off" name="v-inp-referral" />
         <div class="form-hint">May referral? Mas mabilis ang review. Walang referral? Ayos lang, manual LGU review.</div>
-        <div class="form-error" id="v-err-referral"></div>
+        <div role="alert" class="form-error" id="v-err-referral"></div>
       </div>
 
       <div class="step-nav">
@@ -178,8 +183,8 @@
 
     <div class="step-panel" id="step-4">
       <div class="availability-intro">
-        <span class="availability-kicker">VOLUNTEER PROFILE 2.0</span>
-        <div class="step-title">Kailan ka available?</div>
+        <span class="availability-kicker">IYONG AVAILABILITY</span>
+        <h2 class="step-title" tabindex="-1">Kailan ka available?</h2>
         <div class="step-desc">Pumili ng kahit isang oras na maaari kang mag-accept ng mission.</div>
       </div>
 
@@ -201,7 +206,7 @@
           <div class="availability-row"><span class="availability-day">Sabado</span><label class="slot-card"><input type="checkbox" data-slot="sat-morning" aria-label="Sabado, umaga" /><span>6 AM - 12 PM</span></label><label class="slot-card"><input type="checkbox" data-slot="sat-afternoon" aria-label="Sabado, hapon" /><span>12 - 6 PM</span></label><label class="slot-card"><input type="checkbox" data-slot="sat-evening" aria-label="Sabado, gabi" /><span>6 - 10 PM</span></label></div>
           <div class="availability-row"><span class="availability-day">Linggo</span><label class="slot-card"><input type="checkbox" data-slot="sun-morning" aria-label="Linggo, umaga" /><span>6 AM - 12 PM</span></label><label class="slot-card"><input type="checkbox" data-slot="sun-afternoon" aria-label="Linggo, hapon" /><span>12 - 6 PM</span></label><label class="slot-card"><input type="checkbox" data-slot="sun-evening" aria-label="Linggo, gabi" /><span>6 - 10 PM</span></label></div>
         </div>
-        <div class="form-error" id="v-err-avail"></div>
+        <div role="alert" class="form-error" id="v-err-avail"></div>
       </div>
 
       <div class="form-group">
@@ -213,7 +218,7 @@
           <span class="selection-count" id="barangay-count">0 napili</span>
         </div>
         <div id="barangay-chips" class="choice-grid barangay-chip-grid"></div>
-        <div class="form-error" id="v-err-preferred"></div>
+        <div role="alert" class="form-error" id="v-err-preferred"></div>
       </div>
 
       <div class="form-group">
@@ -225,7 +230,7 @@
           <option value="motorcycle">Motor</option>
           <option value="car">Sasakyan</option>
         </select>
-        <div class="form-error" id="v-err-transport"></div>
+        <div role="alert" class="form-error" id="v-err-transport"></div>
       </div>
 
       <div class="step-nav">
@@ -235,32 +240,32 @@
     </div>
 
     <div class="step-panel" id="step-5">
-      <div class="step-title">Emergency contact</div>
+      <h2 class="step-title" tabindex="-1">Emergency contact</h2>
       <div class="step-desc">Para sa safety at emergency coordination kapag may kailangan lang.</div>
 
       <div class="form-group">
         <label class="form-label" for="v-inp-ec-name">Pangalan ng Kontak</label>
-        <input id="v-inp-ec-name" class="form-input" maxlength="100" />
-        <div class="form-error" id="v-err-ec-name"></div>
+        <input id="v-inp-ec-name" class="form-input" maxlength="100" name="v-inp-ec-name" />
+        <div role="alert" class="form-error" id="v-err-ec-name"></div>
       </div>
 
       <div class="form-group">
         <label class="form-label" for="v-inp-ec-phone">Numero ng Kontak</label>
-        <input id="v-inp-ec-phone" class="form-input" type="tel" inputmode="numeric" maxlength="11" placeholder="09181234567" />
-        <div class="form-error" id="v-err-ec-phone"></div>
+        <input id="v-inp-ec-phone" class="form-input" type="tel" inputmode="numeric" maxlength="11" placeholder="09181234567" name="v-inp-ec-phone" />
+        <div role="alert" class="form-error" id="v-err-ec-phone"></div>
       </div>
 
       <div class="form-group">
         <label class="form-label" for="v-inp-team">Team Code (optional)</label>
-        <input id="v-inp-team" class="form-input" maxlength="40" />
+        <input id="v-inp-team" class="form-input" maxlength="40" name="v-inp-team" />
       </div>
 
       <div class="form-group">
         <label class="checkbox-row" for="v-chk-terms">
-          <input id="v-chk-terms" type="checkbox" />
+          <input id="v-chk-terms" type="checkbox" name="v-chk-terms" />
           <span>Nauunawaan ko ang volunteer responsibilities at privacy notice.</span>
         </label>
-        <div class="form-error" id="v-err-terms"></div>
+        <div role="alert" class="form-error" id="v-err-terms"></div>
       </div>
 
       <div class="step-nav">
@@ -269,17 +274,17 @@
       </div>
     </div>
 
-    <div class="step-panel" id="step-success">
+    <div class="step-panel" id="step-6">
       <div class="completion-screen">
         <div class="check-icon">✓</div>
         <h2>Nakapag-register ka na!</h2>
         <p class="text-muted">Pending orientation ang iyong account. Makakatanggap ka ng missions pagkatapos ng activation.</p>
-        <a class="btn btn-primary btn-full" href="../volunteer/index.html">Pumunta sa Mission Board</a>
+        <a class="btn btn-primary btn-full" href="../volunteer/index.html">Pumunta sa Dashboard →</a>
       </div>
     </div>
   </main>
 
   <div id="toast-container" aria-live="polite"></div>
-  <script type="module" src="../js/register/volunteer.js"></script>
+  <script src="../js/register/boot.js" data-module="./volunteer.js?v=phone-imports-2"></script>
 </body>
 </html>

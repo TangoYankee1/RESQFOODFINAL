@@ -1,3 +1,19 @@
+## Shared role workspace — November 2026
+
+The protected donor, volunteer, organization, LGU, app-admin, and legacy admin pages now share Option 1 workspace navigation (`workspace-shell.js`) and responsive styling (`workspace.css`). Existing bound controls are retained; account sign-out is moved into the sidebar, donor posting into the heading, and duplicate action banners are removed. Role-specific lists, permissions, verification, exports, and request actions remain owned by their existing modules.
+
+Donor summary cards mirror existing active-count, verified-count, and verified-receipt kg fields. No sample metrics, pickup scheduler, new impact page, or new role capability is introduced. Mobile navigation uses a toggle with Escape dismissal. Application pages retain their existing loading/error gates. Search still filters loaded records only.
+
+Syntax and structural checks are performed; no automated workflow tests were run at the owner's request. Manual checks remain necessary for each role and viewport before describing all workflows as verified.
+
+## Updated assistance request rules
+
+Find Food now enforces one active request per resident, organization availability, collection details on acceptance, resident cancellation, and actor/timestamp history. The independent **Mga request ko** phone-verification flow includes status filters and Philippine-time collection instructions. Search the shared 48-sitio list and choose within organization coverage. See [current behavior](COMMUNITY-REQUESTS.md).
+
+## November 2026 — Community Requests
+
+Implemented scoped callable endpoints for public active-organization discovery, phone-verified resident submission/status, and active organization review. Added server-only request and cooldown collections, idempotent submission, coverage validation, transactional transitions, and review audit events. Added emulator-only demo organization seed. Automated tests have not been run for this change per owner preference. See [details and limitations](COMMUNITY-REQUESTS.md).
+
 # Backend progress
 
 LGU-admin review: see [LGU-ADMIN-LOGIC.md](LGU-ADMIN-LOGIC.md) for onboarding,

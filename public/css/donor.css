@@ -211,8 +211,8 @@
 /* Status accent via top colored strip instead of left border */
 .donation-card.status-pending    { border-top: 3px solid #f59e0b; }
 .donation-card.status-scheduled  { border-top: 3px solid #3b82f6; }
-.donation-card.status-picked-up  { border-top: 3px solid #0ea5e9; }
-.donation-card.status-en-route   { border-top: 3px solid #8b5cf6; }
+.donation-card.status-pickedUp  { border-top: 3px solid #0ea5e9; }
+.donation-card.status-enRoute   { border-top: 3px solid #8b5cf6; }
 .donation-card.status-delivered  { border-top: 3px solid var(--color-primary); }
 .donation-card.status-verified   { border-top: 3px solid var(--color-primary); }
 .donation-card.status-cancelled  { border-top: 3px solid var(--color-danger); opacity: .7; }

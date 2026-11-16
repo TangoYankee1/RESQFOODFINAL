@@ -7,15 +7,22 @@
   <link rel="stylesheet" href="../css/base.css" />
   <link rel="stylesheet" href="../css/donor.css" />
   <link rel="stylesheet" href="/vendor/fonts/fonts.css" />
+  <link rel="stylesheet" href="../css/dashboard.css" />
+  <script src="../js/core/dashboard-boot.js"></script>
+  <link rel="stylesheet" href="/css/brand.css" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/resqfood-mark.svg" />
+  <link rel="stylesheet" href="/css/select-enhancer.css" />
+  <script src="/js/core/select-enhancer.js" defer></script>
+  <link rel="stylesheet" href="/css/workspace.css?v=1" />
 </head>
-<body>
+<body class="dashboard-page">
   <div id="offline-banner">📶 Offline mode — Huling update: <span id="offline-ts"></span></div>
 
   <div class="donor-shell">
 
     <!-- Top bar -->
     <header class="donor-topbar" role="banner">
-      <span class="brand">🍱 RESQFOOD</span>
+      <a class="resqfood-brand" href="/" aria-label="ResQFood home"><img class="resqfood-logo" src="/assets/resqfood-logo.png" alt="RESQFOOD" width="266" height="84" decoding="async" /></a>
       <span class="greeting" id="greeting-name">Magandang araw!</span>
       <button class="icon-btn" id="btn-signout" aria-label="Sign out" title="Mag-sign out">⎋</button>
     </header>
@@ -33,7 +40,7 @@
     <!-- Navigation tabs -->
     <nav class="donor-tabs" role="tablist" aria-label="Donor navigation">
       <button class="donor-tab active" role="tab" aria-selected="true"
-              data-tab="board" aria-controls="panel-board">
+              data-tab="board" id="tab-board" aria-controls="panel-board">
         <span class="tab-icon">📋</span>
         Board
       </button>
@@ -70,7 +77,7 @@
       <!-- Active donations -->
       <div class="section-header">
         <span class="section-title">Aktibong Donations</span>
-        <span class="section-count" id="active-count">0</span>
+        <span class="section-count" id="active-count">—</span>
       </div>
       <div id="active-list" aria-live="polite" aria-label="Aktibong donations">
         <!-- Skeleton loaders shown while data loads -->
@@ -90,7 +97,7 @@
       <div class="history-section">
         <button class="history-toggle" id="history-toggle-btn"
                 aria-expanded="false" aria-controls="completed-list">
-          <span class="section-title text-muted">Natapos na (nakaraang 5)</span>
+          <span class="section-title text-muted">Mga saradong donation (huling 5)</span>
           <span class="history-chevron">▼</span>
         </button>
         <div class="history-list" id="completed-list" role="list"
@@ -104,7 +111,7 @@
 
     <!-- ── STATS TAB ── -->
     <div class="donor-body hidden" id="panel-stats" role="tabpanel" aria-label="Iyong statistics">
-      <div id="stats-content"><p>10 puntos bawat natanggap na donation. Ang kg ay mula lamang sa verified receipts.</p><p>Expired: <span id="stat-expired">0</span></p>
+      <div id="stats-content"><p>10 puntos bawat natanggap na donation. Ang kg ay mula lamang sa verified receipts.</p><p>Expired: <span id="stat-expired">—</span></p>
         <div class="card card-elevated" style="margin-bottom:1rem;">
           <div class="text-muted text-sm" style="margin-bottom:.5rem;">Reliability Score</div>
           <div style="font-size:2rem; font-weight:800;" id="stat-reliability">—</div>
@@ -114,20 +121,20 @@
         </div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:.75rem;">
           <div class="card">
-            <div class="text-muted text-xs">Kabuuang Donated</div>
-            <div style="font-size:1.5rem; font-weight:800;" id="stat-kg">0 kg</div>
+            <div class="text-muted text-xs">Natanggap na kg · lahat ng panahon</div>
+            <div style="font-size:1.5rem; font-weight:800;" id="stat-kg">—</div>
           </div>
           <div class="card">
             <div class="text-muted text-xs">Points</div>
-            <div style="font-size:1.5rem; font-weight:800;" id="stat-points">0</div>
+            <div style="font-size:1.5rem; font-weight:800;" id="stat-points">—</div>
           </div>
           <div class="card">
             <div class="text-muted text-xs">Nai-verify</div>
-            <div style="font-size:1.5rem; font-weight:800;" id="stat-verified">0</div>
+            <div style="font-size:1.5rem; font-weight:800;" id="stat-verified">—</div>
           </div>
           <div class="card">
             <div class="text-muted text-xs">Na-cancel</div>
-            <div style="font-size:1.5rem; font-weight:800;" id="stat-cancelled">0</div>
+            <div style="font-size:1.5rem; font-weight:800;" id="stat-cancelled">—</div>
           </div>
         </div>
       </div>
@@ -137,22 +144,7 @@
 
   <div id="toast-container" aria-live="polite"></div>
 
-  <!-- Sign-out confirmation modal (minimal) -->
-  <div id="signout-modal" style="
-    display:none; position:fixed; inset:0; background:rgba(0,0,0,.5);
-    z-index:9000; align-items:flex-end; justify-content:center;
-  ">
-    <div style="background:#fff; border-radius:1.25rem 1.25rem 0 0; padding:2rem 1.5rem; width:100%; max-width:480px;">
-      <h3 style="margin-bottom:.75rem;">Mag-sign out?</h3>
-      <p class="text-muted text-sm" style="margin-bottom:1.5rem;">
-        Kailangan mo pang mag-OTP para makabalik.
-      </p>
-      <div style="display:flex; gap:.75rem;">
-        <button class="btn btn-ghost" id="btn-cancel-signout" style="flex:1;">Huwag na</button>
-        <button class="btn btn-danger" id="btn-confirm-signout" style="flex:1;">Sign Out</button>
-      </div>
-    </div>
-  </div>
+
 
   <script type="module" src="../js/modules/donor.js"></script>
 </body>

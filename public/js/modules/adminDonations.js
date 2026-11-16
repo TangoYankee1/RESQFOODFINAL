@@ -1,3 +1,4 @@
+import { bindSignOutDialog } from '../core/role-ui.js';
 import { loadAdminSession } from '../core/adminSession.js';
 // public/js/modules/adminDonations.js — PRODUCTION (read-only donations list)
 // Wires admin/donations.html to the live `donations` collection + exportCsv.
@@ -30,13 +31,13 @@ if (typeof document !== 'undefined' && document.getElementById('donations-body')
 }
 
 const STATUS_MAP = {
-  pending: { cls: 'badge-pending', label: 'Pending' },
-  scheduled: { cls: 'badge-scheduled', label: 'Scheduled' },
-  pickedUp: { cls: 'badge-pickedup', label: 'Picked Up' },
-  enRoute: { cls: 'badge-enroute', label: 'En Route' },
-  delivered: { cls: 'badge-delivered', label: 'Delivered' },
-  verified: { cls: 'badge-active', label: 'Verified' },
-  cancelled: { cls: 'badge-suspended', label: 'Cancelled' },
+  pending: { cls: 'badge-pending', label: 'Naka-post' },
+  scheduled: { cls: 'badge-scheduled', label: 'May Kumuha' },
+  pickedUp: { cls: 'badge-pickedup', label: 'Nakuha na' },
+  enRoute: { cls: 'badge-enroute', label: 'Papunta' },
+  delivered: { cls: 'badge-delivered', label: 'Naihatid' },
+  verified: { cls: 'badge-active', label: 'Natanggap' },
+  cancelled: { cls: 'badge-suspended', label: 'Na-cancel' },
 };
 
 function loadDonations() {
@@ -104,10 +105,7 @@ function bindExport() {
 }
 
 function bindSignOut() {
-  document.getElementById('btn-signout')?.addEventListener('click', async () => {
-    await signOutCurrentUser();
-    window.location.href = '/admin/login.html';
-  });
+  bindSignOutDialog(signOutCurrentUser);
 }
 
 function setupOnline() {

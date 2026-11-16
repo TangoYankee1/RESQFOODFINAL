@@ -110,3 +110,13 @@ async function setUserStatus(payload){
 }
 
 export { signupWithProfile, signupVolunteerWithProfile, signupOrgAdminWithProfile, createInvite, validateInvite, consumeInvite, assignRole, verifyQr, reviewVerificationRequest, claimDonation, transitionDonationStatus, sendNotification, issuePin, verifyPinCode, issueCredential, recordOtpSend, recordConsent, exportCsv, setUserStatus };
+
+// Organization-mediated resident assistance.
+export const listCommunityOrganizations = payload => donorCall('listCommunityOrganizations', payload);
+export const submitCommunityRequest = payload => donorCall('submitCommunityRequest', payload);
+export const listMyCommunityRequests = payload => donorCall('listMyCommunityRequests', payload);
+export const listOrganizationCommunityRequests = payload => donorCall('listOrganizationCommunityRequests', payload);
+export const reviewCommunityRequest = payload => donorCall('reviewCommunityRequest', payload);
+
+export const cancelCommunityRequest = payload => donorCall('cancelCommunityRequest',payload);
+export const setCommunityAvailability = payload => donorCall('setCommunityAvailability',payload);

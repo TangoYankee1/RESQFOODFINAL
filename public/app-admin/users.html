@@ -1,20 +1,94 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fil">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ResQFood - App Admin Users</title>
+  <title>ResQFood — Mga User</title>
   <link rel="stylesheet" href="../css/base.css" />
   <link rel="stylesheet" href="../css/admin.css" />
   <link rel="stylesheet" href="/vendor/fonts/fonts.css" />
+  <link rel="stylesheet" href="../css/dashboard.css" />
+  <script src="../js/core/dashboard-boot.js"></script>
+  <link rel="stylesheet" href="/css/brand.css" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/resqfood-mark.svg" />
+  <link rel="stylesheet" href="/css/select-enhancer.css" />
+  <script src="/js/core/select-enhancer.js" defer></script>
+  <link rel="stylesheet" href="/css/workspace.css?v=1" />
 </head>
-<body>
-  <header class="admin-topbar"><span class="brand">🍱 RESQFOOD</span><span class="topbar-barangay">Global Operations</span><span class="admin-name">App Admin</span><span class="mfa-badge">🔐 System Admin</span><button class="signout-btn" id="btn-signout">Sign out</button></header>
+<body class="dashboard-page">
+
+  <header class="admin-topbar">
+    <a class="resqfood-brand" href="/" aria-label="ResQFood home"><img class="resqfood-logo" src="/assets/resqfood-logo.png" alt="RESQFOOD" width="266" height="84" decoding="async" /></a>
+    <span class="topbar-barangay">Project-wide</span>
+    <span class="admin-name">App Admin</span>
+
+    <button class="signout-btn" id="btn-signout">Sign out</button>
+  </header>
+
   <div id="offline-banner">📶 Offline ka ngayon. Ilang features ay hindi available.</div>
+
   <div class="admin-layout">
-    <nav class="admin-sidenav" aria-label="App admin navigation"><a class="nav-link" href="index.html"><span class="nav-icon">🛡️</span>Overview</a><a class="nav-link active" href="users.html"><span class="nav-icon">👥</span>All Users</a><a class="nav-link" href="audit.html"><span class="nav-icon">📋</span>Global Audit</a><a class="nav-link" href="../admin/index.html"><span class="nav-icon">🏛️</span>LGU Admin</a></nav>
-    <main class="admin-main"><div class="admin-main-inner"><h1 class="page-title">All Users</h1><p class="page-subtitle">Global account and role oversight. Role assignment remains server-controlled.</p><div class="filter-bar"><button class="filter-btn active">All</button><button class="filter-btn">Donors</button><button class="filter-btn">Volunteers</button><button class="filter-btn">Org Admins</button><button class="filter-btn">LGU Admins</button></div><div class="alert alert-info" style="margin-top:var(--sp-5);"><span>ℹ️</span><span>This App Admin view is ready for live user queries. Suspension and role changes must go through audited server callables.</span></div><div class="data-table-wrap" style="margin-top:var(--sp-5);"><table class="data-table"><thead><tr><th>User</th><th>Role</th><th>Status</th><th>Scope</th><th>Action</th></tr></thead><tbody><tr><td><strong>Local App Admin</strong></td><td><span class="badge badge-verified">systemAdmin</span></td><td>Active</td><td>Global</td><td>Protected</td></tr><tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--color-muted);">Live user query integration pending.</td></tr></tbody></table></div></div></main>
+
+    <nav class="admin-sidenav" aria-label="App Admin navigation"><a class="nav-link" href="index.html">Overview</a><a class="nav-link active" href="users.html">Mga User</a><a class="nav-link " href="audit.html">Global Audit</a><a class="nav-link" href="../admin/index.html">Operations</a></nav>
+
+    <main class="admin-main">
+      <div class="admin-main-inner">
+
+        <h1 class="page-title">Mga User</h1>
+        <p class="page-subtitle">Pamahalaan ang mga donor, volunteer, at org admin sa buong proyekto.</p>
+
+        <!-- Filter bar -->
+        <div class="filter-bar" id="filter-bar">
+          <button class="filter-btn active" data-filter="all">Lahat</button>
+          <button class="filter-btn" data-filter="donor">Mga Donor</button>
+          <button class="filter-btn" data-filter="volunteer">Mga Volunteer</button>
+          <button class="filter-btn" data-filter="orgAdmin">Org Admins</button>
+          <button class="filter-btn" data-filter="pending">Pending Training</button>
+        </div>
+
+        <!-- User count -->
+        <p class="section-head">
+          <span id="user-count">0</span> user ang nahanap
+        </p>
+
+        <!-- Table -->
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Pangalan</th>
+                <th>Role</th>
+                <th>Barangay</th>
+                <th>Status</th>
+                <th>Detalye</th>
+                <th>Aksyon</th>
+              </tr>
+            </thead>
+            <tbody id="users-body">
+              <!-- injected by JS -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </main>
   </div>
-  <script type="module" src="../js/modules/appAdmin.js?v=app-admin-users-v1"></script>
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- Profile modal -->
+  <div id="user-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 class="modal-title" id="modal-user-name">—</h3>
+      <div id="modal-fields"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="btn-close-modal" style="flex:1;">Isara</button>
+        <button class="btn btn-danger hidden" id="btn-modal-suspend" style="flex:1;">Suspend</button>
+        <button class="btn btn-primary hidden" id="btn-modal-activate" style="flex:1;">Activate</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/modules/adminUsers.js" type="module"></script>
 </body>
 </html>

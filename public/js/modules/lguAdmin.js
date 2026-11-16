@@ -1,3 +1,5 @@
+import { receiptDate } from '../core/receiptStats.js';
+import { bindSignOutDialog } from '../core/role-ui.js';
 // public/js/modules/lguAdmin.js — LGU Admin Dashboard (boot + metrics + missions)
 import { bootGuardedPage } from '../core/guard-boot.js';
 import { donationsQuery, usersQuery, watchQuery, fetchDoc } from '../core/data.js';
@@ -60,10 +62,10 @@ function loadActiveMissions() {
       }
       setText('stat-active', docs.length);
       const STATUS_MAP = {
-        scheduled: { cls: 'badge-scheduled', label: 'Scheduled' },
-        pickedUp: { cls: 'badge-pickedup', label: 'Picked Up' },
-        enRoute: { cls: 'badge-enroute', label: 'En Route' },
-        delivered: { cls: 'badge-delivered', label: 'Delivered' },
+        scheduled: { cls: 'badge-scheduled', label: 'May Kumuha' },
+        pickedUp: { cls: 'badge-pickedup', label: 'Nakuha na' },
+        enRoute: { cls: 'badge-enroute', label: 'Papunta' },
+        delivered: { cls: 'badge-delivered', label: 'Naihatid' },
       };
       tbody.innerHTML = docs.map((m) => {
         const st = STATUS_MAP[m.status] || { cls: 'badge-pending', label: m.status };
@@ -90,6 +92,7 @@ function loadDonationsFeed() {
     next: (docs) => { allDonations = docs; recomputeStats(); },
     error: (err) => handleError(err, { scope: 'lguAdmin.feed' }),
   });
+}
 
 function recomputeStats() {
   const now = new Date();
@@ -100,7 +103,7 @@ function recomputeStats() {
   const rangeStart = currentRange === '7' ? sevenDaysAgo : currentRange === 'month' ? new Date(now.getFullYear(), now.getMonth(), 1) : thirtyDaysAgo;
 
   const inRange = verified.filter((d) => {
-    const t = new Date(d.createdAt || d.verifiedAt || 0);
+    const t = receiptDate(d.verifiedAt || d.createdAt) || new Date(NaN);
     return !isNaN(t.getTime()) && t >= rangeStart;
   });
 
@@ -133,7 +136,7 @@ function recomputeStats() {
     buckets[day.toISOString().slice(0, 10)] = 0;
   }
   verified.forEach((d) => {
-    const t = new Date(d.createdAt || d.verifiedAt || 0);
+    const t = receiptDate(d.verifiedAt || d.createdAt) || new Date(NaN);
     if (!t || isNaN(t.getTime())) return;
     const ageWeeks = Math.floor((Date.now() - t.getTime()) / (7 * 86400000));
     const key = Object.keys(buckets)[7 - ageWeeks];
@@ -180,13 +183,7 @@ function bindExportCSV() {
 }
 
 function bindSignOut() {
-  const modal = document.getElementById('signout-modal');
-  document.getElementById('btn-signout')?.addEventListener('click', () => { if (modal) modal.style.display = 'flex'; });
-  document.getElementById('btn-cancel-signout')?.addEventListener('click', () => { if (modal) modal.style.display = 'none'; });
-  document.getElementById('btn-confirm-signout')?.addEventListener('click', async () => {
-    await signOutCurrentUser();
-    window.location.href = '/lgu-admin/login.html';
-  });
+  bindSignOutDialog(signOutCurrentUser);
 }
 
 function setupOnline() {

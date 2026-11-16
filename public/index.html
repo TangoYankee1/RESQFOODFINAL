@@ -9,7 +9,12 @@
     <link rel="stylesheet" href="/vendor/fonts/fonts.css" />
     <link rel="stylesheet" href="/css/landing.css" />
     <link rel="stylesheet" href="/css/icons.css" />
-  </head>
+    <link rel="stylesheet" href="/css/brand.css" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/resqfood-mark.svg" />
+  <link rel="stylesheet" href="/css/home-workflow.css" />
+  <link rel="stylesheet" href="/css/select-enhancer.css" />
+  <script src="/js/core/select-enhancer.js" defer></script>
+</head>
   <body
     class="bg-surface text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed"
   >
@@ -20,13 +25,7 @@
       <div
         class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto"
       >
-        <div class="flex items-center gap-2">
-          <svg class="ui-icon text-emerald-800 dark:text-emerald-400" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/icons/ui.svg#restaurant"></use></svg>
-          <span
-            class="text-2xl font-black text-emerald-900 dark:text-emerald-50 tracking-tighter"
-            >RESQFOOD</span
-          >
-        </div>
+        <a class="resqfood-brand" href="/" aria-label="ResQFood home"><img class="resqfood-logo" src="/assets/resqfood-logo.png" alt="RESQFOOD" width="266" height="84" decoding="async" /></a>
         <nav class="hidden md:flex items-center gap-8">
           <a
             class="text-emerald-700 dark:text-emerald-400 font-semibold transition-colors hover:text-orange-600"
@@ -83,12 +82,11 @@
                 Donate Food
                 <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/icons/ui.svg#volunteer_activism"></use></svg>
               </a>
-              <button
-                class="border-2 border-primary text-primary px-10 py-4 rounded-full font-bold text-lg hover:bg-primary/5 transition-all flex items-center justify-center gap-2"
-              >
+              <a href="/find-food.html"
+                class="border-2 border-primary text-primary px-10 py-4 rounded-full font-bold text-lg hover:bg-primary/5 transition-all flex items-center justify-center gap-2">
                 Find Food
                 <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/icons/ui.svg#search"></use></svg>
-              </button>
+              </a>
             </div>
           </div>
           <!-- Hero Visual Overlay -->
@@ -122,137 +120,39 @@
           </div>
         </div>
       </section>
-      <!-- Features Section (Bento Inspired) -->
-      <section class="py-24 px-6 bg-surface-container-low">
-        <div class="max-w-7xl mx-auto">
-          <div class="mb-16 max-w-2xl">
-            <h2
-              class="text-3xl md:text-5xl font-extrabold text-on-surface tracking-tight mb-4"
-            >
-              Empowering Rescue Operations
-            </h2>
-            <p class="text-on-surface-variant text-lg">
-              We provide the digital infrastructure to turn surplus food into
-              social impact.
-            </p>
+      <!-- Shared community workflow -->
+      <section class="home-workflow" id="how-it-works" aria-labelledby="workflow-title">
+        <div class="home-workflow-inner">
+          <div class="home-workflow-intro">
+            <h2 id="workflow-title">How ResQFood Works</h2>
+            <p>Connecting donors, volunteers, and verified organizations to support the Lahug community.</p>
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Feature 1 -->
-            <div
-              class="bg-surface-container-lowest p-8 rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow group"
-            >
-              <div
-                class="w-16 h-16 bg-primary-fixed rounded-md flex items-center justify-center mb-8 group-hover:scale-110 transition-transform"
-              >
-                <svg class="ui-icon text-on-primary-fixed text-3xl" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/icons/ui.svg#schedule"></use></svg>
+          <ol class="home-workflow-grid">
+            <li class="home-workflow-card">
+              <div class="home-workflow-card-top">
+                <span class="home-workflow-icon"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/icons/ui.svg#restaurant"></use></svg></span>
+                <span class="home-workflow-step">01 · Donate</span>
               </div>
-              <h3 class="text-xl font-bold text-on-surface mb-3">
-                Real-time listings
-              </h3>
-              <p class="text-on-surface-variant leading-relaxed">
-                Instantly broadcast surplus food availability to local community
-                hubs and shelters.
-              </p>
-            </div>
-            <!-- Feature 2 -->
-            <div
-              class="bg-surface-container-lowest p-8 rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow group"
-            >
-              <div
-                class="w-16 h-16 bg-secondary-fixed rounded-md flex items-center justify-center mb-8 group-hover:scale-110 transition-transform"
-              >
-                <svg class="ui-icon text-on-secondary-fixed text-3xl" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/icons/ui.svg#psychology"></use></svg>
+              <h3>Share surplus food</h3>
+              <p>Post available food, its quantity, and pickup schedule to help organizations serving Barangay Lahug.</p>
+            </li>
+            <li class="home-workflow-card">
+              <div class="home-workflow-card-top">
+                <span class="home-workflow-icon"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/icons/ui.svg#bicycle"></use></svg></span>
+                <span class="home-workflow-step">02 · Deliver</span>
               </div>
-              <h3 class="text-xl font-bold text-on-surface mb-3">
-                Smart matching system
-              </h3>
-              <p class="text-on-surface-variant leading-relaxed">
-                Our AI connects the right dietary requirements with the right
-                surplus sources automatically.
-              </p>
-            </div>
-            <!-- Feature 3 -->
-            <div
-              class="bg-surface-container-lowest p-8 rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow group"
-            >
-              <div
-                class="w-16 h-16 bg-tertiary-fixed rounded-md flex items-center justify-center mb-8 group-hover:scale-110 transition-transform"
-              >
-                <svg class="ui-icon text-on-tertiary-fixed text-3xl" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/icons/ui.svg#star"></use></svg>
+              <h3>Volunteers connect the community</h3>
+              <p>Volunteers collect donations and deliver them to verified organizations, with status updates along the way.</p>
+            </li>
+            <li class="home-workflow-card">
+              <div class="home-workflow-card-top">
+                <span class="home-workflow-icon"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/icons/ui.svg#organization"></use></svg></span>
+                <span class="home-workflow-step">03 · Receive</span>
               </div>
-              <h3 class="text-xl font-bold text-on-surface mb-3">
-                Reward points for donors
-              </h3>
-              <p class="text-on-surface-variant leading-relaxed">
-                Businesses earn impact points and tax certificates for every
-                successful rescue completed.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-      <!-- How It Works Section -->
-      <section class="py-24 px-6 bg-surface">
-        <div class="max-w-7xl mx-auto">
-          <div class="text-center mb-20">
-            <h2 class="text-4xl md:text-6xl font-black text-primary mb-6">
-              How It Works
-            </h2>
-            <div class="h-1.5 w-24 bg-secondary mx-auto rounded-full"></div>
-          </div>
-          <div
-            class="relative flex flex-col md:flex-row justify-between items-start gap-12"
-          >
-            <!-- Connector line for desktop -->
-            <div
-              class="hidden md:block absolute top-24 left-0 w-full h-0.5 border-t-2 border-dashed border-outline-variant/30 -z-0"
-            ></div>
-            <!-- Step 1 -->
-            <div
-              class="relative z-10 flex-1 flex flex-col items-center text-center"
-            >
-              <div
-                class="w-20 h-20 rounded-full bg-surface-container-lowest shadow-xl flex items-center justify-center text-3xl font-black text-primary mb-8 border-4 border-primary"
-              >
-                1
-              </div>
-              <h4 class="text-2xl font-bold mb-4">Post surplus food</h4>
-              <p class="text-on-surface-variant">
-                Snap a photo and list items from your kitchen or grocery store
-                in seconds.
-              </p>
-            </div>
-            <!-- Step 2 -->
-            <div
-              class="relative z-10 flex-1 flex flex-col items-center text-center"
-            >
-              <div
-                class="w-20 h-20 rounded-full bg-surface-container-lowest shadow-xl flex items-center justify-center text-3xl font-black text-secondary mb-8 border-4 border-secondary"
-              >
-                2
-              </div>
-              <h4 class="text-2xl font-bold mb-4">Get matched</h4>
-              <p class="text-on-surface-variant">
-                Our system notifies nearby verified partners and individual
-                members in need.
-              </p>
-            </div>
-            <!-- Step 3 -->
-            <div
-              class="relative z-10 flex-1 flex flex-col items-center text-center"
-            >
-              <div
-                class="w-20 h-20 rounded-full bg-surface-container-lowest shadow-xl flex items-center justify-center text-3xl font-black text-emerald-800 mb-8 border-4 border-emerald-800"
-              >
-                3
-              </div>
-              <h4 class="text-2xl font-bold mb-4">Deliver or pickup</h4>
-              <p class="text-on-surface-variant">
-                Volunteers or partners collect the food, ensuring nothing goes
-                to waste.
-              </p>
-            </div>
-          </div>
+              <h3>Request through verified organizations</h3>
+              <p>Residents select their sitio and submit a request. Organizations confirm availability and collection details.</p>
+            </li>
+          </ol>
         </div>
       </section>
       <!-- CTA Section -->
@@ -299,9 +199,7 @@
         class="w-full px-8 py-16 grid grid-cols-1 md:grid-cols-3 gap-12 max-w-7xl mx-auto"
       >
         <div class="space-y-6">
-          <span class="text-xl font-bold text-emerald-800 dark:text-emerald-400"
-            >RESQFOOD</span
-          >
+          <a class="resqfood-brand" href="/" aria-label="ResQFood home"><img class="resqfood-logo" src="/assets/resqfood-logo.png" alt="RESQFOOD" width="266" height="84" decoding="async" /></a>
           <p
             class="font-['Inter'] text-sm leading-relaxed text-zinc-500 dark:text-zinc-400 max-w-xs"
           >

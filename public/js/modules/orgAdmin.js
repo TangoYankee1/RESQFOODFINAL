@@ -1,3 +1,5 @@
+import { initCommunityInbox } from './communityInbox.js';
+import { bindSignOutDialog, bindRoleTabs } from '../core/role-ui.js';
 // public/js/modules/orgAdmin.js — PRODUCTION (a: boot + incoming)
 import { bootGuardedPage } from '../core/guard-boot.js';
 import { donationsQuery, watchQuery } from '../core/data.js';
@@ -31,11 +33,13 @@ export async function initOrgAdmin(s) {
   bindTabs();
   bindSignOut();
   if (!organizationAccess.active) {
-    for (const id of ['panel-incoming', 'panel-verified', 'panel-history']) {
+    for (const id of ['panel-incoming', 'panel-verified']) {
       renderState(document.getElementById(id), { kind: 'empty', message: organizationAccess.message });
     }
     return;
   }
+  document.getElementById('community-inbox').hidden = false;
+  initCommunityInbox();
   loadIncoming();
   loadVerifiedToday();
   bindDetails();
@@ -113,7 +117,7 @@ function deliveryCard(d) {
       <div class="dc-food">${esc(d.foodType)} · ${esc(d.quantityKg)} kg</div>
       <div class="dc-meta">Volunteer: ${esc(d.volunteerName || d.volunteerId || '')}</div>
       <div class="dc-meta">${esc(formatDateTime(d.createdAt))}</div>
-    </div><span class="badge badge-${esc(d.status)}">${isDelivered ? 'Nakarating na' : 'En Route'}</span></div>
+    </div><span class="badge badge-${esc(d.status)}">${isDelivered ? 'Naihatid' : 'Papunta'}</span></div>
     <div class="dc-actions">${isDelivered
       ? `<a class="btn btn-primary btn-full" href="verify.html?donationId=${encodeURIComponent(d.id)}">I-verify ang Pagtanggap</a>`
       : `<button class="btn btn-ghost btn-full" disabled style="opacity:.5;">Naghihintay pa...</button>`}</div>
@@ -142,7 +146,7 @@ function loadVerifiedToday() {
           <div class="dc-food">${esc(d.foodType)} · ${esc(d.quantityKg)} kg</div>
           <div class="dc-meta">Volunteer: ${esc(d.volunteerName || d.volunteerId || '')}</div>
           <div class="dc-meta">${esc(formatDateTime(d.verifiedAt || d.createdAt))}</div>
-        </div><span class="badge badge-verified">Verified</span></div>
+        </div><span class="badge badge-verified">Natanggap</span></div>
       </div>`).join('');
     },
     error: (err) => {
@@ -153,23 +157,9 @@ function loadVerifiedToday() {
 }
 
 function bindTabs() {
-  [{ btn: 'tab-incoming', panel: 'panel-incoming' }, { btn: 'tab-verified', panel: 'panel-verified' }, { btn: 'tab-history', panel: 'panel-history' }]
-    .forEach(({ btn, panel }) => {
-      document.getElementById(btn)?.addEventListener('click', () => {
-        ['tab-incoming', 'tab-verified', 'tab-history'].forEach((b) => document.getElementById(b)?.classList.remove('active'));
-        ['panel-incoming', 'panel-verified', 'panel-history'].forEach((p) => document.getElementById(p)?.classList.add('hidden'));
-        document.getElementById(btn)?.classList.add('active');
-        document.getElementById(panel)?.classList.remove('hidden');
-      });
-    });
+  bindRoleTabs([{ tab: 'tab-incoming', panel: 'panel-incoming' }, { tab: 'tab-verified', panel: 'panel-verified' }]);
 }
 
 function bindSignOut() {
-  const modal = document.getElementById('signout-modal');
-  document.getElementById('btn-signout')?.addEventListener('click', () => { if (modal) modal.style.display = 'flex'; });
-  document.getElementById('btn-cancel-signout')?.addEventListener('click', () => { if (modal) modal.style.display = 'none'; });
-  document.getElementById('btn-confirm-signout')?.addEventListener('click', async () => {
-    await signOutCurrentUser();
-    window.location.href = '/org-admin/login.html';
-  });
+  bindSignOutDialog(signOutCurrentUser);
 }

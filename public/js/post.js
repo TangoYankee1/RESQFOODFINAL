@@ -84,7 +84,7 @@ async function prefillAddress() {
   const el = document.getElementById('inp-pickup-addr');
   try {
     const profile = await fetchDoc(`users/${donorSession.user.uid}`);
-    if (el && !el.value) el.value = profile?.address || profile?.barangay || '';
+    if (el && !el.value) el.value = [profile?.address, profile?.sitio, profile?.barangay].filter(Boolean).join(', ');
   } catch (err) { handleError(err, { scope: 'donor.post.profile' }); }
 
   const now = new Date();

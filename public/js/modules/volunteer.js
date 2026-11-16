@@ -1,3 +1,4 @@
+import { bindSignOutDialog, bindRoleTabs } from '../core/role-ui.js';
 // public/js/modules/volunteer.js — PRODUCTION (a: boot + available)
 import { bootGuardedPage } from '../core/guard-boot.js';
 import { pendingDonationsQuery, donationsQuery, watchQuery, fetchDoc } from '../core/data.js';
@@ -16,9 +17,7 @@ let unsubStats = null;
 export async function initVolunteer(s) {
   volSession = s;
   bindTabs();
-  document.getElementById('btn-signout')?.addEventListener('click', async () => {
-    await signOutCurrentUser(); window.location.href = '/volunteer/login.html';
-  });
+  bindSignOutDialog(signOutCurrentUser);
   try {
     const p = await fetchDoc(`users/${s.user.uid}`);
     const el = document.getElementById('vol-greeting-name');
@@ -27,7 +26,7 @@ export async function initVolunteer(s) {
     if (p?.status !== 'active') {
       const message = p?.status === 'rejected' ? 'Hindi naaprubahan ang application. Makipag-ugnayan sa administrator.'
         : 'Pending ang account review at orientation. I-refresh ang pahina pagkatapos ng approval.';
-      for (const id of ['panel-available', 'panel-my', 'panel-history']) {
+      for (const id of ['panel-available', 'panel-my']) {
         renderState(document.getElementById(id), { kind: 'empty', message });
       }
       if (p?.status === 'rejected') document.getElementById('orientation-banner').textContent = message;
@@ -147,19 +146,11 @@ function loadMine() {
 }
 
 function statusLabel(s) {
-  return { scheduled: 'Scheduled', pickedUp: 'Picked Up', enRoute: 'En Route', delivered: 'Delivered' }[s] || s;
+  return { scheduled: 'May Kumuha', pickedUp: 'Nakuha na', enRoute: 'Papunta', delivered: 'Naihatid' }[s] || s;
 }
 
 function bindTabs() {
-  [{ btn: 'tab-available', panel: 'panel-available' }, { btn: 'tab-my', panel: 'panel-my' }, { btn: 'tab-history', panel: 'panel-history' }]
-    .forEach(({ btn, panel }) => {
-      document.getElementById(btn)?.addEventListener('click', () => {
-        ['tab-available', 'tab-my', 'tab-history'].forEach((b) => document.getElementById(b)?.classList.remove('active'));
-        ['panel-available', 'panel-my', 'panel-history'].forEach((p) => document.getElementById(p)?.classList.add('hidden'));
-        document.getElementById(btn)?.classList.add('active');
-        document.getElementById(panel)?.classList.remove('hidden');
-      });
-    });
+  bindRoleTabs([{ tab: 'tab-available', panel: 'panel-available' }, { tab: 'tab-my', panel: 'panel-my' }]);
 }
 
 function setText(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }

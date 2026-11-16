@@ -1,0 +1,15 @@
+/* Homepage explanation of the implemented donation and assistance workflow. */
+.home-workflow { padding:5rem 1.5rem; background:#f3f5f3; }
+.home-workflow-inner { max-width:1280px; margin:0 auto; }
+.home-workflow-intro { max-width:680px; margin-bottom:2.5rem; }
+.home-workflow-intro h2 { font-size:clamp(2rem,4vw,3rem); font-weight:800; line-height:1.15; letter-spacing:-.025em; color:#005641; margin:0 0 1rem; }
+.home-workflow-intro p { font-size:1.125rem; line-height:1.65; color:#45554b; margin:0; }
+.home-workflow-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1.5rem; padding:0; margin:0; list-style:none; }
+.home-workflow-card { background:#fff; padding:2rem; border-radius:24px; box-shadow:0 4px 18px rgba(20,60,44,.04); }
+.home-workflow-card-top { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:1.75rem; }
+.home-workflow-icon { width:60px; height:60px; display:grid; place-items:center; background:#edf5ee; color:#005641; border-radius:16px; flex-shrink:0; }
+.home-workflow-icon .ui-icon { width:30px; height:30px; }
+.home-workflow-step { color:#914d00; font-size:.8rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
+.home-workflow-card h3 { color:#183c32; font-size:1.3rem; font-weight:700; line-height:1.35; margin:0 0 1rem; }
+.home-workflow-card p { color:#45554b; font-size:1rem; line-height:1.7; margin:0; }
+@media(max-width:800px) { .home-workflow-grid { grid-template-columns:1fr; } .home-workflow { padding:3.5rem 1.25rem; } .home-workflow-card { padding:1.5rem; } }

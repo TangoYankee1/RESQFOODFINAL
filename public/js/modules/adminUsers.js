@@ -1,3 +1,4 @@
+import { bindSignOutDialog } from '../core/role-ui.js';
 import { signOutCurrentUser } from '../core/auth.js';
 import { loadAdminSession } from '../core/adminSession.js';
 // public/js/modules/adminUsers.js
@@ -40,10 +41,7 @@ async function initAdminUsers(s) {
     if (e.target === e.currentTarget) closeModal();
   });
 
-  document.getElementById('btn-signout')?.addEventListener('click', async () => {
-    await signOutCurrentUser();
-    window.location.href = '/admin/login.html';
-  });
+  bindSignOutDialog(signOutCurrentUser);
 }
 
 function loadUsers() {
@@ -113,7 +111,7 @@ function openModal(uid) {
   }
 
   // Pending review is never an activation shortcut.
-  const manageable = uid !== adminSession.user.uid && (adminSession.role === 'systemAdmin' || ['donor','volunteer','orgAdmin'].includes(u.role));
+  const manageable = u.role !== 'systemAdmin' && uid !== adminSession.user.uid && (adminSession.role === 'systemAdmin' || ['donor','volunteer','orgAdmin'].includes(u.role));
   const mayActivate = manageable && u.status === 'suspended' && (u.role === 'donor' || u.trustStatus === 'approved');
   const suspendBtn = document.getElementById('btn-modal-suspend');
   const activateBtn = document.getElementById('btn-modal-activate');

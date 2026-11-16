@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResQFood — Audit Trail</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/admin.css" />
+  <link rel="stylesheet" href="/vendor/fonts/fonts.css" />
+  <link rel="stylesheet" href="../css/dashboard.css" />
+  <script src="../js/core/dashboard-boot.js"></script>
+  <link rel="stylesheet" href="/css/brand.css" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/resqfood-mark.svg" />
+  <link rel="stylesheet" href="/css/select-enhancer.css" />
+  <script src="/js/core/select-enhancer.js" defer></script>
+  <link rel="stylesheet" href="/css/workspace.css?v=1" />
+</head>
+<body class="dashboard-page">
+
+  <header class="admin-topbar">
+    <a class="resqfood-brand" href="/" aria-label="ResQFood home"><img class="resqfood-logo" src="/assets/resqfood-logo.png" alt="RESQFOOD" width="266" height="84" decoding="async" /></a>
+    <span class="topbar-barangay">Project-wide</span>
+    <span class="admin-name">LGU Admin</span>
+
+    <button class="signout-btn" id="btn-signout">Sign out</button>
+  </header>
+
+  <div id="offline-banner">📶 Offline ka ngayon. Ilang features ay hindi available.</div>
+
+  <div class="admin-layout">
+
+    <nav class="admin-sidenav" aria-label="LGU Admin navigation">
+      <a class="nav-link" href="index.html"><span class="nav-icon">📊</span> Dashboard</a>
+      <a class="nav-link" href="users.html"><span class="nav-icon">👥</span> Mga User</a>
+      <a class="nav-link" href="reports.html"><span class="nav-icon">📈</span> Reports</a>
+      <a class="nav-link active" href="audit.html"><span class="nav-icon">📋</span> Audit Trail</a>
+    </nav>
+
+    <main class="admin-main">
+      <div class="admin-main-inner">
+
+        <h1 class="page-title">Audit Trail</h1>
+        <p class="page-subtitle">
+          Read-only na talaan ng lahat ng admin actions. Hindi mabubura o mae-edit.
+        </p>
+
+        <p class="text-muted text-sm">Ang CSV ay hanggang 1,000 pinakabagong tugmang rekord.</p>
+        <!-- Toolbar -->
+        <div style="display:flex; gap:var(--sp-3); margin-bottom:var(--sp-5); flex-wrap:wrap; align-items:center;">
+          <div class="filter-bar" style="margin-bottom:0;">
+            <button class="filter-btn active" data-action="all">Lahat</button>
+            <button class="filter-btn" data-action="user_suspended">Suspended</button>
+            <button class="filter-btn" data-action="user_activated">Activated</button>
+            <button class="filter-btn" data-action="report_exported">Exports</button>
+            <button class="filter-btn" data-action="verification_approved">Approved</button>
+          </div>
+          <button class="btn btn-ghost" id="btn-export-audit" style="white-space:nowrap;">
+            📥 I-export CSV
+          </button>
+        </div>
+
+        <div style="background:var(--color-warning-lt); border-radius:var(--radius-md); padding:var(--sp-3) var(--sp-4); margin-bottom:var(--sp-5); font-size:.85rem;">
+          🔒 <strong>Immutable log.</strong> Walang delete o edit buttons. Lahat ng rekord ay permanente.
+        </div>
+
+        <p class="section-head"><span id="audit-count">0</span> rekord</p>
+
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Admin</th>
+                <th>Aksyon</th>
+                <th>Target</th>
+                <th>Detalye</th>
+              </tr>
+            </thead>
+            <tbody id="audit-body">
+              <!-- injected by JS -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <script src="../js/modules/adminAudit.js" type="module"></script>
+</body>
+</html>

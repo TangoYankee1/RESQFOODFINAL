@@ -1,3 +1,21 @@
+## Shared role workspace — November 2026
+
+The protected donor, volunteer, organization, LGU, app-admin, and legacy admin pages now share Option 1 workspace navigation (`workspace-shell.js`) and responsive styling (`workspace.css`). Existing bound controls are retained; account sign-out is moved into the sidebar, donor posting into the heading, and duplicate action banners are removed. Role-specific lists, permissions, verification, exports, and request actions remain owned by their existing modules.
+
+Donor summary cards mirror existing active-count, verified-count, and verified-receipt kg fields. No sample metrics, pickup scheduler, new impact page, or new role capability is introduced. Mobile navigation uses a toggle with Escape dismissal. Application pages retain their existing loading/error gates. Search still filters loaded records only.
+
+Syntax and structural checks are performed; no automated workflow tests were run at the owner's request. Manual checks remain necessary for each role and viewport before describing all workflows as verified.
+
+## Shared searchable dropdowns
+
+All single-choice select fields now use the shared `select-enhancer.js` and `select-enhancer.css` component: inline search, compact scrollable results, selection checkmark, result count, arrow-key navigation, Enter selection, Escape dismissal, and touch-sized rows. Stored option values and native form/change behavior remain unchanged. Multiple-selection listboxes retain their native behavior. Donor and Find Food sitio fields no longer have separate search controls.
+
+## Current authentication and community design (November 2026)
+
+This update supersedes older green hero specifications for registration and login. Use the supplied dark-green logo on a white header, one contextual account link, a light page background, centered role introduction, and a consistent back-to-role link. Put registration progress inside the form card. Shared sources: `public/js/core/auth-header.js` and `public/css/auth-shell.css`; preserve the static navigation fallback.
+
+Find Food uses organization cards and native sitio selection. Show DEMO labels, explicit pending/accepted/declined/fulfilled states, visible failures, and coordinator replies. Do not imply live food stock or guaranteed allocation. See [Community Requests](docs/COMMUNITY-REQUESTS.md).
+
 # Design System Document: The Humanitarian Editorial
 
 ## 1. Overview & Creative North Star

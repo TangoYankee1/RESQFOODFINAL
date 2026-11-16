@@ -1,14 +1,6 @@
-import {
-  showToast,
-  setStepperState,
-  showFieldError,
-  clearFieldError,
-  buildDonorRegistrationPayload,
-  validateDonorRegistrationPayload,
-  isValidPHPhone,
-  normalizePhone,
-} from './shared.js';
-import { sendOTP, confirmOTP } from '../core/auth.js';
+import './sitio-picker.js';
+import { showToast, setStepperState, showFieldError, clearFieldError, buildDonorRegistrationPayload, validateDonorRegistrationPayload } from './shared.js';
+import { sendOTP, confirmOTP, normalizePhone, isValidPHPhone } from '../core/auth.js';
 import { signupWithProfile } from '../core/callables.js';
 
 // ── State ────────────────────────────────────────────────────────────────────
@@ -25,7 +17,8 @@ function goToStep(n) {
   if (panel) panel.classList.add('active');
   setStepperState(n);
   if (n === 4) requestAnimationFrame(updateWaiverGate);
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.querySelector('.step-panel.active .step-title, .step-panel.active h2')?.focus({ preventScroll: true });
+  window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
 }
 
 // ── STEP 1 — Phone via real Firebase OTP ────────────────────────────────────
@@ -45,6 +38,7 @@ document.getElementById('btn-send-otp').addEventListener('click', async () => {
 
   sendingOtp = true;
   document.getElementById('btn-send-otp').disabled = true;
+  document.getElementById('btn-send-otp').textContent = 'Ipinapadala ang Code…';
   try {
     pendingConfirmation = await sendOTP(phone, 'recaptcha-container');
     showOtpSection(phone);
@@ -55,6 +49,7 @@ document.getElementById('btn-send-otp').addEventListener('click', async () => {
   } finally {
     sendingOtp = false;
     document.getElementById('btn-send-otp').disabled = false;
+    document.getElementById('btn-send-otp').textContent = 'Magpadala ng Code';
   }
 });
 
@@ -201,7 +196,7 @@ document.getElementById('btn-2-next').addEventListener('click', () => {
   const barangay = document.getElementById('inp-barangay').value;
   clearFieldError('inp-barangay', 'err-barangay');
   if (!barangay) {
-    showFieldError('inp-barangay', 'err-barangay', 'Piliin ang iyong barangay.');
+    showFieldError('inp-barangay', 'err-barangay', 'Piliin ang iyong sitio sa Barangay Lahug.');
     valid = false;
   }
 
@@ -303,7 +298,7 @@ btnSubmit.addEventListener('click', async () => {
   }
 
   btnSubmit.disabled = true;
-  btnSubmit.innerHTML = '<span class="spinner"></span> Sine-save...';
+  btnSubmit.innerHTML = '<span class="spinner"></span> Sine-save…';
 
   try {
     const result = await signupWithProfile(payload);

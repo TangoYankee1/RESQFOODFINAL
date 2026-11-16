@@ -42,7 +42,7 @@ export function renderState(container, state, opts = {}) {
   const p = document.createElement('p');
   p.textContent = state.message || (state.kind === 'loading' ? t('common.loading') : state.kind === 'empty' ? t('common.emptyState') : t('common.error'));
   wrap.appendChild(p);
-  if (state.kind === 'error' && state.onRetry !== false) {
+  if (state.kind === 'error' && state.onRetry !== false && typeof opts.onRetry === 'function') {
     const btn = document.createElement('button');
     btn.type = 'button'; btn.className = 'btn btn-ghost';
     btn.textContent = t('common.retry');

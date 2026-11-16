@@ -1,3 +1,4 @@
+import { bindSignOutDialog } from '../core/role-ui.js';
 // public/js/modules/lguReports.js — LGU Admin Reports (rescue totals, charts, CSV export)
 import { bootGuardedPage } from '../core/guard-boot.js';
 import { donationsQuery, watchQuery, fetchDoc } from '../core/data.js';
@@ -110,13 +111,7 @@ function bindExportCSV() {
 }
 
 function bindSignOut() {
-  const modal = document.getElementById('signout-modal');
-  document.getElementById('btn-signout')?.addEventListener('click', () => { if (modal) modal.style.display = 'flex'; });
-  document.getElementById('btn-cancel-signout')?.addEventListener('click', () => { if (modal) modal.style.display = 'none'; });
-  document.getElementById('btn-confirm-signout')?.addEventListener('click', async () => {
-    await signOutCurrentUser();
-    window.location.href = '/lgu-admin/login.html';
-  });
+  bindSignOutDialog(signOutCurrentUser);
 }
 
 function setupOnline() {
