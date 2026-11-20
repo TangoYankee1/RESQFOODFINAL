@@ -1,7 +1,7 @@
 # Pickup and receipt handover — 2026-10-15
 
 This batch closes the atomic handover and receipt-code UI items recorded on
-2026-10-14 in BACKEND-PROGRESS.md and DONOR-LOGIC.md. The older PHASE_CD/STAGE files
+2026-10-14 in BACKEND-PROGRESS.md and DONOR-LOGIC.md. The older legacy-verification files
 are page-wiring snapshots; they do not prove that verification changes database state.
 
 ## Exact flow

@@ -67,13 +67,14 @@ Previously observed passing checks include community-request regression, receipt
 
 ## Documentation and references
 
+- [Documentation index](docs/README.md): guides grouped by purpose.
 - docs/COMMUNITY-REQUESTS.md: assistance workflow and permissions.
-- DESIGN.md: UI conventions.
+- docs/DESIGN.md: current UI conventions.
 - docs/LOCAL-UAT.md: current local setup, OTP handling, data retention, and UAT scope.
 - docs/DEPLOYMENT.md and docs/PUBLIC-MIGRATION.md: superseded historical proposals, not setup instructions for this environment.
 - Firebase Auth emulator behavior: https://firebase.google.com/docs/emulator-suite/connect_auth
 
-Historical role/reference documents may describe earlier designs. Validate claims against current code and this migration status before using them in the thesis defense.
+Historical role/reference documents are grouped in docs/reference/ and may describe earlier designs. Validate claims against current code and this migration status before using them in the thesis defense.
 # System administrator setup
 
 See [the administrator guide](docs/SYSTEM-ADMIN.md) for creation, login, password recovery and snapshot restoration. With emulators running, use `npm.cmd run seed:app-admin`. Generated credentials are saved in an ignored local file; rerunning setup preserves the password. LGU administrators remain a separate role.

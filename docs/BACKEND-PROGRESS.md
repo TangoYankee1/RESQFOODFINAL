@@ -258,7 +258,7 @@ business mutations. Document deliberate simplifications.
 
 ### 2026-10-15 | Atomic handover and usable receipt flow
 
-- Read: latest progress/donor logs and PHASE_CD/STAGE snapshots. Continued the
+- Read: latest progress/donor logs and the archived legacy-verification snapshots. Continued the
   explicitly unfinished handover instead of repeating completed donor work.
 - Added: one handover transaction, server-only durable receipts, read-only QR preview,
   shared scanner screen, volunteer pickup PIN and receipt QR/PIN/transport controls.

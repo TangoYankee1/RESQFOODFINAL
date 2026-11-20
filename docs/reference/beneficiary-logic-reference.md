@@ -1,6 +1,6 @@
 ## Implemented update — organization-mediated resident requests
 
-The current app includes a public Find Food organization directory, phone-verified resident assistance requests, and a Community Requests coordinator inbox. This extends the receipt-focused role described below; it does not let residents claim donations. See [current implementation](docs/COMMUNITY-REQUESTS.md). Older proposals below remain reference material.
+The current app includes a public Find Food organization directory, phone-verified resident assistance requests, and a Community Requests coordinator inbox. This extends the receipt-focused role described below; it does not let residents claim donations. See [current implementation](../COMMUNITY-REQUESTS.md). Older proposals below remain reference material.
 
 Here is the **in-depth architectural guide** for the beneficiary (Organization Admin) side of ResQFood, followed by the **Claude-ready, token-optimized prompt**.
 

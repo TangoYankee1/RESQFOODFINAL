@@ -8,3 +8,5 @@ functions/.env.local
 .browser-test/
 .browser-smoke/
 .browser-metrics/
+gformbot-responses.json
+uat_30_responses.csv

@@ -14,7 +14,7 @@ All single-choice select fields now use the shared `select-enhancer.js` and `sel
 
 This update supersedes older green hero specifications for registration and login. Use the supplied dark-green logo on a white header, one contextual account link, a light page background, centered role introduction, and a consistent back-to-role link. Put registration progress inside the form card. Shared sources: `public/js/core/auth-header.js` and `public/css/auth-shell.css`; preserve the static navigation fallback.
 
-Find Food uses organization cards and native sitio selection. Show DEMO labels, explicit pending/accepted/declined/fulfilled states, visible failures, and coordinator replies. Do not imply live food stock or guaranteed allocation. See [Community Requests](docs/COMMUNITY-REQUESTS.md).
+Find Food uses organization cards and native sitio selection. Show DEMO labels, explicit pending/accepted/declined/fulfilled states, visible failures, and coordinator replies. Do not imply live food stock or guaranteed allocation. See [Community Requests](COMMUNITY-REQUESTS.md).
 
 # Design System Document: The Humanitarian Editorial
 
