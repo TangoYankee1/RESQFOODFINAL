@@ -280,6 +280,8 @@ function startHold() {
   if (!chk?.checked || btn?.disabled) return;
   cancelHold();
   btn.classList.add('holding');
+  const label = document.getElementById('hold-label');
+  if (label) label.textContent = 'Pindutin pa ng 3 segundo…';
   holdTimer = setTimeout(() => {
     btn.classList.remove('holding');
     submitDonation();
@@ -290,6 +292,10 @@ function cancelHold() {
   const btn = document.getElementById('btn-hold-submit');
   if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
   btn?.classList.remove('holding');
+  const label = document.getElementById('hold-label');
+  if (label && !submitting) {
+    label.textContent = 'I-post ang Donation';
+  }
 }
 
 function buildReviewSummary() {

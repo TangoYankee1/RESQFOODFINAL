@@ -8,9 +8,9 @@ Use /org-admin/login.html with these local-only phone identities:
 
 | Organization | Phone input (after +63) | Base sitio |
 | --- | --- | --- |
-| DEMO — Lahug Community Kitchen | 9170009101 | ACACIA |
-| DEMO — Lahug Feeding Partners | 9170009102 | LOWER PEACE VALLEY |
-| DEMO — Lahug Food Support | 9170009103 | SUDLON |
+| DEMO — Lahug Community Kitchen | 9170009201 | ACACIA |
+| DEMO — Lahug Feeding Partners | 9170009202 | LOWER PEACE VALLEY |
+| DEMO — Lahug Food Support | 9170009203 | SUDLON |
 
 Click Magpadala ng Code and use the latest OTP from the Auth emulator terminal. Phone numbers and addresses are demonstration fixtures, not contact details to use outside the emulator.
 

@@ -8,9 +8,9 @@ for (const [key, fallback] of Object.entries({ FIRESTORE_EMULATOR_HOST:'127.0.0.
 admin.initializeApp({ projectId:'resqfood-ec8f5' });
 const db = admin.firestore();
 const entries = [
-  { id:'demo-lahug-community-kitchen', name:'DEMO — Lahug Community Kitchen', phone:'+639170009101', sitio:'ACACIA', serviceSitios:['ACACIA','ANAPOG','ARCO','AVOCADO','BAYANIHAN'], description:'Fictional community kitchen for the thesis demonstration.' },
-  { id:'demo-lahug-feeding-partners', name:'DEMO — Lahug Feeding Partners', phone:'+639170009102', sitio:'LOWER PEACE VALLEY', serviceSitios:['LOWER PEACE VALLEY','UPPER PEACE VALLEY','LOWER BETANIA','GOLDEN VALLEY','UPPER GREEN VALLEY'], description:'Fictional feeding-program team for the thesis demonstration.' },
-  { id:'demo-lahug-food-support', name:'DEMO — Lahug Food Support', phone:'+639170009103', sitio:'SUDLON', serviceSitios:['SUDLON','SUDLON RIVERSIDE','VETERANS','VETERANS VILLAGE','PASTEUR'], description:'Fictional food-assistance organization for the thesis demonstration.' },
+  { id:'demo-lahug-community-kitchen', name:'DEMO — Lahug Community Kitchen', phone:'+639170009201', sitio:'ACACIA', serviceSitios:['ACACIA','ANAPOG','ARCO','AVOCADO','BAYANIHAN'], description:'Fictional community kitchen for the thesis demonstration.' },
+  { id:'demo-lahug-feeding-partners', name:'DEMO — Lahug Feeding Partners', phone:'+639170009202', sitio:'LOWER PEACE VALLEY', serviceSitios:['LOWER PEACE VALLEY','UPPER PEACE VALLEY','LOWER BETANIA','GOLDEN VALLEY','UPPER GREEN VALLEY'], description:'Fictional feeding-program team for the thesis demonstration.' },
+  { id:'demo-lahug-food-support', name:'DEMO — Lahug Food Support', phone:'+639170009203', sitio:'SUDLON', serviceSitios:['SUDLON','SUDLON RIVERSIDE','VETERANS','VETERANS VILLAGE','PASTEUR'], description:'Fictional food-assistance organization for the thesis demonstration.' },
 ];
 async function run() {
   for (const entry of entries) {

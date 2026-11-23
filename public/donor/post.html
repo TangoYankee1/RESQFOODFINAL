@@ -57,32 +57,42 @@
     .hold-btn {
       position: relative;
       overflow: hidden;
-      background: var(--color-primary);
-      color: var(--color-accent);
-      border: none;
-      border-radius: var(--radius-md);
-      padding: var(--sp-4) var(--sp-6);
-      width: 100%;
-      font-size: 1.05rem;
-      font-weight: 700;
-      cursor: pointer;
+      isolation: isolate;
       user-select: none;
       -webkit-user-select: none;
-      transition: background .18s;
+      touch-action: none;
     }
-    .hold-btn:disabled { opacity: .5; cursor: not-allowed; }
+    .hold-btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
     .hold-btn .hold-fill {
       position: absolute;
+      z-index: 0;
       inset: 0;
-      background: rgba(252, 212, 0, .35);
+      background: rgba(255, 255, 255, .22);
       transform: scaleX(0);
       transform-origin: left;
       transition: none;
     }
-    .hold-btn .hold-label { position: relative; z-index: 1; }
+    .hold-btn .hold-label {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-2);
+    }
     .hold-btn.holding .hold-fill {
       transform: scaleX(1);
       transition: transform 3s linear;
+    }
+    .hold-btn.holding {
+      box-shadow: var(--shadow-md);
+    }
+    .hold-btn:focus-visible {
+      outline: 3px solid rgba(231, 126, 23, .28);
+      outline-offset: 3px;
     }
 
     .expiry-badge {
@@ -283,9 +293,9 @@
       </p>
 
       <!-- Hold-to-confirm submit -->
-      <button class="hold-btn" id="btn-hold-submit" disabled aria-label="Pindutin nang 3 segundo para mag-submit">
+      <button class="btn btn-primary btn-full btn-lg hold-btn" id="btn-hold-submit" disabled aria-label="Pindutin nang 3 segundo para mag-submit" aria-live="polite">
         <div class="hold-fill" id="hold-fill"></div>
-        <span class="hold-label" id="hold-label">🍱 I-post ang Donation</span>
+        <span class="hold-label" id="hold-label">I-post ang Donation</span>
       </button>
 
       <div class="step-nav" style="margin-top:1rem;">
