@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "emulators": "node scripts/start-emulators.js",
+    "preview:lan": "node scripts/start-lan-preview.cjs",
     "test:otp": "node tests/otp-signup-emulator-test.js",
     "test:donor": "node tests/donor-workflow-test.js && node tests/donor-storage-test.js",
     "test:handover": "node tests/handover-test.js",

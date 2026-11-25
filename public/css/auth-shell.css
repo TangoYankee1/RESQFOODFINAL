@@ -13,6 +13,7 @@ resqfood-auth-header { display:block; }
 .auth-intro p { color:#53645e; font-size:1rem; line-height:1.6; margin:0; }
 .auth-back { width:calc(100% - 2rem); max-width:520px; margin:0 auto; padding:0 0 .5rem; font-size:.875rem; }
 .auth-page .reg-container { width:calc(100% - 2rem); max-width:520px; margin:0 auto; padding:1.5rem; min-height:0; border:1px solid #dfe8e3; border-radius:20px; box-shadow:0 8px 24px rgba(20,60,44,.04); }
+.auth-page form[id$="-login-form"] #login-confirm { margin-top:var(--sp-3); }
 .auth-progress { padding:0 0 1.25rem; margin-bottom:1.5rem; border-bottom:1px solid #e5ece8; }
 .auth-progress .stepper { margin:0; }
 .auth-invite-note { margin:0 0 1.5rem; padding:1rem; border-radius:12px; background:#eef5f0; color:#365446; font-size:.875rem; line-height:1.6; }

@@ -37,14 +37,17 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 const functions = getFunctions(app);
-const isLocalDev = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+const hostname = location.hostname;
+const isLoopback = hostname === "localhost" || hostname === "127.0.0.1";
+const isPrivateLanIPv4 = /^(10(?:\.\d{1,3}){3}|192\.168(?:\.\d{1,3}){2}|172\.(?:1[6-9]|2\d|3[01])(?:\.\d{1,3}){2})$/.test(hostname);
+const isLocalDev = isLoopback || isPrivateLanIPv4;
 
 if (isLocalDev) {
   try {
-    connectAuthEmulator(auth, "http://localhost:9099");
-    connectFirestoreEmulator(db, "localhost", 8080);
-    connectStorageEmulator(storage, "localhost", 9199);
-    connectFunctionsEmulator(functions, "localhost", 5001);
+    connectAuthEmulator(auth, `http://${hostname}:9099`);
+    connectFirestoreEmulator(db, hostname, 8080);
+    connectStorageEmulator(storage, hostname, 9199);
+    connectFunctionsEmulator(functions, hostname, 5001);
     console.log("Using Firebase emulators for local development.");
   } catch (err) {
     console.warn("Emulator connection skipped:", err);

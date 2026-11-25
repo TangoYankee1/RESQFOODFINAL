@@ -3,6 +3,49 @@ body {
   min-height: 100dvh;
 }
 
+@media (max-width: 520px) {
+  .site-header-inner {
+    gap: .75rem;
+    padding-inline: 1rem;
+  }
+
+  .site-header-inner .resqfood-brand {
+    min-width: 0;
+  }
+
+  .site-header-inner .resqfood-brand .resqfood-logo {
+    width: clamp(120px, 40vw, 150px);
+  }
+
+  .site-header-inner > a:last-child {
+    flex-shrink: 0;
+    padding: .625rem 1rem;
+    font-size: .8rem;
+    white-space: nowrap;
+  }
+
+  .hero-content,
+  .hero-section .max-w-7xl {
+    min-width: 0;
+  }
+
+  .hero-title {
+    font-size: clamp(2rem, 9.5vw, 2.75rem);
+    line-height: 1.08;
+    overflow-wrap: break-word;
+  }
+
+  .hero-description {
+    font-size: 1.05rem;
+    overflow-wrap: anywhere;
+  }
+
+  .hero-action {
+    width: 100%;
+    padding-inline: 1.25rem;
+  }
+}
+
 h1,
 h2,
 h3,

@@ -25,7 +25,20 @@ No SMS is sent and no SMS subscription is required. Codes are not hardcoded.
 
 Firebase browser SDK files still require internet on first load. Emulator records
 are temporary unless explicitly exported/imported; do not use real personal data.
-Access through a LAN IP is not wired for emulators in this setup.
+
+For Android browser testing on the same trusted private Wi-Fi, leave the emulator
+terminal running and start a second terminal at the project root:
+
+```powershell
+npm.cmd run preview:lan
+```
+
+Open the printed `http://<computer-LAN-IP>:5000` link on the Android device.
+This starts LAN-bound proxies for Hosting and the Firebase emulators; it does not
+restart or replace the localhost preview. Stop the proxy with Ctrl+C when finished.
+Use only a trusted private network. This plain-HTTP LAN link is for responsive
+browser testing; Android PWA installation, service workers, and camera scanning
+require a secure context such as HTTPS or localhost.
 
 For scripted code retrieval (local testing only):
 

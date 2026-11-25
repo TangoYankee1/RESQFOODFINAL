@@ -122,6 +122,81 @@
 .pin-digit::-webkit-inner-spin-button,
 .pin-digit::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
+.pickup-pin-card {
+  max-width: 560px;
+  margin: 1.5rem auto 0;
+  padding: clamp(1.25rem, 4vw, 2rem);
+  border: 1px solid #e2e9e5;
+  box-shadow: 0 12px 32px rgba(24, 60, 50, .07);
+}
+.pickup-pin-heading { margin-bottom: 1.5rem; }
+.pickup-pin-heading h2 {
+  margin: 0 0 .4rem;
+  color: #005641;
+  font-size: clamp(1.2rem, 4vw, 1.45rem);
+}
+.pickup-pin-heading p,
+.pickup-pin-help {
+  margin: 0;
+  color: #617368;
+  font-size: .88rem;
+  line-height: 1.5;
+}
+.pickup-pin-field label,
+.pickup-pin-label {
+  display: block;
+  margin: 0 0 .5rem;
+  color: #354b40;
+  font-size: .85rem;
+  font-weight: 700;
+}
+.pickup-pin-card #pin-donation-id {
+  min-height: 48px;
+  border: 1px solid #dce5df;
+  border-radius: 10px;
+  background: #f7f9f7;
+  font-size: .95rem;
+}
+.pickup-pin-card #pin-donation-id:focus {
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(0, 86, 65, .14);
+}
+.pickup-pin-help { margin-top: .4rem; font-size: .78rem; }
+.pickup-pin-label { margin-top: 1.35rem; text-align: center; }
+.pickup-pin-card .pin-inputs {
+  gap: clamp(.5rem, 3vw, .75rem);
+  margin: .75rem 0 1rem;
+}
+.pickup-pin-card .pin-digit {
+  width: clamp(3.25rem, 15vw, 4rem);
+  height: clamp(3.5rem, 16vw, 4rem);
+  border: 1.5px solid #cbd8d0;
+  border-radius: 12px;
+  background: #f7f9f7;
+  color: #183c32;
+  font-size: 1.5rem;
+  transition: border-color .16s, box-shadow .16s, background .16s;
+}
+.pickup-pin-card .pin-digit:focus {
+  border-color: #005641;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(0, 86, 65, .14);
+}
+.pickup-pin-card #pin-error {
+  margin: 0 0 .75rem;
+  color: #a12622;
+  font-size: .85rem;
+  line-height: 1.45;
+}
+.pickup-pin-card #pin-error:empty { display: none; }
+.pickup-pin-card #btn-confirm-pin { min-height: 52px; }
+.pickup-pin-card #btn-confirm-pin:disabled {
+  border-color: #f3d5b8;
+  background: #f8e4d0;
+  color: #70400d;
+  opacity: 1;
+}
+
 /* ── Success state ──────────────────────────────────────────────── */
 .scan-success,
 .verify-success {
